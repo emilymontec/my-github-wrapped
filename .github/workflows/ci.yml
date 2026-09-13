@@ -1,0 +1,153 @@
+name: CI
+
+# ⚠️ Fase 13: este pipeline es, en un sentido muy concreto, la primera
+# vez que el código de este proyecto se compila con el CLIENTE DE PRISMA
+# REALMENTE GENERADO. Cada fase anterior (0-12) se desarrolló y verificó
+# en un sandbox donde `prisma generate` está bloqueado por red (no puede
+# descargar el motor de consultas desde binaries.prisma.sh) -- ahí,
+# `PrismaClient` queda tipado como `any` (ver node_modules/.prisma/client
+# antes de generar), así que `tsc --noEmit` NUNCA pudo detectar un typo
+# de campo en un `where`/`select`/`data` de Prisma en 13 fases de
+# desarrollo. Los runners de GitHub Actions sí tienen acceso de red
+# completo, así que este es el primer chequeo real de esa superficie.
+# Si este pipeline falla en el job `typecheck` la primera vez que corre,
+# ese es exactamente el tipo de error que estaba esperando a ser
+# descubierto -- no es necesariamente un bug de este workflow.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: "20"
+  # Valores dummy pero con el FORMATO correcto -- no son secretos reales,
+  # son los que necesita el proceso de build/boot para no tirar un error
+  # de validación (ver lib/auth/crypto.ts: exige exactamente 64 chars hex).
+  # Nunca se usan para hablar con GitHub, Inngest ni Anthropic de verdad
+  # en ningún job de este pipeline.
+  TOKEN_ENCRYPTION_KEY: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  AUTH_SECRET: "ci-only-not-a-real-secret"
+  AUTH_URL: "http://localhost:3000"
+  GITHUB_CLIENT_ID: "ci-dummy-client-id"
+  GITHUB_CLIENT_SECRET: "ci-dummy-client-secret"
+
+jobs:
+  typecheck:
+    name: Typecheck (tsc)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "${{ env.NODE_VERSION }}", cache: "npm" }
+      - run: npm ci
+      # DATABASE_URL no necesita apuntar a una DB real -- `prisma
+      # generate` solo lee prisma/schema.prisma, nunca se conecta.
+      - run: npx prisma generate
+        env:
+          DATABASE_URL: "postgresql://user:pass@localhost:5432/unused_at_generate_time"
+      - run: npx tsc --noEmit
+
+  unit-tests:
+    name: Tests unitarios + integración (Vitest)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "${{ env.NODE_VERSION }}", cache: "npm" }
+      - run: npm ci
+      - run: npx prisma generate
+        env:
+          DATABASE_URL: "postgresql://user:pass@localhost:5432/unused_at_generate_time"
+      # ⚠️ Ninguno de los ~200 tests de esta suite toca una DB ni la red
+      # real (Prisma siempre mockeado con vi.mock, HTTP de GitHub
+      # simulado con msw) -- ver ROADMAP.md, "Convenciones de
+      # desarrollo". Por eso este job no necesita un servicio de
+      # Postgres, a diferencia de `e2e` más abajo.
+      - run: npm test
+
+  build:
+    name: Build de producción (next build)
+    runs-on: ubuntu-latest
+    needs: [typecheck]
+    env:
+      DATABASE_URL: "postgresql://user:pass@localhost:5432/unused_at_build_time"
+      INNGEST_EVENT_KEY: "ci-dummy"
+      INNGEST_SIGNING_KEY: "ci-dummy"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "${{ env.NODE_VERSION }}", cache: "npm" }
+      - run: npm ci
+      - run: npx prisma generate
+      - run: npm run build
+
+  e2e:
+    name: E2E (Playwright)
+    runs-on: ubuntu-latest
+    needs: [typecheck, unit-tests]
+    # ⚠️ Corre en paralelo con `build` (no depende de su artefacto) pero
+    # SÍ después de que typecheck/unit-tests confirmen que el código
+    # compila y la lógica pura anda -- es el job más lento y el que más
+    # infraestructura levanta (Postgres, Inngest Dev Server, tres
+    # navegadores), así que no tiene sentido pagar ese costo si algo más
+    # básico ya está roto.
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: github_wrapped_e2e
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/github_wrapped_e2e"
+      E2E_BASE_URL: "http://localhost:3000"
+      # ⚠️ `INNGEST_DEV=1` fuerza al SDK de Inngest a mandar eventos al
+      # Inngest Dev Server local (ver el paso "Start Inngest Dev Server"
+      # abajo) en vez de a Inngest Cloud -- sin esto, `inngest.send(...)`
+      # en cada Route Handler intentaría autenticarse contra la nube real
+      # con las keys dummy de abajo y fallaría. Es el mismo mecanismo que
+      # ya usa el flujo de desarrollo local documentado en README.md
+      # ("Setup" → `npx inngest-cli@latest dev`), aplicado acá a CI.
+      INNGEST_DEV: "1"
+      INNGEST_EVENT_KEY: "ci-dummy"
+      INNGEST_SIGNING_KEY: "ci-dummy"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "${{ env.NODE_VERSION }}", cache: "npm" }
+      - run: npm ci
+      - run: npx prisma generate
+      # `db push` (no `migrate deploy`): esta DB es efímera, se crea y
+      # se tira en cada corrida -- no hay historial de migraciones que
+      # preservar, mismo criterio que usa `npm run db:push` en desarrollo
+      # local (ver README.md, Setup).
+      - run: npx prisma db push --skip-generate
+      - name: Instalar navegadores de Playwright
+        run: npx playwright install --with-deps chromium firefox webkit
+      - name: Iniciar Inngest Dev Server en segundo plano
+        run: npx inngest-cli@latest dev --no-discovery -u http://localhost:3000/api/inngest &
+      # ⚠️ NO VERIFICADO end-to-end en el sandbox de desarrollo de este
+      # proyecto (ver README.md, Fase 13, "Límites conocidos") -- ni
+      # GitHub Actions ni un browser real están disponibles ahí. Esta es
+      # la config más razonable que se pudo escribir por lectura de la
+      # documentación de Playwright/Inngest, pero la primera corrida real
+      # en un repo con Actions habilitado es la que la valida de verdad.
+      - name: Correr tests E2E
+        run: npm run test:e2e
+      - name: Subir el reporte de Playwright
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 14

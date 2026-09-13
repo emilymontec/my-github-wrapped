@@ -19,13 +19,32 @@ export interface CollectedCommit {
  * del commit local no coincide con ninguno registrado en la cuenta. Por
  * eso comparamos también contra `verifiedEmails`, no solo contra
  * `commit.author.login`.
+ *
+ * ⚠️ CORRECCIÓN (auditoría Fase 13, Hallazgo 1): `repos` se sincroniza con
+ * `affiliation: "owner,collaborator,organization_member"` (ver
+ * lib/jobs/sync.ts) — es decir, esta función también corre sobre repos
+ * donde el usuario NO es el único autor. `commit.author?.login` es el
+ * login al que GITHUB vinculó ese commit, que puede ser el de CUALQUIER
+ * colaborador, no necesariamente el del usuario que está siendo
+ * analizado. Verificar solo que exista (`Boolean(commit.author?.login)`)
+ * atribuía commits ajenos al usuario en cualquier repo compartido/org.
+ * La comparación correcta es contra el login real del usuario
+ * autenticado (`currentUserLogin`), case-insensitive porque GitHub no
+ * distingue mayúsculas en logins.
  */
 export async function getCommitsForRepository(
   client: Octokit,
-  params: { owner: string; repo: string; since?: Date; verifiedEmails: string[] }
+  params: {
+    owner: string;
+    repo: string;
+    since?: Date;
+    verifiedEmails: string[];
+    currentUserLogin: string;
+  }
 ): Promise<CollectedCommit[]> {
-  const { owner, repo, since, verifiedEmails } = params;
+  const { owner, repo, since, verifiedEmails, currentUserLogin } = params;
   const emailSet = new Set(verifiedEmails.map((e) => e.toLowerCase()));
+  const normalizedLogin = currentUserLogin.toLowerCase();
   const commits: CollectedCommit[] = [];
   let page = 1;
   const perPage = 100;
@@ -45,7 +64,7 @@ export async function getCommitsForRepository(
     for (const commit of data) {
       const commitAuthorEmail = commit.commit.author?.email ?? null;
       const isOwnedByUser =
-        Boolean(commit.author?.login) || // GitHub ya lo vinculó
+        commit.author?.login?.toLowerCase() === normalizedLogin || // GitHub lo vinculó A ESTE usuario
         (commitAuthorEmail !== null && emailSet.has(commitAuthorEmail.toLowerCase()));
 
       commits.push({

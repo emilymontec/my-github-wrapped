@@ -70,6 +70,15 @@ model User {
   // ⚠️ Corrección (sección 9/14.4): necesario para normalizar día/hora de
   // actividad a la hora local del usuario en vez de UTC. IANA tz name.
   timezone  String   @default("UTC")
+  // ⚠️ Fase 9: idioma preferido explícito, closed set en código
+  // (lib/i18n/locales.ts), no enum de Prisma — misma convención que
+  // Badge.type/Insight.type: agregar un idioma nuevo no debería requerir
+  // migración, solo agregar el diccionario y sumarlo a SUPPORTED_LOCALES.
+  // Default "es" porque el producto nace en español (ver ROADMAP.md);
+  // se sobreescribe una vez con el Accept-Language del primer visitante
+  // anónimo (cookie NEXT_LOCALE, ver middleware.ts) y, para usuarios
+  // logueados, se puede cambiar explícitamente desde /settings.
+  locale    String   @default("es")
   // ⚠️ Fase 6: opt-in explícito para incluir repos privados en el
   // análisis. Por defecto false — el MVP es solo-públicos, y ampliar el
   // alcance requiere una decisión consciente del usuario, nunca un
@@ -95,6 +104,7 @@ model User {
   comparisonsReceived  ComparisonLink[] @relation("ComparisonRecipient")
   notificationPreference NotificationPreference?
   notificationLogs       NotificationLog[]
+  dataExportRequests     DataExportRequest[]
 }
 
 // GitHub App/OAuth token storage.
@@ -286,6 +296,16 @@ enum InsightSource {
 // Auditoría de costo/uso de IA (sección 16: "controlar costo en llamadas a
 // IA"). Independiente de Insight para poder loguear también llamadas que
 // fallaron o cayeron a fallback, sin ensuciar el modelo de dominio.
+//
+// ⚠️ Fase 10: a propósito NO tiene `user User @relation(...)` — es un log
+// de costo operativo interno (cuántos tokens gastamos, no contenido del
+// usuario), y encadenarlo con `onDelete: Cascade` obligaría a mantener
+// filas de auditoría de facturación atadas al ciclo de vida de una cuenta
+// que puede borrarse. En cambio, `lib/account/delete.ts::deleteAccount`
+// borra estas filas explícitamente ANTES de borrar el User (dentro de la
+// misma transacción) — el efecto de borrado es el mismo, pero es una
+// decisión explícita del código de negocio, no un cascade implícito del
+// schema sobre una tabla que es de nosotros, no del usuario.
 model AiUsageLog {
   id           String   @id @default(cuid())
   userId       String
@@ -357,6 +377,67 @@ enum ComparisonStatus {
   PENDING
   ACCEPTED
   DECLINED
+}
+
+// ─────────────────────────────────────────────────────────
+// Seguridad / Compliance (Fase 10 del roadmap de producto final)
+// ─────────────────────────────────────────────────────────
+
+// Rate limiting propio de la aplicación -- deliberadamente independiente
+// de los rate limits de la API de GitHub (REST 5000/h, GraphQL por
+// puntos) que ya maneja el Data Collector (ver ROADMAP.md,
+// "Restricciones no negociables"): esto protege el COSTO Y CAPACIDAD DE
+// NUESTRA PROPIA infraestructura (jobs de Inngest, llamadas a la API de
+// Anthropic, cómputo de ImageResponse) contra un usuario autenticado que
+// dispare de más, no contra que GitHub nos corte el acceso.
+//
+// `key` es la unidad atómica ("action:userId", p. ej. "sync:clx123") --
+// una fila por combinación de acción + actor, no una tabla genérica de
+// requests. `lib/ratelimit/index.ts` hace el chequeo+incremento en una
+// sola sentencia SQL (`$queryRaw`, upsert atómico) en vez de
+// leer-luego-escribir, mismo principio de "la DB es el árbitro" que
+// `lib/notifications/service.ts::tryClaimNotification` -- dos requests
+// concurrentes del mismo usuario nunca pueden colarse ambas por debajo
+// del límite.
+model RateLimitBucket {
+  key         String   @id
+  windowStart DateTime
+  count       Int      @default(0)
+}
+
+// Exportar los datos propios es trabajo pesado (lee commits, potencialmente
+// decenas de miles por usuario — ver ROADMAP.md sección 32) y por lo tanto
+// NUNCA corre inline en un Route Handler, mismo principio no-negociable
+// que ya rige sync y la generación del Wrapped. El Route Handler solo crea
+// esta fila en QUEUED y encola el evento; `lib/jobs/account-export.ts`
+// hace el trabajo real vía Inngest y deja acá el resultado.
+//
+// `data` guarda el export completo como JSON directamente en Postgres —
+// no se agregó un servicio de blob storage (S3, etc.) para esto porque no
+// está en el stack declarado (ROADMAP.md) y el volumen esperado (incluso
+// para un power user de decenas de miles de commits) entra cómodo en el
+// límite de ~1GB por valor JSONB de Postgres. Si el producto creciera lo
+// suficiente para que esto deje de ser cierto, ese es el momento de sumar
+// blob storage — no antes.
+model DataExportRequest {
+  id           String              @id @default(cuid())
+  userId       String
+  status       DataExportStatus    @default(QUEUED)
+  data         Json?
+  requestedAt  DateTime            @default(now())
+  completedAt  DateTime?
+  errorMessage String?             @db.Text
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, requestedAt])
+}
+
+enum DataExportStatus {
+  QUEUED
+  RUNNING
+  COMPLETED
+  FAILED
 }
 
 // ─────────────────────────────────────────────────────────

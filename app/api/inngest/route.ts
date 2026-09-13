@@ -12,6 +12,7 @@ import {
   sendWrappedReadyNotification,
   sendStreakMilestoneNotification
 } from "@/lib/jobs/notifications";
+import { generateAccountExport } from "@/lib/jobs/account-export";
 
 export const { GET, POST, PUT } = serve({
   client: inngest,
@@ -25,6 +26,7 @@ export const { GET, POST, PUT } = serve({
     reconcileAllUsers,
     autoGenerateClosedYearWrapped,
     sendWrappedReadyNotification,
-    sendStreakMilestoneNotification
+    sendStreakMilestoneNotification,
+    generateAccountExport
   ]
 });

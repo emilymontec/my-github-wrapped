@@ -2,10 +2,13 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { getDictionary, t } from "@/lib/i18n/dictionary";
+import type { Locale } from "@/lib/i18n/locales";
 
 interface PrivateReposToggleProps {
   initialEnabled: boolean;
   enabledAt: Date | null;
+  locale: Locale;
 }
 
 /**
@@ -15,7 +18,8 @@ interface PrivateReposToggleProps {
  * (irreversible). Ninguna de las dos acciones debería poder dispararse
  * por accidente con un solo click.
  */
-export function PrivateReposToggle({ initialEnabled, enabledAt }: PrivateReposToggleProps) {
+export function PrivateReposToggle({ initialEnabled, enabledAt, locale }: PrivateReposToggleProps) {
+  const dict = getDictionary(locale).settings.privateRepos;
   const router = useRouter();
   const [enabled, setEnabled] = useState(initialEnabled);
   const [confirming, setConfirming] = useState(false);
@@ -27,7 +31,7 @@ export function PrivateReposToggle({ initialEnabled, enabledAt }: PrivateReposTo
     setError(null);
     const next = !enabled;
 
-    const res = await fetch("/api/settings/private-repos", {
+    const res = await fetch("/settings/private-repos", {
       method: "PATCH",
       body: JSON.stringify({ enabled: next })
     });
@@ -37,7 +41,7 @@ export function PrivateReposToggle({ initialEnabled, enabledAt }: PrivateReposTo
 
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
-      setError(data?.error ?? "No se pudo actualizar la configuración.");
+      setError(data?.error ?? dict.genericError);
       return;
     }
 
@@ -50,11 +54,11 @@ export function PrivateReposToggle({ initialEnabled, enabledAt }: PrivateReposTo
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm text-neutral-200">
-            {enabled ? "Repos privados incluidos" : "Repos privados no incluidos"}
+            {enabled ? dict.includedLabel : dict.notIncludedLabel}
           </p>
           {enabled && enabledAt && (
             <p className="text-xs text-neutral-500">
-              Activado el {enabledAt.toLocaleDateString("es")}
+              {t(dict.enabledOnLabel, { date: enabledAt.toLocaleDateString(locale) })}
             </p>
           )}
         </div>
@@ -67,7 +71,7 @@ export function PrivateReposToggle({ initialEnabled, enabledAt }: PrivateReposTo
               enabled ? "bg-white/10 text-neutral-200 hover:bg-white/20" : "bg-wrapped-accent text-black hover:opacity-90"
             }`}
           >
-            {enabled ? "Desactivar" : "Activar"}
+            {enabled ? dict.disableButton : dict.enableButton}
           </button>
         ) : (
           <div className="flex items-center gap-2">
@@ -76,7 +80,7 @@ export function PrivateReposToggle({ initialEnabled, enabledAt }: PrivateReposTo
               onClick={() => setConfirming(false)}
               className="rounded-full px-3 py-2 text-sm text-neutral-400 hover:text-neutral-200"
             >
-              Cancelar
+              {dict.cancelButton}
             </button>
             <button
               type="button"
@@ -84,11 +88,7 @@ export function PrivateReposToggle({ initialEnabled, enabledAt }: PrivateReposTo
               disabled={submitting}
               className="rounded-full bg-red-500/90 px-4 py-2 text-sm font-medium text-white hover:bg-red-500 disabled:opacity-50"
             >
-              {submitting
-                ? "Aplicando…"
-                : enabled
-                  ? "Sí, desactivar y borrar datos privados"
-                  : "Sí, activar"}
+              {submitting ? dict.applying : enabled ? dict.confirmDisable : dict.confirmEnable}
             </button>
           </div>
         )}

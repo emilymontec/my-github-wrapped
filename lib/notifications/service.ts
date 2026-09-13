@@ -4,6 +4,7 @@ import { wrappedReadyEmail, streakMilestoneEmail } from "@/lib/notifications/tem
 import { getNotificationPreferences } from "@/lib/notifications/preferences";
 import type { NotificationType } from "@/lib/notifications/types";
 import type { BadgeType } from "@/lib/gamification/badges";
+import { isSupportedLocale, DEFAULT_LOCALE } from "@/lib/i18n/locales";
 
 export interface NotifyResult {
   sent: boolean;
@@ -64,13 +65,19 @@ export async function notifyWrappedReady(userId: string, year: number): Promise<
 
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    select: { email: true, username: true, name: true }
+    select: { email: true, username: true, name: true, locale: true }
   });
   if (!user?.email) {
     return { sent: false, reason: "no_email" };
   }
 
-  const content = wrappedReadyEmail({ displayName: user.username ?? user.name, year });
+  // ⚠️ Fase 9: `User.locale` es un `String` en el schema (no un enum de
+  // Prisma), así que se re-valida acá contra `SUPPORTED_LOCALES` antes
+  // de pasarlo a las plantillas -- un valor corrupto o de un idioma
+  // retirado no debe filtrarse hasta `getDictionary` y explotar el envío.
+  const locale = isSupportedLocale(user.locale) ? user.locale : DEFAULT_LOCALE;
+
+  const content = wrappedReadyEmail({ displayName: user.username ?? user.name, year, locale });
   return sendEmail(user.email, content);
 }
 
@@ -100,16 +107,19 @@ export async function notifyStreakMilestone(
 
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    select: { email: true, username: true, name: true }
+    select: { email: true, username: true, name: true, locale: true }
   });
   if (!user?.email) {
     return { sent: false, reason: "no_email" };
   }
 
+  const locale = isSupportedLocale(user.locale) ? user.locale : DEFAULT_LOCALE;
+
   const content = streakMilestoneEmail({
     displayName: user.username ?? user.name,
     badgeType,
-    streakLength
+    streakLength,
+    locale
   });
   return sendEmail(user.email, content);
 }

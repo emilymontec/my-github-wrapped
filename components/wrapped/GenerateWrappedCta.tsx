@@ -2,13 +2,17 @@
 
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
+import { getDictionary, t } from "@/lib/i18n/dictionary";
+import type { Locale } from "@/lib/i18n/locales";
 
 interface GenerateWrappedCtaProps {
   year: number;
   isClosed: boolean;
+  locale: Locale;
 }
 
-export function GenerateWrappedCta({ year, isClosed }: GenerateWrappedCtaProps) {
+export function GenerateWrappedCta({ year, isClosed, locale }: GenerateWrappedCtaProps) {
+  const dict = getDictionary(locale).wrapped;
   const router = useRouter();
   const [status, setStatus] = useState<"idle" | "generating" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -16,7 +20,7 @@ export function GenerateWrappedCta({ year, isClosed }: GenerateWrappedCtaProps) 
 
   async function pollUntilReady() {
     pollRef.current = setInterval(async () => {
-      const res = await fetch(`/api/wrapped?year=${year}`);
+      const res = await fetch(`/wrapped?year=${year}`);
       if (!res.ok) return;
       const data = await res.json();
       if (data.status === "ready") {
@@ -30,7 +34,7 @@ export function GenerateWrappedCta({ year, isClosed }: GenerateWrappedCtaProps) 
     setStatus("generating");
     setErrorMessage(null);
 
-    const res = await fetch("/api/wrapped", {
+    const res = await fetch("/wrapped", {
       method: "POST",
       body: JSON.stringify({ year })
     });
@@ -44,7 +48,7 @@ export function GenerateWrappedCta({ year, isClosed }: GenerateWrappedCtaProps) 
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
       setStatus("error");
-      setErrorMessage(data?.error ?? "No se pudo generar tu Wrapped. Intenta de nuevo.");
+      setErrorMessage(data?.error ?? dict.generateGenericError);
       return;
     }
 
@@ -61,8 +65,8 @@ export function GenerateWrappedCta({ year, isClosed }: GenerateWrappedCtaProps) 
     <div className="flex flex-col items-center gap-4 text-center">
       <p className="max-w-sm text-neutral-400">
         {isClosed
-          ? `Todavía no generaste tu Wrapped de ${year}.`
-          : `${year} sigue en curso — genera un adelanto con lo que llevas hasta ahora.`}
+          ? t(dict.notGeneratedYet, { year })
+          : t(dict.inProgress, { year })}
       </p>
       <button
         type="button"
@@ -70,7 +74,7 @@ export function GenerateWrappedCta({ year, isClosed }: GenerateWrappedCtaProps) 
         disabled={status === "generating"}
         className="rounded-full bg-wrapped-accent px-6 py-3 font-medium text-black transition hover:opacity-90 disabled:opacity-50"
       >
-        {status === "generating" ? "Generando…" : "Generar mi Wrapped"}
+        {status === "generating" ? dict.generating : dict.generateButton}
       </button>
       {status === "error" && <p className="text-sm text-red-400">{errorMessage}</p>}
     </div>

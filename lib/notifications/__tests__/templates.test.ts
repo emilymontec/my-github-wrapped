@@ -16,6 +16,13 @@ describe("wrappedReadyEmail", () => {
     expect(content.text.startsWith("Hola,")).toBe(true);
   });
 
+  it("respeta locale='en'", () => {
+    const content = wrappedReadyEmail({ displayName: "emily", year: 2026, locale: "en" });
+
+    expect(content.subject).toBe("Your GitHub Wrapped 2026 is ready 🎉");
+    expect(content.text).toContain("Hi emily");
+    expect(content.html).toContain('lang="en"');
+  });
 });
 
 describe("streakMilestoneEmail", () => {
@@ -40,5 +47,19 @@ describe("streakMilestoneEmail", () => {
 
     expect(content.subject).toContain("Racha de 100 días");
     expect(content.text).toContain("100 días");
+  });
+
+  it("respeta locale='en', incluyendo la etiqueta del badge en inglés", () => {
+    const content = streakMilestoneEmail({
+      displayName: "emily",
+      badgeType: "streak_30",
+      streakLength: 30,
+      locale: "en"
+    });
+
+    expect(content.subject).toBe("New streak unlocked: 30-day streak 🔥");
+    expect(content.text).toContain("Hi emily");
+    expect(content.text).toContain("30-day coding streak");
+    expect(content.html).toContain('lang="en"');
   });
 });

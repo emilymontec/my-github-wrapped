@@ -2,8 +2,11 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import type { Locale } from "@/lib/i18n/locales";
 
-export function InviteForm() {
+export function InviteForm({ locale }: { locale: Locale }) {
+  const dict = getDictionary(locale).comparisons;
   const router = useRouter();
   const [username, setUsername] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -16,7 +19,7 @@ export function InviteForm() {
     setSubmitting(true);
     setError(null);
 
-    const res = await fetch("/api/comparisons", {
+    const res = await fetch("/comparisons", {
       method: "POST",
       body: JSON.stringify({ username: username.trim() })
     });
@@ -25,7 +28,7 @@ export function InviteForm() {
 
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
-      setError(data?.error ?? "No se pudo enviar la invitación.");
+      setError(data?.error ?? dict.inviteGenericError);
       return;
     }
 
@@ -38,7 +41,7 @@ export function InviteForm() {
       <input
         value={username}
         onChange={(e) => setUsername(e.target.value)}
-        placeholder="username de GitHub"
+        placeholder={dict.inviteInputPlaceholder}
         className="flex-1 rounded-lg border border-wrapped-border bg-black/20 px-3 py-2 text-sm text-neutral-200 placeholder:text-neutral-600"
       />
       <button
@@ -46,7 +49,7 @@ export function InviteForm() {
         disabled={submitting}
         className="shrink-0 rounded-lg bg-wrapped-accent px-4 py-2 text-sm font-medium text-black hover:opacity-90 disabled:opacity-50"
       >
-        {submitting ? "Enviando…" : "Invitar a comparar"}
+        {submitting ? dict.inviteSending : dict.inviteButton}
       </button>
       {error && <p className="ml-2 self-center text-sm text-red-400">{error}</p>}
     </form>

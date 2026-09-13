@@ -6,6 +6,9 @@
  * mismo `PeriodOption`, o el dashboard mostraría números distintos según
  * cómo se haya cargado.
  */
+import { getDictionary } from "@/lib/i18n/dictionary";
+import type { Locale } from "@/lib/i18n/locales";
+
 export const PERIOD_OPTIONS = ["last30", "calendarYear", "rolling12"] as const;
 export type PeriodOption = (typeof PERIOD_OPTIONS)[number];
 
@@ -82,3 +85,12 @@ export const PERIOD_LABELS: Record<PeriodOption, string> = {
   calendarYear: "Este año",
   rolling12: "Últimos 12 meses"
 };
+
+// ⚠️ Fase 9: `PERIOD_LABELS` (español) se mantiene por compatibilidad
+// hacia atrás -- es un derivado de `lib/i18n/dictionaries/es.ts`, no una
+// copia mantenida a mano, mismo patrón que `BADGE_INFO` en
+// `lib/gamification/badges.ts`. `getPeriodLabels` es la variante
+// locale-aware que usa `components/dashboard/PeriodSelector.tsx`.
+export function getPeriodLabels(locale: Locale): Record<PeriodOption, string> {
+  return getDictionary(locale).periods;
+}

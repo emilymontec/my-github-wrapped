@@ -1,5 +1,6 @@
 import { inngest } from "@/lib/jobs/client";
 import { prisma } from "@/lib/db/prisma";
+import { FANOUT_PAGE_SIZE, buildCursorPageArgs, isLastPage } from "@/lib/jobs/fanout";
 
 /**
  * Generación automática del Wrapped anual (sección Alcance, Fase 7): en
@@ -23,6 +24,13 @@ import { prisma } from "@/lib/db/prisma";
  * está deduplicado por `NotificationLog` (userId, "wrapped_ready", year)
  * -- reintentar el mismo `previousYear` en los días siguientes nunca
  * reenvía el aviso.
+ *
+ * ⚠️ Fase 11: fan-out paginado por cursor sobre `User.id` — mismo
+ * razonamiento que `reconcile.ts` (ver lib/jobs/fanout.ts): un
+ * `step.sendEvent` por página con el batch completo, no uno por usuario.
+ * La idempotencia de `lib/jobs/wrapped.ts` sigue siendo la que hace
+ * seguro reintentar/reencolar sin duplicar trabajo, independientemente
+ * de cómo se pagine el fan-out.
  */
 export const autoGenerateClosedYearWrapped = inngest.createFunction(
   { id: "auto-generate-closed-year-wrapped" },
@@ -30,21 +38,38 @@ export const autoGenerateClosedYearWrapped = inngest.createFunction(
   async ({ step }) => {
     const previousYear = new Date().getUTCFullYear() - 1;
 
-    const userIds = await step.run("list-users-with-data", async (): Promise<string[]> => {
-      const users = await prisma.user.findMany({
-        where: { commits: { some: {} } },
-        select: { id: true }
-      });
-      return users.map((u: { id: string }) => u.id);
-    });
+    let cursor: string | null = null;
+    let totalChecked = 0;
+    let pageIndex = 0;
 
-    for (const userId of userIds) {
-      await step.sendEvent(`auto-generate-wrapped-${userId}-${previousYear}`, {
-        name: "wrapped/generate.requested",
-        data: { userId, year: previousYear }
+    while (true) {
+      const page = await step.run(`list-users-with-data-page-${pageIndex}`, async (): Promise<string[]> => {
+        const users = await prisma.user.findMany({
+          where: { commits: { some: {} } },
+          select: { id: true },
+          orderBy: { id: "asc" },
+          ...buildCursorPageArgs("id", cursor, FANOUT_PAGE_SIZE)
+        });
+        return users.map((u: { id: string }) => u.id);
       });
+
+      if (page.length === 0) break;
+
+      await step.sendEvent(
+        `auto-generate-wrapped-batch-${pageIndex}-${previousYear}`,
+        page.map((userId) => ({
+          name: "wrapped/generate.requested" as const,
+          data: { userId, year: previousYear }
+        }))
+      );
+
+      totalChecked += page.length;
+      cursor = page[page.length - 1];
+      pageIndex += 1;
+
+      if (isLastPage(page.length, FANOUT_PAGE_SIZE)) break;
     }
 
-    return { usersChecked: userIds.length, year: previousYear };
+    return { usersChecked: totalChecked, pages: pageIndex, year: previousYear };
   }
 );

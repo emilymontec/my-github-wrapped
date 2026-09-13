@@ -101,6 +101,34 @@ describe("notifyWrappedReady", () => {
     const [, content] = sendEmailMock.mock.calls[0];
     expect(content.text).toContain("Hola Emily R");
   });
+
+  it("usa el locale del usuario si es válido", async () => {
+    userFindUniqueMock.mockResolvedValue({
+      email: "a@b.com",
+      username: "emily",
+      name: null,
+      locale: "en"
+    });
+
+    await notifyWrappedReady("u1", 2026);
+
+    const [, content] = sendEmailMock.mock.calls[0];
+    expect(content.subject).toBe("Your GitHub Wrapped 2026 is ready 🎉");
+  });
+
+  it("cae a español si el locale guardado no es válido", async () => {
+    userFindUniqueMock.mockResolvedValue({
+      email: "a@b.com",
+      username: "emily",
+      name: null,
+      locale: "klingon"
+    });
+
+    await notifyWrappedReady("u1", 2026);
+
+    const [, content] = sendEmailMock.mock.calls[0];
+    expect(content.subject).toContain("ya está listo");
+  });
 });
 
 describe("notifyStreakMilestone", () => {

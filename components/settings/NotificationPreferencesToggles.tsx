@@ -1,10 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import type { Locale } from "@/lib/i18n/locales";
 
 interface NotificationPreferencesTogglesProps {
   initialWrappedReadyEmail: boolean;
   initialStreakMilestoneEmail: boolean;
+  locale: Locale;
 }
 
 /**
@@ -17,8 +20,10 @@ interface NotificationPreferencesTogglesProps {
  */
 export function NotificationPreferencesToggles({
   initialWrappedReadyEmail,
-  initialStreakMilestoneEmail
+  initialStreakMilestoneEmail,
+  locale
 }: NotificationPreferencesTogglesProps) {
+  const dict = getDictionary(locale).settings;
   const [wrappedReadyEmail, setWrappedReadyEmail] = useState(initialWrappedReadyEmail);
   const [streakMilestoneEmail, setStreakMilestoneEmail] = useState(initialStreakMilestoneEmail);
   const [error, setError] = useState<string | null>(null);
@@ -32,7 +37,7 @@ export function NotificationPreferencesToggles({
     setCurrent(next); // optimista
     setError(null);
 
-    const res = await fetch("/api/settings/notifications", {
+    const res = await fetch("/settings/notifications", {
       method: "PATCH",
       body: JSON.stringify({ [key]: next })
     });
@@ -40,21 +45,21 @@ export function NotificationPreferencesToggles({
     if (!res.ok) {
       setCurrent(current); // revertir
       const data = await res.json().catch(() => ({}));
-      setError(data?.error ?? "No se pudo actualizar la preferencia.");
+      setError(data?.error ?? dict.preferenceUpdateError);
     }
   }
 
   return (
     <div className="space-y-4">
       <ToggleRow
-        label="Tu Wrapped anual está listo"
-        description="Un email cuando se genera el Wrapped de un año recién cerrado."
+        label={dict.wrappedReadyLabel}
+        description={dict.wrappedReadyDescription}
         checked={wrappedReadyEmail}
         onChange={() => toggle("wrappedReadyEmail", wrappedReadyEmail, setWrappedReadyEmail)}
       />
       <ToggleRow
-        label="Nuevas rachas de commits"
-        description="Un email cuando alcanzás una racha de 7, 30 o 100 días seguidos."
+        label={dict.streakMilestoneLabel}
+        description={dict.streakMilestoneDescription}
         checked={streakMilestoneEmail}
         onChange={() => toggle("streakMilestoneEmail", streakMilestoneEmail, setStreakMilestoneEmail)}
       />

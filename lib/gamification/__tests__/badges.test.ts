@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { detectEligibleBadges, BADGE_TYPES, BADGE_INFO } from "@/lib/gamification/badges";
+import { detectEligibleBadges, BADGE_TYPES, BADGE_INFO, getBadgeInfo } from "@/lib/gamification/badges";
 import { buildAnalyticsFixture } from "@/lib/insights/__tests__/fixtures";
 
 function typesOf(analytics: ReturnType<typeof buildAnalyticsFixture>) {
@@ -154,5 +154,23 @@ describe("catálogo de badges", () => {
 
   it("con datos completamente neutros no se otorga ningún badge", () => {
     expect(detectEligibleBadges(buildAnalyticsFixture())).toHaveLength(0);
+  });
+});
+
+describe("getBadgeInfo (Fase 9 — locale-aware)", () => {
+  it("devuelve label/description en español por defecto (BADGE_INFO)", () => {
+    expect(getBadgeInfo("streak_30", "es")).toEqual(BADGE_INFO.streak_30);
+  });
+
+  it("devuelve el mismo catálogo en inglés para cada BadgeType", () => {
+    for (const type of BADGE_TYPES) {
+      const info = getBadgeInfo(type, "en");
+      expect(info.label.length).toBeGreaterThan(0);
+      expect(info.description.length).toBeGreaterThan(0);
+    }
+  });
+
+  it("es y en dan textos distintos para el mismo badge", () => {
+    expect(getBadgeInfo("streak_7", "es").label).not.toBe(getBadgeInfo("streak_7", "en").label);
   });
 });

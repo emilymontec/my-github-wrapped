@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db/prisma";
 import { getWrappedPageData } from "@/lib/wrapped/service";
 import { WrappedSlideDeck } from "@/components/wrapped/WrappedSlideDeck";
 import { GenerateWrappedCta } from "@/components/wrapped/GenerateWrappedCta";
+import { getRequestLocale } from "@/lib/i18n/server";
 
 interface WrappedPageProps {
   params: { year: string };
@@ -15,10 +16,11 @@ interface WrappedPageProps {
  * disparar ninguna llamada de IA en esta request. Si el reporte no
  * existe todavía, muestra el CTA de generación en vez de un error.
  *
- * ⚠️ La protección de esta ruta vive aquí, en el Server Component — no en
- * middleware.ts (no existe, ver nota en app/dashboard/page.tsx sobre por
- * qué: session strategy "database" + node:crypto no corren en el Edge
- * Runtime).
+ * ⚠️ La protección de esta ruta vive aquí, en el Server Component — no
+ * en middleware.ts (que desde la Fase 9 existe, pero solo resuelve el
+ * locale del navegador, no auth: session strategy "database" +
+ * node:crypto no corren en el Edge Runtime, ver nota en
+ * app/dashboard/page.tsx).
  */
 export default async function WrappedPage({ params }: WrappedPageProps) {
   const session = await auth();
@@ -40,13 +42,16 @@ export default async function WrappedPage({ params }: WrappedPageProps) {
     select: { username: true, name: true }
   });
 
-  const data = await getWrappedPageData(session.user.id, year, user.name ?? "developer");
+  const [data, locale] = await Promise.all([
+    getWrappedPageData(session.user.id, year, user.name ?? "developer"),
+    getRequestLocale()
+  ]);
 
   if (data.status === "not_generated") {
     return (
       <main className="flex min-h-screen flex-col items-center justify-center gap-6 bg-wrapped-bg px-6">
         <h1 className="font-display text-2xl font-semibold text-white">Wrapped {year}</h1>
-        <GenerateWrappedCta year={year} isClosed={data.isClosed} />
+        <GenerateWrappedCta year={year} isClosed={data.isClosed} locale={locale} />
       </main>
     );
   }
@@ -58,6 +63,7 @@ export default async function WrappedPage({ params }: WrappedPageProps) {
       mode="private"
       username={user.username}
       initialIsPublic={data.isPublic}
+      locale={locale}
     />
   );
 }

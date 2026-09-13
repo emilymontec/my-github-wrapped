@@ -2,14 +2,17 @@
 
 import { useMemo } from "react";
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis } from "recharts";
+import { getDictionary, t } from "@/lib/i18n/dictionary";
+import type { Locale } from "@/lib/i18n/locales";
 
 interface DayBucket {
   date: string;
   count: number;
 }
 
-interface CommitTrendProps {
+export interface CommitTrendProps {
   dailyDistribution: DayBucket[];
+  locale: Locale;
 }
 
 /**
@@ -19,7 +22,8 @@ interface CommitTrendProps {
  * un cálculo de negocio) — los conteos diarios en sí ya vienen resueltos
  * del Analytics Engine, este componente solo los sum ariza para dibujar.
  */
-export function CommitTrend({ dailyDistribution }: CommitTrendProps) {
+export function CommitTrend({ dailyDistribution, locale }: CommitTrendProps) {
+  const dict = getDictionary(locale).dashboard;
   const weeklyData = useMemo(() => {
     if (dailyDistribution.length === 0) return [];
 
@@ -33,7 +37,7 @@ export function CommitTrend({ dailyDistribution }: CommitTrendProps) {
   }, [dailyDistribution]);
 
   if (weeklyData.length === 0) {
-    return <p className="text-sm text-neutral-500">Sin actividad en este período todavía.</p>;
+    return <p className="text-sm text-neutral-500">{dict.chartNoActivity}</p>;
   }
 
   return (
@@ -60,8 +64,8 @@ export function CommitTrend({ dailyDistribution }: CommitTrendProps) {
               borderRadius: 8,
               fontSize: 12
             }}
-            labelFormatter={(label) => `Semana de ${label}`}
-            formatter={(value: number) => [`${value} commits`, ""]}
+            labelFormatter={(label) => t(dict.weekOf, { label })}
+            formatter={(value: number) => [`${value} ${dict.commitPlural}`, ""]}
           />
           <Area
             type="monotone"

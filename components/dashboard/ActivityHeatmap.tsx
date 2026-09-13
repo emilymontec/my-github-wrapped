@@ -1,31 +1,18 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import type { Locale } from "@/lib/i18n/locales";
 
 interface DayBucket {
   date: string;
   count: number;
 }
 
-interface ActivityHeatmapProps {
+export interface ActivityHeatmapProps {
   dailyDistribution: DayBucket[];
+  locale: Locale;
 }
-
-const WEEKDAY_LABELS = ["", "Lun", "", "Mié", "", "Vie", ""];
-const MONTH_LABELS = [
-  "Ene",
-  "Feb",
-  "Mar",
-  "Abr",
-  "May",
-  "Jun",
-  "Jul",
-  "Ago",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dic"
-];
 
 /**
  * El heatmap SOLO dibuja lo que ya viene calculado en `dailyDistribution`
@@ -34,7 +21,11 @@ const MONTH_LABELS = [
  * grilla visualmente — la fecha y el conteo de cada día ya vienen
  * resueltos en la timezone del usuario desde el Analytics Engine.
  */
-export function ActivityHeatmap({ dailyDistribution }: ActivityHeatmapProps) {
+export function ActivityHeatmap({ dailyDistribution, locale }: ActivityHeatmapProps) {
+  const dict = getDictionary(locale).dashboard;
+  const WEEKDAY_LABELS = ["", dict.weekdayShort.mon, "", dict.weekdayShort.wed, "", dict.weekdayShort.fri, ""];
+  const MONTH_LABELS = dict.monthsShort;
+
   const [hovered, setHovered] = useState<DayBucket | null>(null);
 
   const { weeks, monthMarkers, maxCount } = useMemo(() => {
@@ -74,7 +65,7 @@ export function ActivityHeatmap({ dailyDistribution }: ActivityHeatmapProps) {
     const max = Math.max(1, ...dailyDistribution.map((d) => d.count));
 
     return { weeks: weeksAcc, monthMarkers: markers, maxCount: max };
-  }, [dailyDistribution]);
+  }, [dailyDistribution, MONTH_LABELS]);
 
   function levelFor(count: number): 0 | 1 | 2 | 3 | 4 {
     if (count === 0) return 0;
@@ -94,7 +85,7 @@ export function ActivityHeatmap({ dailyDistribution }: ActivityHeatmapProps) {
   };
 
   if (weeks.length === 0) {
-    return <p className="text-sm text-neutral-500">Sin actividad en este período todavía.</p>;
+    return <p className="text-sm text-neutral-500">{dict.chartNoActivity}</p>;
   }
 
   return (
@@ -141,15 +132,15 @@ export function ActivityHeatmap({ dailyDistribution }: ActivityHeatmapProps) {
         <div className="flex items-center justify-between pl-6 pt-1">
           <p className="text-xs text-neutral-500" aria-live="polite">
             {hovered
-              ? `${hovered.count} commit${hovered.count === 1 ? "" : "s"} · ${hovered.date}`
-              : "Pasa el cursor sobre un día para ver el detalle"}
+              ? `${hovered.count} ${hovered.count === 1 ? dict.commitSingular : dict.commitPlural} · ${hovered.date}`
+              : dict.heatmapHoverHint}
           </p>
           <div className="flex items-center gap-1 text-xs text-neutral-500">
-            <span>Menos</span>
+            <span>{dict.heatmapLess}</span>
             {([0, 1, 2, 3, 4] as const).map((level) => (
               <div key={level} className={`h-[11px] w-[11px] rounded-[2px] ${heatClasses[level]}`} />
             ))}
-            <span>Más</span>
+            <span>{dict.heatmapMore}</span>
           </div>
         </div>
       </div>

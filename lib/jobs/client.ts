@@ -49,6 +49,11 @@ type Events = {
   "notifications/streak-milestone.requested": {
     data: { userId: string; badgeType: string; streakLength: number };
   };
+  // ⚠️ Fase 10: ver lib/jobs/account-export.ts para el porqué de que
+  // esto sea un job y no trabajo inline en el Route Handler.
+  "account/export.requested": {
+    data: { requestId: string; userId: string };
+  };
 };
 
 export const inngest = new Inngest({

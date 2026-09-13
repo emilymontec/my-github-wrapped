@@ -1,4 +1,6 @@
-import { BADGE_INFO, type BadgeType } from "@/lib/gamification/badges";
+import { getBadgeInfo, type BadgeType } from "@/lib/gamification/badges";
+import { getDictionary, t } from "@/lib/i18n/dictionary";
+import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locales";
 
 /**
  * ⚠️ Estas plantillas nunca calculan nada -- reciben números ya
@@ -6,6 +8,11 @@ import { BADGE_INFO, type BadgeType } from "@/lib/gamification/badges";
  * que `lib/insights/templates.ts`: la IA/las plantillas redactan, nunca
  * agregan datos). Texto plano + HTML mínimo, sin dependencias de un
  * motor de templating -- el volumen de contenido es chico y fijo.
+ *
+ * ⚠️ Fase 9: el copy sale de `lib/i18n/dictionaries/` (namespace
+ * `notificationsEmail`), no de strings hardcodeados acá -- `locale` es
+ * opcional y default `"es"` a propósito, para no romper ningún caller
+ * existente de la Fase 8 que todavía no pasa el parámetro.
  */
 
 export interface EmailContent {
@@ -14,48 +21,48 @@ export interface EmailContent {
   text: string;
 }
 
-function wrapHtml(bodyHtml: string): string {
+function wrapHtml(locale: Locale, footer: string, bodyHtml: string): string {
   return `<!doctype html>
-<html lang="es">
+<html lang="${locale}">
   <body style="margin:0;padding:32px 16px;background:#0a0a0a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#e5e5e5;">
     <div style="max-width:480px;margin:0 auto;background:#171717;border:1px solid #262626;border-radius:16px;padding:32px;">
       ${bodyHtml}
-      <p style="margin-top:32px;font-size:12px;color:#737373;">
-        Recibiste este email porque tenés notificaciones activadas en GitHub Wrapped.
-        Podés desactivarlas en cualquier momento desde tu configuración.
-      </p>
+      <p style="margin-top:32px;font-size:12px;color:#737373;">${footer}</p>
     </div>
   </body>
 </html>`;
 }
 
-export function wrappedReadyEmail(params: { displayName: string | null; year: number }): EmailContent {
-  const { displayName, year } = params;
-  const greeting = displayName ? `Hola ${displayName}` : "Hola";
-  const subject = `Tu GitHub Wrapped ${year} ya está listo 🎉`;
+function greeting(dict: { greetingNamed: string; greetingGeneric: string }, displayName: string | null): string {
+  return displayName ? t(dict.greetingNamed, { name: displayName }) : dict.greetingGeneric;
+}
 
-  const text = [
-    `${greeting},`,
-    "",
-    `Tu GitHub Wrapped ${year} ya se generó y está esperándote.`,
-    `Entrá a tu dashboard para verlo: /wrapped/${year}`,
-    "",
-    "— GitHub Wrapped"
-  ].join("\n");
+export function wrappedReadyEmail(params: {
+  displayName: string | null;
+  year: number;
+  locale?: Locale;
+}): EmailContent {
+  const { displayName, year, locale = DEFAULT_LOCALE } = params;
+  const copy = getDictionary(locale).notificationsEmail.wrappedReady;
+  const hello = greeting(copy, displayName);
+  const subject = t(copy.subject, { year });
+  const body = t(copy.body, { year });
 
-  const html = wrapHtml(`
-    <p style="font-size:15px;">${greeting},</p>
-    <p style="font-size:15px;line-height:1.6;">
-      Tu <strong>GitHub Wrapped ${year}</strong> ya se generó y está esperándote:
-      tu volumen de commits, tus lenguajes, tu racha más larga y los patrones
-      que detectamos en tu actividad de este año.
-    </p>
+  const text = [`${hello},`, "", body, `${copy.cta}: /wrapped/${year}`, "", "— GitHub Wrapped"].join("\n");
+
+  const html = wrapHtml(
+    locale,
+    copy.footer,
+    `
+    <p style="font-size:15px;">${hello},</p>
+    <p style="font-size:15px;line-height:1.6;">${body}</p>
     <p style="margin-top:24px;">
       <a href="/wrapped/${year}" style="display:inline-block;background:#22c55e;color:#000;text-decoration:none;font-weight:600;padding:10px 20px;border-radius:999px;font-size:14px;">
-        Ver mi Wrapped
+        ${copy.cta}
       </a>
     </p>
-  `);
+  `
+  );
 
   return { subject, html, text };
 }
@@ -64,36 +71,33 @@ export function streakMilestoneEmail(params: {
   displayName: string | null;
   badgeType: BadgeType;
   streakLength: number;
+  locale?: Locale;
 }): EmailContent {
-  const { displayName, badgeType, streakLength } = params;
-  const badge = BADGE_INFO[badgeType];
-  const greeting = displayName ? `Hola ${displayName}` : "Hola";
-  const subject = `Nueva racha desbloqueada: ${badge.label} 🔥`;
+  const { displayName, badgeType, streakLength, locale = DEFAULT_LOCALE } = params;
+  const copy = getDictionary(locale).notificationsEmail.streakMilestone;
+  const badge = getBadgeInfo(badgeType, locale);
+  const hello = greeting(copy, displayName);
+  const subject = t(copy.subject, { badgeLabel: badge.label });
+  const body = t(copy.body, { streakLength, badgeLabel: badge.label });
 
-  const text = [
-    `${greeting},`,
-    "",
-    `Llegaste a una racha de ${streakLength} días programando seguidos y ganaste el badge "${badge.label}".`,
-    badge.description,
-    "",
-    "Entrá a tu dashboard para verlo: /dashboard",
-    "",
-    "— GitHub Wrapped"
-  ].join("\n");
+  const text = [`${hello},`, "", body, badge.description, "", `${copy.cta}: /dashboard`, "", "— GitHub Wrapped"].join(
+    "\n"
+  );
 
-  const html = wrapHtml(`
-    <p style="font-size:15px;">${greeting},</p>
-    <p style="font-size:15px;line-height:1.6;">
-      Llegaste a una racha de <strong>${streakLength} días</strong> programando seguidos y
-      ganaste el badge <strong>${badge.label}</strong>.
-    </p>
+  const html = wrapHtml(
+    locale,
+    copy.footer,
+    `
+    <p style="font-size:15px;">${hello},</p>
+    <p style="font-size:15px;line-height:1.6;">${body}</p>
     <p style="font-size:14px;color:#a3a3a3;">${badge.description}</p>
     <p style="margin-top:24px;">
       <a href="/dashboard" style="display:inline-block;background:#22c55e;color:#000;text-decoration:none;font-weight:600;padding:10px 20px;border-radius:999px;font-size:14px;">
-        Ver mi dashboard
+        ${copy.cta}
       </a>
     </p>
-  `);
+  `
+  );
 
   return { subject, html, text };
 }

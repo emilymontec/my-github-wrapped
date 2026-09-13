@@ -13,7 +13,7 @@ import { resolvePeriod } from "@/lib/dashboard/period";
  * Inngest, no en un Route Handler. `step.run` da checkpointing automático:
  * si un paso falla, Inngest reintenta solo ese paso, no todo el flujo.
  *
- * Route Handler (app/api/sync/route.ts) solo ENCOLA este evento; el
+ * Route Handler (app/sync/route.ts) solo ENCOLA este evento; el
  * procesamiento real ocurre aquí.
  */
 export const syncUserData = inngest.createFunction(
@@ -129,7 +129,8 @@ export const syncUserData = inngest.createFunction(
           owner,
           repo: repoName,
           since,
-          verifiedEmails
+          verifiedEmails,
+          currentUserLogin: githubUser.login
         });
 
         for (const commit of commits) {

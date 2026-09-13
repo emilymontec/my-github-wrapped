@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { getPublicWrappedPageData } from "@/lib/wrapped/service";
 import { WrappedSlideDeck } from "@/components/wrapped/WrappedSlideDeck";
+import { getRequestLocale } from "@/lib/i18n/server";
 
 interface PublicWrappedPageProps {
   params: { username: string; year: string };
@@ -34,5 +35,7 @@ export default async function PublicWrappedPage({ params }: PublicWrappedPagePro
     notFound();
   }
 
-  return <WrappedSlideDeck slides={data.slides} year={year} mode="public" />;
+  const locale = await getRequestLocale();
+
+  return <WrappedSlideDeck slides={data.slides} year={year} mode="public" locale={locale} />;
 }

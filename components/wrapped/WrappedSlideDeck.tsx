@@ -6,6 +6,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import type { WrappedSlide } from "@/lib/wrapped/types";
 import { SlideRenderer } from "@/components/wrapped/SlideRenderer";
 import { ShareControls } from "@/components/wrapped/ShareControls";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import type { Locale } from "@/lib/i18n/locales";
 
 interface WrappedSlideDeckPrivateProps {
   slides: WrappedSlide[];
@@ -13,12 +15,14 @@ interface WrappedSlideDeckPrivateProps {
   mode: "private";
   username: string | null;
   initialIsPublic: boolean;
+  locale: Locale;
 }
 
 interface WrappedSlideDeckPublicProps {
   slides: WrappedSlide[];
   year: number;
   mode: "public";
+  locale: Locale;
 }
 
 type WrappedSlideDeckProps = WrappedSlideDeckPrivateProps | WrappedSlideDeckPublicProps;
@@ -44,7 +48,8 @@ const variants = {
  * activar, ningún control de privacidad ajeno.
  */
 export function WrappedSlideDeck(props: WrappedSlideDeckProps) {
-  const { slides, year, mode } = props;
+  const { slides, year, mode, locale } = props;
+  const dict = getDictionary(locale).wrapped;
   const [index, setIndex] = useState(0);
   const [direction, setDirection] = useState(1);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -143,9 +148,9 @@ export function WrappedSlideDeck(props: WrappedSlideDeckProps) {
       <Link
         href={closeHref}
         className="absolute right-3 top-8 z-10 rounded-full bg-black/30 px-3 py-1 text-sm text-white/80 hover:bg-black/50"
-        aria-label="Cerrar Wrapped"
+        aria-label={dict.closeAria}
       >
-        Cerrar
+        {dict.closeButton}
       </Link>
 
       <div
@@ -164,7 +169,7 @@ export function WrappedSlideDeck(props: WrappedSlideDeckProps) {
             transition={{ duration: 0.35, ease: "easeInOut" }}
             className="absolute inset-0"
           >
-            <SlideRenderer slide={slides[index]} />
+            <SlideRenderer slide={slides[index]} locale={locale} />
           </motion.div>
         </AnimatePresence>
 
@@ -173,7 +178,7 @@ export function WrappedSlideDeck(props: WrappedSlideDeckProps) {
             {/* Zonas de tap invisibles para desktop (click, no solo touch) */}
             <button
               type="button"
-              aria-label="Slide anterior"
+              aria-label={dict.prevAria}
               onClick={() => {
                 setIsPlaying(false);
                 prev();
@@ -182,7 +187,7 @@ export function WrappedSlideDeck(props: WrappedSlideDeckProps) {
             />
             <button
               type="button"
-              aria-label="Siguiente slide"
+              aria-label={dict.nextAria}
               onClick={() => {
                 setIsPlaying(false);
                 next();
@@ -199,6 +204,7 @@ export function WrappedSlideDeck(props: WrappedSlideDeckProps) {
             currentSlide={slides[index]}
             initialIsPublic={props.initialIsPublic}
             onClose={() => setShareOpen(false)}
+            locale={locale}
           />
         )}
       </div>
@@ -209,7 +215,7 @@ export function WrappedSlideDeck(props: WrappedSlideDeckProps) {
           onClick={() => setIsPlaying((p) => !p)}
           className="rounded-full bg-white/10 px-4 py-2 text-sm text-white hover:bg-white/20"
         >
-          {isPlaying ? "Pausar" : "Reproducir automáticamente"}
+          {isPlaying ? dict.pauseAutoplay : dict.playAutoplay}
         </button>
         {mode === "private" && (
           <button
@@ -220,7 +226,7 @@ export function WrappedSlideDeck(props: WrappedSlideDeckProps) {
             }}
             className="rounded-full bg-wrapped-accent px-4 py-2 text-sm font-medium text-black hover:opacity-90"
           >
-            Compartir
+            {dict.shareButton}
           </button>
         )}
         <span className="text-xs text-white/50">

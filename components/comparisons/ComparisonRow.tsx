@@ -4,20 +4,23 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import type { ComparisonSummary } from "@/lib/comparisons/service";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import type { Locale } from "@/lib/i18n/locales";
 
-const STATUS_LABELS: Record<ComparisonSummary["status"], string> = {
-  PENDING: "Pendiente",
-  ACCEPTED: "Aceptada",
-  DECLINED: "Rechazada"
-};
+export function ComparisonRow({ comparison, locale }: { comparison: ComparisonSummary; locale: Locale }) {
+  const dict = getDictionary(locale).comparisons;
+  const STATUS_LABELS: Record<ComparisonSummary["status"], string> = {
+    PENDING: dict.statusPending,
+    ACCEPTED: dict.statusAccepted,
+    DECLINED: dict.statusDeclined
+  };
 
-export function ComparisonRow({ comparison }: { comparison: ComparisonSummary }) {
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
 
   async function respond(action: "accept" | "revoke") {
     setSubmitting(true);
-    await fetch(`/api/comparisons/${comparison.id}`, {
+    await fetch(`/comparisons/${comparison.id}`, {
       method: "PATCH",
       body: JSON.stringify({ action })
     });
@@ -32,7 +35,7 @@ export function ComparisonRow({ comparison }: { comparison: ComparisonSummary })
     <div className="flex items-center justify-between rounded-xl border border-wrapped-border bg-wrapped-card p-4">
       <div>
         <p className="text-sm text-neutral-200">
-          {comparison.direction === "sent" ? "Invitaste a " : "Te invitó "}
+          {comparison.direction === "sent" ? `${dict.invitedPrefix} ` : `${dict.invitedByPrefix} `}
           <span className="font-medium text-white">{comparison.otherUsername}</span>
         </p>
         <p className="text-xs text-neutral-500">{STATUS_LABELS[comparison.status]}</p>
@@ -44,7 +47,7 @@ export function ComparisonRow({ comparison }: { comparison: ComparisonSummary })
             href={`/compare/${comparison.id}`}
             className="rounded-full bg-wrapped-accent px-3 py-1.5 text-xs font-medium text-black hover:opacity-90"
           >
-            Ver comparación
+            {dict.viewComparison}
           </Link>
         )}
         {canAccept && (
@@ -54,7 +57,7 @@ export function ComparisonRow({ comparison }: { comparison: ComparisonSummary })
             disabled={submitting}
             className="rounded-full bg-wrapped-accent px-3 py-1.5 text-xs font-medium text-black hover:opacity-90 disabled:opacity-50"
           >
-            Aceptar
+            {dict.accept}
           </button>
         )}
         {canRevoke && (
@@ -64,7 +67,7 @@ export function ComparisonRow({ comparison }: { comparison: ComparisonSummary })
             disabled={submitting}
             className="rounded-full bg-white/10 px-3 py-1.5 text-xs text-neutral-300 hover:bg-white/20 disabled:opacity-50"
           >
-            {comparison.status === "PENDING" ? "Cancelar" : "Revocar"}
+            {comparison.status === "PENDING" ? dict.cancel : dict.revoke}
           </button>
         )}
       </div>

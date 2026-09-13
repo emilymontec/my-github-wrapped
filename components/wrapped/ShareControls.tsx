@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import type { WrappedSlide } from "@/lib/wrapped/types";
+import { getDictionary, t } from "@/lib/i18n/dictionary";
+import type { Locale } from "@/lib/i18n/locales";
 
 interface ShareControlsProps {
   year: number;
@@ -9,15 +11,10 @@ interface ShareControlsProps {
   currentSlide: WrappedSlide;
   initialIsPublic: boolean;
   onClose: () => void;
+  locale: Locale;
 }
 
 type ExportFormat = "story" | "post" | "twitter";
-
-const FORMAT_LABELS: Record<ExportFormat, string> = {
-  story: "Story (9:16)",
-  post: "Post (1:1)",
-  twitter: "X/Twitter (16:9)"
-};
 
 /**
  * ⚠️ Compartir es una acción consciente (Fase 4, Consideraciones): este
@@ -31,8 +28,16 @@ export function ShareControls({
   username,
   currentSlide,
   initialIsPublic,
-  onClose
+  onClose,
+  locale
 }: ShareControlsProps) {
+  const dict = getDictionary(locale).wrapped.share;
+  const FORMAT_LABELS: Record<ExportFormat, string> = {
+    story: dict.formatStory,
+    post: dict.formatPost,
+    twitter: dict.formatTwitter
+  };
+
   const [isPublic, setIsPublic] = useState(initialIsPublic);
   const [updating, setUpdating] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -44,7 +49,7 @@ export function ShareControls({
   async function togglePublic() {
     setUpdating(true);
     const next = !isPublic;
-    const res = await fetch("/api/wrapped", {
+    const res = await fetch("/wrapped", {
       method: "PATCH",
       body: JSON.stringify({ year, isPublic: next })
     });
@@ -60,24 +65,24 @@ export function ShareControls({
 
   async function shareLink() {
     if (navigator.share) {
-      await navigator.share({ title: `Mi GitHub Wrapped ${year}`, url: publicUrl }).catch(() => {});
+      await navigator.share({ title: t(dict.shareTitlePrefix, { year }), url: publicUrl }).catch(() => {});
     } else {
       await copyLink();
     }
   }
 
-  const imageUrl = `/api/wrapped/${year}/image?slide=${currentSlide.kind}&format=${format}`;
+  const imageUrl = `/wrapped/${year}/image?slide=${currentSlide.kind}&format=${format}`;
 
   return (
     <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/70 px-6">
       <div className="w-full max-w-sm rounded-2xl border border-wrapped-border bg-wrapped-card p-6 text-left">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="font-display text-lg font-semibold text-white">Compartir</h2>
+          <h2 className="font-display text-lg font-semibold text-white">{dict.title}</h2>
           <button
             type="button"
             onClick={onClose}
             className="text-sm text-neutral-400 hover:text-white"
-            aria-label="Cerrar panel de compartir"
+            aria-label={dict.closeAria}
           >
             ✕
           </button>
@@ -86,10 +91,10 @@ export function ShareControls({
         <div className="mb-4 flex items-center justify-between rounded-lg border border-wrapped-border p-3">
           <div>
             <p className="text-sm text-neutral-200">
-              {isPublic ? "Tu Wrapped es público" : "Tu Wrapped es privado"}
+              {isPublic ? dict.isPublicLabel : dict.isPrivateLabel}
             </p>
             <p className="text-xs text-neutral-500">
-              {isPublic ? "Cualquiera con el link puede verlo." : "Solo tú puedes verlo."}
+              {isPublic ? dict.isPublicDescription : dict.isPrivateDescription}
             </p>
           </div>
           <button
@@ -100,7 +105,7 @@ export function ShareControls({
               isPublic ? "bg-white/10 text-neutral-200" : "bg-wrapped-accent text-black"
             }`}
           >
-            {isPublic ? "Hacer privado" : "Hacer público"}
+            {isPublic ? dict.makePrivate : dict.makePublic}
           </button>
         </div>
 
@@ -116,20 +121,20 @@ export function ShareControls({
               onClick={copyLink}
               className="shrink-0 rounded-lg bg-white/10 px-3 py-2 text-xs text-white hover:bg-white/20"
             >
-              {copied ? "Copiado" : "Copiar"}
+              {copied ? dict.copied : dict.copy}
             </button>
             <button
               type="button"
               onClick={shareLink}
               className="shrink-0 rounded-lg bg-wrapped-accent px-3 py-2 text-xs font-medium text-black hover:opacity-90"
             >
-              Compartir
+              {dict.shareButton}
             </button>
           </div>
         )}
 
         <div className="border-t border-wrapped-border pt-4">
-          <p className="mb-2 text-sm text-neutral-300">Descargar esta tarjeta como imagen</p>
+          <p className="mb-2 text-sm text-neutral-300">{dict.downloadSectionTitle}</p>
           <div className="mb-3 flex gap-2">
             {(Object.keys(FORMAT_LABELS) as ExportFormat[]).map((f) => (
               <button
@@ -149,7 +154,7 @@ export function ShareControls({
             download={`wrapped-${year}-${currentSlide.kind}-${format}.png`}
             className="block w-full rounded-lg bg-white/10 px-4 py-2 text-center text-sm text-white hover:bg-white/20"
           >
-            Descargar PNG
+            {dict.downloadPng}
           </a>
         </div>
       </div>

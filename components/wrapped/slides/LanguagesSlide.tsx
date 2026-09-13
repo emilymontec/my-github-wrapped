@@ -1,10 +1,13 @@
 import { SlideShell } from "@/components/wrapped/slides/SlideShell";
 import type { LanguagesSlideData } from "@/lib/wrapped/types";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import type { Locale } from "@/lib/i18n/locales";
 
-export function LanguagesSlide({ data }: { data: LanguagesSlideData }) {
+export function LanguagesSlide({ data, locale }: { data: LanguagesSlideData; locale: Locale }) {
+  const dict = getDictionary(locale).wrapped.languages;
   return (
     <SlideShell kind="languages">
-      <p className="text-lg text-neutral-300">Tu lenguaje del año</p>
+      <p className="text-lg text-neutral-300">{dict.eyebrow}</p>
       <p className="font-display text-6xl font-bold text-fuchsia-400 sm:text-7xl">
         {data.topLanguage ?? "—"}
       </p>

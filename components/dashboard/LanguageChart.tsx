@@ -1,14 +1,17 @@
 "use client";
 
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import type { Locale } from "@/lib/i18n/locales";
 
 interface LanguageEntry {
   language: string;
   percentage: number;
 }
 
-interface LanguageChartProps {
+export interface LanguageChartProps {
   distribution: LanguageEntry[];
+  locale: Locale;
 }
 
 // Paleta fija (no generada al azar) para que el mismo lenguaje tenga
@@ -16,9 +19,11 @@ interface LanguageChartProps {
 // no solo estética.
 const COLORS = ["#58a6ff", "#39d353", "#e3b341", "#f778ba", "#a371f7", "#79c0ff", "#ff7b72"];
 
-export function LanguageChart({ distribution }: LanguageChartProps) {
+export function LanguageChart({ distribution, locale }: LanguageChartProps) {
+  const dict = getDictionary(locale).dashboard;
+
   if (distribution.length === 0) {
-    return <p className="text-sm text-neutral-500">Sin datos de lenguajes todavía.</p>;
+    return <p className="text-sm text-neutral-500">{dict.chartNoLanguages}</p>;
   }
 
   const top = distribution.slice(0, 7);

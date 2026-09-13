@@ -13,7 +13,7 @@ import { SLIDE_ORDER } from "@/lib/wrapped/types";
  * período (año calendario vs. rolling 12 meses).
  *
  * ⚠️ La verificación de "año cerrado, no regenerar" vive PRINCIPALMENTE
- * en `app/api/wrapped/route.ts` (evita encolar el job para nada), pero
+ * en `app/wrapped/route.ts` (evita encolar el job para nada), pero
  * se repite aquí como defensa en profundidad: si por una condición de
  * carrera dos requests encolan el mismo año cerrado casi al mismo
  * tiempo, el job nunca sobrescribe un reporte cerrado ya existente.

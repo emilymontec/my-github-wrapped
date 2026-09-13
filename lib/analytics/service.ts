@@ -49,7 +49,7 @@ export async function getAnalyticsForPeriod(
 
 /**
  * Se extrajo a un servicio compartido para que el Server Component del
- * dashboard (render inicial) y `/api/analytics` (cambios de período desde
+ * dashboard (render inicial) y `/analytics` (cambios de período desde
  * el cliente) nunca diverjan en cómo arman la consulta.
  */
 export async function getAnalyticsForUser(

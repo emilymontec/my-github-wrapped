@@ -1,16 +1,18 @@
 import { SlideShell } from "@/components/wrapped/slides/SlideShell";
 import type { ReposSlideData } from "@/lib/wrapped/types";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import type { Locale } from "@/lib/i18n/locales";
 
-export function ReposSlide({ data }: { data: ReposSlideData }) {
+export function ReposSlide({ data, locale }: { data: ReposSlideData; locale: Locale }) {
+  const dict = getDictionary(locale).wrapped.repos;
   return (
     <SlideShell kind="repos">
-      <p className="text-lg text-neutral-300">Tu repositorio del año</p>
+      <p className="text-lg text-neutral-300">{dict.eyebrow}</p>
       <p className="font-display text-4xl font-bold text-emerald-400 sm:text-5xl">
         {data.topRepository ?? "—"}
       </p>
       <p className="text-lg text-neutral-300">
-        Tocaste {data.activeRepositories} repositorio{data.activeRepositories === 1 ? "" : "s"} en
-        total este año.
+        {dict.touchedPrefix} {data.activeRepositories} {dict.touchedSuffix}
       </p>
       {data.narrative && (
         <p className="max-w-sm text-lg leading-relaxed text-neutral-200">{data.narrative}</p>

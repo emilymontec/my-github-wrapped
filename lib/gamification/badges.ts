@@ -1,4 +1,6 @@
 import type { AnalyticsResult } from "@/lib/analytics/engine";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locales";
 
 /**
  * ⚠️ Misma regla que las reglas de Insights (lib/insights/rules.ts):
@@ -32,21 +34,20 @@ export interface BadgeMetadata {
   description: string;
 }
 
-export const BADGE_INFO: Record<BadgeType, BadgeMetadata> = {
-  streak_7: { label: "Racha de 7 días", description: "Programaste 7 días seguidos." },
-  streak_30: { label: "Racha de 30 días", description: "Programaste 30 días seguidos." },
-  streak_100: { label: "Racha de 100 días", description: "Programaste 100 días seguidos." },
-  polyglot_5: {
-    label: "Polyglot",
-    description: "Programaste en 5 lenguajes distintos o más."
-  },
-  night_shift: {
-    label: "Night shift",
-    description: "Más de la mitad de tus commits fueron de noche."
-  },
-  century_club: { label: "Century Club", description: "100 commits o más en un año." },
-  marathon: { label: "Maratón", description: "1,000 commits o más en un año." }
-};
+/**
+ * ⚠️ Fase 9: `BADGE_INFO` (español, sin locale) se mantiene por
+ * compatibilidad hacia atrás -- `app/badges/route.ts` y el dashboard
+ * todavía no se migraron al diccionario (alcance parcial a propósito,
+ * ver README.md). Es un derivado de `lib/i18n/dictionaries/es.ts`, no
+ * una copia mantenida a mano: el texto vive en un solo lugar (el
+ * diccionario) para que no puedan desincronizarse.
+ */
+export const BADGE_INFO: Record<BadgeType, BadgeMetadata> = getDictionary(DEFAULT_LOCALE).badges;
+
+/** Variante locale-aware -- la usan `lib/notifications/templates.ts` y cualquier caller nuevo. */
+export function getBadgeInfo(type: BadgeType, locale: Locale): BadgeMetadata {
+  return getDictionary(locale).badges[type];
+}
 
 // Mismo umbral de muestra mínima que lib/insights/rules.ts, para no
 // otorgar "night shift" con 3 commits de los cuales 2 fueron de noche.

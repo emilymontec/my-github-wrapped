@@ -3,11 +3,12 @@ import { auth } from "@/lib/auth";
 import { listComparisonsForUser } from "@/lib/comparisons/service";
 import { InviteForm } from "@/components/comparisons/InviteForm";
 import { ComparisonRow } from "@/components/comparisons/ComparisonRow";
+import { getRequestDictionary } from "@/lib/i18n/server";
 
 /**
  * Server Component — la protección de ruta vive aquí (mismo motivo que
- * app/dashboard/page.tsx: sin middleware.ts, ver esa nota para el
- * porqué).
+ * app/dashboard/page.tsx: middleware.ts existe desde la Fase 9 pero solo
+ * para locale, no para auth — ver esa nota para el porqué).
  */
 export default async function ComparePage() {
   const session = await auth();
@@ -15,26 +16,26 @@ export default async function ComparePage() {
     redirect("/");
   }
 
-  const comparisons = await listComparisonsForUser(session.user.id);
+  const [comparisons, { locale, dict }] = await Promise.all([
+    listComparisonsForUser(session.user.id),
+    getRequestDictionary()
+  ]);
 
   return (
     <main className="mx-auto max-w-2xl px-6 py-12">
-      <h1 className="mb-2 font-display text-2xl font-semibold text-white">Comparaciones</h1>
-      <p className="mb-8 text-sm text-neutral-400">
-        Invita a otro usuario a comparar su actividad con la tuya. Nunca es automático — la otra
-        persona tiene que aceptar, y cualquiera de los dos puede revocarlo después.
-      </p>
+      <h1 className="mb-2 font-display text-2xl font-semibold text-white">{dict.comparisons.pageTitle}</h1>
+      <p className="mb-8 text-sm text-neutral-400">{dict.comparisons.pageDescription}</p>
 
       <div className="mb-8">
-        <InviteForm />
+        <InviteForm locale={locale} />
       </div>
 
       {comparisons.length === 0 ? (
-        <p className="text-sm text-neutral-500">Todavía no tenés ninguna comparación.</p>
+        <p className="text-sm text-neutral-500">{dict.comparisons.emptyList}</p>
       ) : (
         <div className="flex flex-col gap-3">
           {comparisons.map((c) => (
-            <ComparisonRow key={c.id} comparison={c} />
+            <ComparisonRow key={c.id} comparison={c} locale={locale} />
           ))}
         </div>
       )}
