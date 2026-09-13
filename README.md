@@ -333,7 +333,7 @@ Private repositories are never analyzed unless you explicitly opt in from `/sett
 
 ## Self-Hosting
 
-Running your own instance requires a GitHub OAuth App, a PostgreSQL database, and an Inngest account. Full step-by-step setup (creating each of these, exact env vars, and deploying to Vercel) is in [`DEPLOYMENT.md`](DEPLOYMENT.md).
+Running your own instance requires a GitHub OAuth App, a PostgreSQL database, and an Inngest account. Full step-by-step setup (creating each of these, exact env vars, and deploying to Vercel) is in [`DOCUMENT`]().
 
 ```bash
 git clone https://github.com/emilymontec/github-wrapped.git; cd github-wrapped
