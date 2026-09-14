@@ -152,3 +152,117 @@
 .btn-connect:active {
   transform: translateY(0) scale(0.98);
 }
+
+/* ── Wrapped: campo de cubos de vidrio interactivo ──────────────────
+   Ver components/wrapped/GlassCubeField.tsx para el porqué del concepto. */
+
+.cube-field {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  perspective: 1200px;
+  --px: 0;
+  --py: 0;
+}
+
+.cube {
+  position: absolute;
+  transform-style: preserve-3d;
+  animation-name: cubeDrift;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  will-change: transform;
+  translate: calc(var(--px) * -40px * var(--cube-depth)) calc(var(--py) * -40px * var(--cube-depth));
+  transition: translate 0.6s ease-out;
+}
+
+.cube-face {
+  position: absolute;
+  inset: 0;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(1px);
+  opacity: 0.55;
+  box-shadow:
+    inset 0 0 20px rgba(255, 255, 255, 0.06),
+    0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+.cube-face--back {
+  transform: translateZ(-14px) rotateY(180deg);
+  opacity: 0.3;
+}
+
+.cube--x .cube-face--front {
+  transform: translateZ(14px);
+}
+.cube--x {
+  animation-name: cubeDriftX;
+}
+
+.cube--y .cube-face--front {
+  transform: translateZ(14px);
+}
+.cube--y {
+  animation-name: cubeDriftY;
+}
+
+.cube--diag .cube-face--front {
+  transform: translateZ(14px);
+}
+.cube--diag {
+  animation-name: cubeDriftDiag;
+}
+
+@keyframes cubeDriftX {
+  0% { transform: translateY(0) rotateX(0deg) rotateY(15deg); }
+  50% { transform: translateY(-22px) rotateX(180deg) rotateY(15deg); }
+  100% { transform: translateY(0) rotateX(360deg) rotateY(15deg); }
+}
+
+@keyframes cubeDriftY {
+  0% { transform: translateX(0) rotateY(0deg) rotateX(10deg); }
+  50% { transform: translateX(18px) rotateY(180deg) rotateX(10deg); }
+  100% { transform: translateX(0) rotateY(360deg) rotateX(10deg); }
+}
+
+@keyframes cubeDriftDiag {
+  0% { transform: translate(0, 0) rotate3d(1, 1, 0, 0deg); }
+  50% { transform: translate(14px, -18px) rotate3d(1, 1, 0, 180deg); }
+  100% { transform: translate(0, 0) rotate3d(1, 1, 0, 360deg); }
+}
+
+/* ── Wrapped: panel de contenido esmerilado ──────────────────────── */
+
+.glass-panel {
+  position: relative;
+  z-index: 1;
+  background: rgba(13, 17, 23, 0.44);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.06) inset,
+    0 24px 60px rgba(0, 0, 0, 0.45);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cube {
+    animation: none !important;
+    translate: none !important;
+    transition: none !important;
+  }
+  .gradient-mesh,
+  .aurora-green,
+  .aurora-blue,
+  .aurora-center {
+    animation: none !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .cube-field {
+    perspective: 800px;
+  }
+}
+
