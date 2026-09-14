@@ -39,10 +39,31 @@ export async function POST(request: Request) {
     update: { status: "QUEUED", progress: 0, errorMessage: null }
   });
 
-  await inngest.send({
-    name: "sync/user.requested",
-    data: { userId: session.user.id, mode }
-  });
+  // ⚠️ Corrección: si el envío del evento a Inngest falla (red, app no
+  // sincronizada, lo que sea), NO podemos dejar `syncState` colgado en
+  // QUEUED — eso es exactamente lo que dejó el botón de sync trabado en
+  // "Sincronizando..." para siempre, porque cada intento posterior
+  // chocaba con el guard de arriba (RUNNING/QUEUED → 409) sin que nada
+  // volviera a intentar encolar. Si el send() falla, revertimos a FAILED
+  // con mensaje, para que el usuario pueda reintentar de inmediato.
+  try {
+    await inngest.send({
+      name: "sync/user.requested",
+      data: { userId: session.user.id, mode }
+    });
+  } catch (error) {
+    await prisma.syncState.update({
+      where: { userId: session.user.id },
+      data: {
+        status: "FAILED",
+        errorMessage: "No se pudo encolar la sincronización. Probá de nuevo."
+      }
+    });
+    return NextResponse.json(
+      { error: "No se pudo encolar la sincronización" },
+      { status: 502 }
+    );
+  }
 
   return NextResponse.json({ status: "queued" });
 }

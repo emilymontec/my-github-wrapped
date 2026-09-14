@@ -48,7 +48,20 @@ export function SyncPanel({ locale }: { locale: Locale }) {
       method: "POST",
       body: JSON.stringify({ mode: "initial" })
     });
-    if (!res.ok) return;
+
+    if (!res.ok) {
+      // ⚠️ Corrección: antes esto se ignoraba en silencio (`return;`),
+      // que es exactamente lo que dejaba el botón trabado diciendo
+      // "Sincronizando..." sin que hubiera nada corriendo de verdad —
+      // un 409 ("ya hay una sincronización en curso" por un intento
+      // huérfano anterior) nunca se mostraba ni desbloqueaba nada.
+      // Ahora se pide el estado real al servidor: si el 409 vino de un
+      // syncState colgado, esto refleja lo que la base dice de verdad
+      // en vez de mentir con "idle".
+      await fetchStatus();
+      return;
+    }
+
     setState({ status: "QUEUED", progress: 0 });
     pollRef.current = setInterval(fetchStatus, 2000);
   };
