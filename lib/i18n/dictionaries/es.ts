@@ -17,7 +17,7 @@ export const es = {
   },
   landing: {
     title: "GitHub Wrapped",
-    subtitle: "Descubrí cómo programaste este año.",
+    subtitle: "Descubre cómo programaste este año.",
     connectButton: "Conectar GitHub",
     privacyNote:
       "Solo analizamos tus repositorios públicos. El acceso a repositorios privados es opcional y se activa por separado más adelante."
@@ -26,13 +26,13 @@ export const es = {
     pageTitle: "Configuración",
     notificationsSectionTitle: "Notificaciones",
     notificationsSectionDescription:
-      "Elegí qué avisos por email querés recibir. Podés desactivarlos en cualquier momento.",
+      "Elige qué avisos por email quieres recibir. Puedes desactivarlos en cualquier momento.",
     wrappedReadyLabel: "Tu Wrapped anual está listo",
     wrappedReadyDescription: "Un email cuando se genera el Wrapped de un año recién cerrado.",
     streakMilestoneLabel: "Nuevas rachas de commits",
     streakMilestoneDescription: "Un email cuando alcanzás una racha de 7, 30 o 100 días seguidos.",
     languageSectionTitle: "Idioma",
-    languageSectionDescription: "Elegí el idioma de la interfaz y de los emails que te enviamos.",
+    languageSectionDescription: "Elige el idioma de la interfaz y de los emails que te enviamos.",
     languageSpanish: "Español",
     languageEnglish: "English",
     preferenceUpdateError: "No se pudo actualizar la preferencia.",
@@ -80,9 +80,9 @@ export const es = {
         "Esto borra tu cuenta y todos tus datos de forma permanente e irreversible: repositorios sincronizados, commits, Wrapped generados, badges, comparaciones y preferencias. No hay forma de deshacer esto.",
       deleteButton: "Eliminar mi cuenta",
       cancelButton: "Cancelar",
-      confirmLabel: "Escribí tu username ({username}) para confirmar",
+      confirmLabel: "Escribe tu username ({username}) para confirmar",
       confirmPlaceholder: "tu-username",
-      confirmButton: "Sí, eliminar mi cuenta para siempre",
+      confirmButton: "Si, eliminar mi cuenta para siempre",
       deleting: "Eliminando…",
       mismatchError: "El username no coincide.",
       genericError: "No se pudo eliminar la cuenta."
