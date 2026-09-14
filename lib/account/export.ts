@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db/prisma";
 
 /**
@@ -54,7 +55,7 @@ export interface AccountExport {
     generatedAt: string;
   }[];
   insights: { type: string; periodStart: string; periodEnd: string; narrative: string; createdAt: string }[];
-  badges: { type: string; earnedAt: string; metadata: unknown }[];
+  badges: { type: string; earnedAt: string; metadata: Prisma.JsonValue }[];
   comparisons: { otherUsername: string | null; status: string; direction: "sent" | "received"; createdAt: string }[];
   notificationPreference: { wrappedReadyEmail: boolean; streakMilestoneEmail: boolean } | null;
 }
@@ -236,7 +237,7 @@ export async function buildAccountExport(userId: string): Promise<AccountExport>
         createdAt: i.createdAt.toISOString()
       })
     ),
-    badges: badges.map((b: { type: string; earnedAt: Date; metadata: unknown }) => ({
+    badges: badges.map((b: { type: string; earnedAt: Date; metadata: Prisma.JsonValue }) => ({
       type: b.type,
       earnedAt: b.earnedAt.toISOString(),
       metadata: b.metadata
