@@ -25,6 +25,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             clientSecret: process.env.GITHUB_CLIENT_SECRET
           }
         : {}),
+      // ⚠️ GitHub activó RFC 9207 (OAuth 2.0 Authorization Server Issuer
+      // Identification) y ahora manda `iss=https://github.com/login/oauth`
+      // en el callback. next-auth@5.0.0-beta.22 no trae el issuer de
+      // GitHub por defecto, así que Auth.js lo compara contra su
+      // placeholder interno y falla con "unexpected iss (issuer) response
+      // parameter value". Fijarlo explícito evita depender de actualizar
+      // next-auth. Ver https://github.com/nextauthjs/next-auth/releases (4.24.14 lo trae por defecto en v4; en v5 hay que declararlo a mano).
+      issuer: "https://github.com/login/oauth",
       authorization: { params: { scope: GITHUB_SCOPES } }
     })
   ],
