@@ -1,19 +1,26 @@
 import type { EmailContent } from "@/lib/notifications/templates";
 
 /**
- * ⚠️ Mismo patrón que `lib/insights/narrate.ts::callAnthropic`: `fetch`
- * directo a la API REST del proveedor (Resend), sin agregar un SDK como
+ * ⚠️ Mismo patrón que `lib/insights/narrate.ts::callHuggingFace`: `fetch`
+ * directo a la API REST del proveedor (Mailgun), sin agregar un SDK como
  * dependencia nueva -- esto es una sola llamada HTTP, y mantenerlo como
  * `fetch` puro es lo que permite mockearlo en tests exactamente igual
- * que ya se mockea la llamada a Anthropic, sin duplicar infraestructura
- * de testing.
+ * que ya se mockea la llamada a Hugging Face, sin duplicar
+ * infraestructura de testing.
  *
- * Igual que `ANTHROPIC_API_KEY`, `RESEND_API_KEY` es opcional: sin ella,
- * el envío de emails cae a un no-op documentado (se loguea localmente y
- * se devuelve `sent: false`) en vez de tirar la sincronización o el cron
- * que lo dispara. Un email que no se pudo mandar nunca debe convertir un
- * job exitoso (Wrapped generado, badge otorgado) en uno fallido -- las
- * notificaciones son una capa de aviso encima de datos que ya existen.
+ * Igual que `HUGGINGFACE_API_KEY`, la config de Mailgun es opcional: sin
+ * ella, el envío de emails cae a un no-op documentado (se loguea
+ * localmente y se devuelve `sent: false`) en vez de tirar la
+ * sincronización o el cron que lo dispara. Un email que no se pudo
+ * mandar nunca debe convertir un job exitoso (Wrapped generado, badge
+ * otorgado) en uno fallido -- las notificaciones son una capa de aviso
+ * encima de datos que ya existen.
+ *
+ * Mailgun usa Basic Auth (usuario literal "api" + la API key como
+ * password) y espera el body como `application/x-www-form-urlencoded`
+ * (o multipart), no JSON -- a diferencia de Resend. `MAILGUN_BASE_URL`
+ * es configurable porque las cuentas creadas en la región EU de Mailgun
+ * deben usar `api.eu.mailgun.net` en vez de `api.mailgun.net`.
  */
 
 export interface SendEmailResult {
@@ -22,34 +29,39 @@ export interface SendEmailResult {
 }
 
 export async function sendEmail(to: string, content: EmailContent): Promise<SendEmailResult> {
-  const apiKey = process.env.RESEND_API_KEY;
-  const from = process.env.RESEND_FROM_EMAIL;
+  const apiKey = process.env.MAILGUN_API_KEY;
+  const domain = process.env.MAILGUN_DOMAIN;
+  const from = process.env.MAILGUN_FROM_EMAIL;
+  const baseUrl = process.env.MAILGUN_BASE_URL || "https://api.mailgun.net";
 
-  if (!apiKey || !from) {
+  if (!apiKey || !domain || !from) {
     console.warn(
-      "[notifications] RESEND_API_KEY o RESEND_FROM_EMAIL no configurados -- email no enviado (no-op documentado)."
+      "[notifications] MAILGUN_API_KEY, MAILGUN_DOMAIN o MAILGUN_FROM_EMAIL no configurados -- email no enviado (no-op documentado)."
     );
     return { sent: false, reason: "not_configured" };
   }
 
   try {
-    const response = await fetch("https://api.resend.com/emails", {
+    const body = new URLSearchParams({
+      from,
+      to,
+      subject: content.subject,
+      html: content.html,
+      text: content.text
+    });
+
+    const response = await fetch(`${baseUrl}/v3/${domain}/messages`, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`
+        "Content-Type": "application/x-www-form-urlencoded",
+        // Basic Auth: usuario literal "api", password = la API key de Mailgun.
+        Authorization: `Basic ${Buffer.from(`api:${apiKey}`).toString("base64")}`
       },
-      body: JSON.stringify({
-        from,
-        to,
-        subject: content.subject,
-        html: content.html,
-        text: content.text
-      })
+      body
     });
 
     if (!response.ok) {
-      console.error(`[notifications] Resend respondió ${response.status} al enviar a ${to}`);
+      console.error(`[notifications] Mailgun respondió ${response.status} al enviar a ${to}`);
       return { sent: false, reason: "provider_error" };
     }
 

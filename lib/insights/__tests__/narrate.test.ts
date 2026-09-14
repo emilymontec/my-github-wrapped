@@ -24,11 +24,11 @@ const nightOwlInsight: DetectedInsight = {
 
 describe("narrateInsight", () => {
   const originalFetch = global.fetch;
-  const originalApiKey = process.env.ANTHROPIC_API_KEY;
+  const originalApiKey = process.env.HUGGINGFACE_API_KEY;
 
   afterEach(() => {
     global.fetch = originalFetch;
-    process.env.ANTHROPIC_API_KEY = originalApiKey;
+    process.env.HUGGINGFACE_API_KEY = originalApiKey;
     vi.clearAllMocks();
   });
 
@@ -43,8 +43,8 @@ describe("narrateInsight", () => {
     expect(fetchSpy).not.toHaveBeenCalled();
   });
 
-  it("cae a la plantilla si no hay ANTHROPIC_API_KEY configurada, aunque useAI sea true", async () => {
-    delete process.env.ANTHROPIC_API_KEY;
+  it("cae a la plantilla si no hay HUGGINGFACE_API_KEY configurada, aunque useAI sea true", async () => {
+    delete process.env.HUGGINGFACE_API_KEY;
     const fetchSpy = vi.fn();
     global.fetch = fetchSpy as unknown as typeof fetch;
 
@@ -55,13 +55,10 @@ describe("narrateInsight", () => {
   });
 
   it("usa la respuesta de la IA cuando es válida", async () => {
-    process.env.ANTHROPIC_API_KEY = "test-key";
+    process.env.HUGGINGFACE_API_KEY = "test-key";
     global.fetch = vi.fn().mockResolvedValue({
       ok: true,
-      json: async () => ({
-        content: [{ type: "text", text: "Programas de noche como un búho digital, sin descanso." }],
-        usage: { input_tokens: 120, output_tokens: 18 }
-      })
+      json: async () => [{ generated_text: "Programas de noche como un búho digital, sin descanso." }]
     }) as unknown as typeof fetch;
 
     const result = await narrateInsight(nightOwlInsight, { userId: "u1", useAI: true });
@@ -76,13 +73,10 @@ describe("narrateInsight", () => {
   });
 
   it("cae a la plantilla si la respuesta de la IA es demasiado corta (moderación)", async () => {
-    process.env.ANTHROPIC_API_KEY = "test-key";
+    process.env.HUGGINGFACE_API_KEY = "test-key";
     global.fetch = vi.fn().mockResolvedValue({
       ok: true,
-      json: async () => ({
-        content: [{ type: "text", text: "Muy corto." }],
-        usage: { input_tokens: 100, output_tokens: 3 }
-      })
+      json: async () => [{ generated_text: "Muy corto." }]
     }) as unknown as typeof fetch;
 
     const result = await narrateInsight(nightOwlInsight, { userId: "u1", useAI: true });
@@ -96,18 +90,26 @@ describe("narrateInsight", () => {
   });
 
   it("cae a la plantilla si la respuesta de la IA contiene markdown/links (moderación)", async () => {
-    process.env.ANTHROPIC_API_KEY = "test-key";
+    process.env.HUGGINGFACE_API_KEY = "test-key";
     global.fetch = vi.fn().mockResolvedValue({
       ok: true,
-      json: async () => ({
-        content: [
-          {
-            type: "text",
-            text: "Mira más en https://example.com sobre tus commits nocturnos, impresionante racha."
-          }
-        ],
-        usage: { input_tokens: 100, output_tokens: 20 }
-      })
+      json: async () => [
+        {
+          generated_text:
+            "Mira más en https://example.com sobre tus commits nocturnos, impresionante racha."
+        }
+      ]
+    }) as unknown as typeof fetch;
+
+    const result = await narrateInsight(nightOwlInsight, { userId: "u1", useAI: true });
+    expect(result.source).toBe("TEMPLATE");
+  });
+
+  it("cae a la plantilla si la API devuelve un objeto de error en vez de un array", async () => {
+    process.env.HUGGINGFACE_API_KEY = "test-key";
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ error: "Model is currently loading" })
     }) as unknown as typeof fetch;
 
     const result = await narrateInsight(nightOwlInsight, { userId: "u1", useAI: true });
@@ -115,7 +117,7 @@ describe("narrateInsight", () => {
   });
 
   it("cae a la plantilla si la llamada a la API falla (network error)", async () => {
-    process.env.ANTHROPIC_API_KEY = "test-key";
+    process.env.HUGGINGFACE_API_KEY = "test-key";
     global.fetch = vi.fn().mockRejectedValue(new Error("network down")) as unknown as typeof fetch;
 
     const result = await narrateInsight(nightOwlInsight, { userId: "u1", useAI: true });
@@ -123,21 +125,18 @@ describe("narrateInsight", () => {
   });
 
   it("cae a la plantilla si la API responde con un status no-OK", async () => {
-    process.env.ANTHROPIC_API_KEY = "test-key";
-    global.fetch = vi.fn().mockResolvedValue({ ok: false, status: 500 }) as unknown as typeof fetch;
+    process.env.HUGGINGFACE_API_KEY = "test-key";
+    global.fetch = vi.fn().mockResolvedValue({ ok: false, status: 503 }) as unknown as typeof fetch;
 
     const result = await narrateInsight(nightOwlInsight, { userId: "u1", useAI: true });
     expect(result.source).toBe("TEMPLATE");
   });
 
   it("nunca deja caer el flujo si el logging de costo falla", async () => {
-    process.env.ANTHROPIC_API_KEY = "test-key";
+    process.env.HUGGINGFACE_API_KEY = "test-key";
     global.fetch = vi.fn().mockResolvedValue({
       ok: true,
-      json: async () => ({
-        content: [{ type: "text", text: "Programas de noche como un búho digital, sin descanso." }],
-        usage: { input_tokens: 120, output_tokens: 18 }
-      })
+      json: async () => [{ generated_text: "Programas de noche como un búho digital, sin descanso." }]
     }) as unknown as typeof fetch;
     (prisma.aiUsageLog.create as ReturnType<typeof vi.fn>).mockRejectedValueOnce(
       new Error("db down")

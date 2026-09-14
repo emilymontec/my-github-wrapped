@@ -9,12 +9,14 @@ import type { DetectedInsight } from "@/lib/insights/types";
  * calculado y verificado — nunca se le pide que calcule un porcentaje o
  * infiera un número que no esté en `data`.
  *
- * Modelo elegido: Haiku 4.5. Es una tarea de redacción de una frase corta,
- * no de razonamiento — no se justifica un modelo más caro. Verificar
- * https://docs.claude.com/en/docs/about-claude/models/overview si esto
- * se revisita más adelante.
+ * Modelo elegido: un modelo instruction-tuned servido por la Hugging
+ * Face Inference API (por defecto Mistral-7B-Instruct; configurable vía
+ * HUGGINGFACE_MODEL sin tocar código, porque la disponibilidad de
+ * modelos en el free tier de HF cambia con más frecuencia que la de
+ * Anthropic). Es una tarea de redacción de una frase corta, no de
+ * razonamiento complejo -- no hace falta un modelo más grande.
  */
-const MODEL = "claude-haiku-4-5-20251001";
+const DEFAULT_MODEL = "mistralai/Mistral-7B-Instruct-v0.3";
 const MIN_LENGTH = 20;
 const MAX_LENGTH = 240;
 
@@ -31,12 +33,12 @@ export interface NarrateResult {
 
 function buildPrompt(insight: DetectedInsight): string {
   return [
-    'Eres el redactor de "GitHub Wrapped", un reporte anual de actividad de programación al estilo Spotify Wrapped.',
+    '[INST] Eres el redactor de "GitHub Wrapped", un reporte anual de actividad de programación al estilo Spotify Wrapped.',
     "Se te da un insight ya calculado. Los números son ciertos — no los inventes, no los cambies, no agregues otros que no estén en los datos.",
     "Redacta UNA sola frase en español, tono cercano y celebratorio, sin emojis, sin comillas, sin markdown, sin consejos, sin preguntas.",
     `Tipo de insight: ${insight.type}`,
     `Datos: ${JSON.stringify(insight.data)}`,
-    "Responde ÚNICAMENTE con la frase final, nada más."
+    "Responde ÚNICAMENTE con la frase final, nada más. [/INST]"
   ].join("\n");
 }
 
@@ -53,47 +55,63 @@ function isNarrativeValid(text: string): boolean {
   return true;
 }
 
-interface AnthropicCallResult {
+interface HuggingFaceCallResult {
   text: string;
   inputTokens: number;
   outputTokens: number;
 }
 
-async function callAnthropic(prompt: string): Promise<AnthropicCallResult | null> {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+/**
+ * ⚠️ Diferencia real con la implementación anterior (Anthropic): la
+ * Hugging Face Inference API para modelos de `text-generation` no
+ * devuelve conteo de tokens de uso como `usage.input_tokens` de
+ * Anthropic, así que `inputTokens`/`outputTokens` en `AiUsageLog`
+ * quedan siempre en 0 acá -- es una limitación documentada del proveedor,
+ * no un bug. Si en el futuro se necesita medir costo real, habría que
+ * estimarlo aproximando tokens ≈ caracteres / 4, pero eso es una
+ * aproximación y se documenta como tal si se agrega.
+ *
+ * `return_full_text: false` es necesario porque los modelos de
+ * `text-generation` de HF devuelven por defecto el prompt completo más
+ * la continuación -- sin este parámetro habría que recortar el prompt
+ * manualmente del resultado.
+ */
+async function callHuggingFace(prompt: string): Promise<HuggingFaceCallResult | null> {
+  const apiKey = process.env.HUGGINGFACE_API_KEY;
   if (!apiKey) return null;
 
+  const model = process.env.HUGGINGFACE_MODEL || DEFAULT_MODEL;
+
   try {
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
+    const response = await fetch(`https://api-inference.huggingface.co/models/${model}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01"
+        Authorization: `Bearer ${apiKey}`
       },
       body: JSON.stringify({
-        model: MODEL,
-        max_tokens: 120,
-        temperature: 0.6,
-        messages: [{ role: "user", content: prompt }]
+        inputs: prompt,
+        parameters: {
+          max_new_tokens: 80,
+          temperature: 0.6,
+          return_full_text: false
+        },
+        // Evita un 503 inmediato si el modelo estaba "dormido" (cold start
+        // del free tier); espera a que cargue en vez de fallar de una.
+        options: { wait_for_model: true }
       })
     });
 
     if (!response.ok) return null;
 
-    const data = (await response.json()) as {
-      content?: { type: string; text?: string }[];
-      usage?: { input_tokens?: number; output_tokens?: number };
-    };
+    const data = (await response.json()) as
+      | { generated_text?: string }[]
+      | { error?: string };
 
-    const text = data.content?.find((block) => block.type === "text")?.text?.trim();
+    const text = Array.isArray(data) ? data[0]?.generated_text?.trim() : undefined;
     if (!text) return null;
 
-    return {
-      text,
-      inputTokens: data.usage?.input_tokens ?? 0,
-      outputTokens: data.usage?.output_tokens ?? 0
-    };
+    return { text, inputTokens: 0, outputTokens: 0 };
   } catch {
     return null;
   }
@@ -112,7 +130,11 @@ async function logAiUsage(entry: {
 }): Promise<void> {
   try {
     await prisma.aiUsageLog.create({
-      data: { purpose: "insight_narration", model: MODEL, ...entry }
+      data: {
+        purpose: "insight_narration",
+        model: process.env.HUGGINGFACE_MODEL || DEFAULT_MODEL,
+        ...entry
+      }
     });
   } catch {
     // intencional: el logging de costo es best-effort
@@ -129,7 +151,7 @@ export async function narrateInsight(
     return { text: fallbackText, source: "TEMPLATE" };
   }
 
-  const aiResult = await callAnthropic(buildPrompt(insight));
+  const aiResult = await callHuggingFace(buildPrompt(insight));
   const isValid = aiResult !== null && isNarrativeValid(aiResult.text);
 
   await logAiUsage({

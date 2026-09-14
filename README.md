@@ -245,7 +245,7 @@ The objective of GitHub Wrapped is to transform raw GitHub activity into a visua
 <td width="25%" valign="top">
 <h3>Notifications</h3>
 
-- Email preferences via Resend
+- Email preferences via Mailgun
 - Optional — the pipeline works with notifications fully disabled
 
 </td>
@@ -333,7 +333,7 @@ Private repositories are never analyzed unless you explicitly opt in from `/sett
 
 ## Self-Hosting
 
-Running your own instance requires a GitHub OAuth App, a PostgreSQL database, and an Inngest account. Full step-by-step setup (creating each of these, exact env vars, and deploying to Vercel) is in [`DOCUMENT`]().
+Running your own instance requires a GitHub OAuth App, a PostgreSQL database, and an Inngest account. Full step-by-step setup (creating each of these, exact env vars, and deploying to Vercel) is in [`DOCS`]().
 
 ```bash
 git clone https://github.com/emilymontec/github-wrapped.git; cd github-wrapped
@@ -353,9 +353,11 @@ INNGEST_EVENT_KEY=INNGEST_EVENT_KEY
 INNGEST_SIGNING_KEY=INNGEST_SIGNING_KEY
 GITHUB_WEBHOOK_SECRET=GITHUB_WEBHOOK_SECRET
 WEBHOOK_BASE_URL=http://localhost:3000
-ANTHROPIC_API_KEY=ANTHROPIC_API_KEY
-RESEND_API_KEY=RESEND_API_KEY
-RESEND_FROM_EMAIL=RESEND_FROM_EMAIL
+HUGGINGFACE_API_KEY=HUGGINGFACE_API_KEY
+HUGGINGFACE_MODEL=HUGGINGFACE_MODEL
+MAILGUN_API_KEY=MAILGUN_API_KEY
+MAILGUN_DOMAIN=MAILGUN_DOMAIN
+MAILGUN_FROM_EMAIL=MAILGUN_FROM_EMAIL
 ```
 
 <sub> create the `.env` file and configure the environment variables — see `.env.example` for details on each one </sub>

@@ -35,7 +35,7 @@ export async function generateAndPersistInsights({
     { analytics, periodDays },
     // useAI depende de que la API key esté configurada — sin ella, el
     // engine cae automáticamente a plantillas deterministas.
-    { userId, useAI: Boolean(process.env.ANTHROPIC_API_KEY) }
+    { userId, useAI: Boolean(process.env.HUGGINGFACE_API_KEY) }
   );
 
   for (const insight of generated) {
