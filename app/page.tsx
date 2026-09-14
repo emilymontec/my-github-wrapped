@@ -19,13 +19,6 @@ export default async function LandingPage() {
         <div className="aurora-center" />
       </div>
 
-      <img
-        src="/github-wrapped-hero.svg"
-        alt=""
-        aria-hidden="true"
-        className="bg-illustration"
-      />
-
       <div className="relative z-10 mx-auto flex min-h-screen w-full max-w-[520px] flex-col items-center justify-center px-6 text-center">
         <h1 className="mb-3 text-5xl font-bold tracking-tight text-white md:text-[3rem]">
           {dict.landing.title}
