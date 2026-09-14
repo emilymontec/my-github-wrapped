@@ -11,7 +11,7 @@
 </p>
 
 <p align="center">
-  <a href="#" target="_blank">Take a look!</a>
+  <a href="https://my-github-wrapped.vercel.app" target="_blank">Take a look!</a>
 </p>
 
 <img src="https://img.shields.io/badge/frontend-next.js_14-1f262e?style=flat-square">
