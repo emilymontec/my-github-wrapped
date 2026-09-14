@@ -1,3 +1,188 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ── Landing: fondo aurora/mesh animado ─────────────────────── */
+.gradient-wrapper {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.gradient-mesh {
+  position: absolute;
+  width: 140%;
+  height: 140%;
+  top: -20%;
+  left: -20%;
+  background: linear-gradient(
+    135deg,
+    #0b0e14 0%,
+    #0e2a1b 25%,
+    #0d1117 50%,
+    #0f2d4a 75%,
+    #0b0e14 100%
+  );
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+  opacity: 0.85;
+}
+
+.aurora-green {
+  position: absolute;
+  bottom: -15%;
+  left: -15%;
+  width: 700px;
+  height: 700px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(57, 211, 83, 0.35) 0%,
+    rgba(46, 160, 67, 0.2) 40%,
+    rgba(11, 14, 20, 0) 70%
+  );
+  filter: blur(80px);
+  animation: floatAuroraGreen 10s ease-in-out infinite alternate;
+}
+
+.aurora-blue {
+  position: absolute;
+  top: -15%;
+  right: -10%;
+  width: 650px;
+  height: 650px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(56, 139, 253, 0.3) 0%,
+    rgba(31, 111, 235, 0.15) 45%,
+    rgba(11, 14, 20, 0) 70%
+  );
+  filter: blur(90px);
+  animation: floatAuroraBlue 12s ease-in-out infinite alternate;
+}
+
+.aurora-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(46, 160, 67, 0.18) 0%,
+    rgba(56, 139, 253, 0.12) 50%,
+    rgba(11, 14, 20, 0) 80%
+  );
+  filter: blur(70px);
+  animation: pulseCenter 8s ease-in-out infinite alternate;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes floatAuroraGreen {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translate(60px, -40px) scale(1.15);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-30px, 30px) scale(0.9);
+    opacity: 0.7;
+  }
+}
+
+@keyframes floatAuroraBlue {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translate(-50px, 50px) scale(1.2);
+    opacity: 0.95;
+  }
+  100% {
+    transform: translate(30px, -20px) scale(0.95);
+    opacity: 0.6;
+  }
+}
+
+@keyframes pulseCenter {
+  0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.4; }
+  100% { transform: translate(-50%, -50%) scale(1.25); opacity: 0.8; }
+}
+
+.bg-illustration {
+  position: absolute;
+  bottom: -40px;
+  left: -60px;
+  width: 750px;
+  max-width: 75vw;
+  height: auto;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.85;
+  animation: floatGraphic 7s ease-in-out infinite alternate;
+  filter: drop-shadow(0 0 35px rgba(57, 211, 83, 0.3));
+}
+
+@keyframes floatGraphic {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+    filter: drop-shadow(0 0 30px rgba(57, 211, 83, 0.25));
+  }
+  100% {
+    transform: translateY(-12px) rotate(-1deg);
+    filter: drop-shadow(0 0 50px rgba(57, 211, 83, 0.45));
+  }
+}
+
+.btn-connect {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, #388bfd 0%, #2f81f7 100%);
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 1rem;
+  padding: 14px 36px;
+  border-radius: 9999px;
+  text-decoration: none;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  cursor: pointer;
+  transition: all 0.25s ease-in-out;
+  box-shadow: 0 4px 20px rgba(56, 139, 253, 0.35), 0 0 15px rgba(56, 139, 253, 0.2);
+}
+
+.btn-connect:hover {
+  background: linear-gradient(135deg, #4493f8 0%, #388bfd 100%);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 25px rgba(56, 139, 253, 0.5), 0 0 25px rgba(56, 139, 253, 0.3);
+}
+
+.btn-connect:active {
+  transform: translateY(0) scale(0.98);
+}
+
+@media (max-width: 768px) {
+  .bg-illustration {
+    width: 500px;
+    left: -100px;
+    bottom: -50px;
+    opacity: 0.75;
+  }
+}
