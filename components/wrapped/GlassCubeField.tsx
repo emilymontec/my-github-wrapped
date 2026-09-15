@@ -60,12 +60,27 @@ function makeCubes(count: number): CubeSpec[] {
 
 export function GlassCubeField({ density = "normal" }: { density?: "normal" | "dense" }) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const cubes = useMemo(() => makeCubes(density === "dense" ? 16 : 10), [density]);
+  // ⚠️ Bajado de 16/10 a 8/6: cada cubo son 2 caras con transform 3D
+  // animado infinito — aunque ya sin backdrop-filter (ver globals.css),
+  // seguía siendo mucha superficie compuesta en simultáneo para siempre
+  // mientras el Wrapped está abierto. Menos cubos, mismo efecto visual.
+  const cubes = useMemo(() => makeCubes(density === "dense" ? 8 : 6), [density]);
 
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    // ⚠️ Si el usuario cambia de pestaña con el Wrapped abierto de
+    // fondo, la animación 3D en loop infinito seguía corriendo y
+    // gastando GPU sin que nadie la viera — sumado al costo ya alto de
+    // tener varios cubos animados, esto podía sostener la carga por
+    // horas sin que el usuario se diera cuenta. La pausamos cuando la
+    // pestaña no está visible.
+    function handleVisibilityChange() {
+      el?.style.setProperty("--play-state", document.hidden ? "paused" : "running");
+    }
+    document.addEventListener("visibilitychange", handleVisibilityChange);
 
     let frame = 0;
     function handlePointerMove(e: PointerEvent) {
@@ -82,6 +97,7 @@ export function GlassCubeField({ density = "normal" }: { density?: "normal" | "d
     window.addEventListener("pointermove", handlePointerMove);
     return () => {
       window.removeEventListener("pointermove", handlePointerMove);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
       if (frame) cancelAnimationFrame(frame);
     };
   }, []);

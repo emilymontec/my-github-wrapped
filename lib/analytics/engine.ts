@@ -65,10 +65,24 @@ export function runAnalytics(input: AnalyticsInput): AnalyticsResult {
   const timezone = safeTimezone(input.timezone);
   const { commits, repositories, languageStats, period, referenceDate } = input;
 
+  // ⚠️ Corrección: `languageStats` llega con el historial COMPLETO del
+  // usuario (getAnalyticsForPeriod no lo filtra por fecha — LanguageStat
+  // es una serie de tiempo de snapshots, no tiene "un" período natural
+  // como sí lo tiene un commit). Sin este filtro, "Lenguajes" mostraba
+  // siempre el conteo de TODA la cuenta sin importar qué período
+  // estuviera seleccionado en el dashboard — los 3 filtros (30 días,
+  // este año, últimos 12 meses) daban el mismo número.
+  // Acotamos a los repos que tuvieron AL MENOS un commit dentro del
+  // período ya filtrado — mismo criterio que ya usa
+  // `calculateRepositoryStats` para "repos activos", así que ambos stats
+  // quedan consistentes entre sí.
+  const activeRepositoryIds = new Set(commits.map((c) => c.repositoryId));
+  const periodLanguageStats = languageStats.filter((stat) => activeRepositoryIds.has(stat.repositoryId));
+
   return {
     commitStats: calculateCommitStats(commits, timezone, period),
     repositoryStats: calculateRepositoryStats(commits, repositories),
-    languageStats: calculateLanguageStats(languageStats),
+    languageStats: calculateLanguageStats(periodLanguageStats),
     temporal: {
       hourlyDistribution: buildHourlyDistribution(commits, timezone),
       weekdayDistribution: buildWeekdayDistribution(commits, timezone),

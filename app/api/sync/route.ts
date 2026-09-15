@@ -4,10 +4,48 @@ import { prisma } from "@/lib/db/prisma";
 import { inngest } from "@/lib/jobs/client";
 import { enforceRateLimit } from "@/lib/ratelimit/respond";
 
-// ⚠️ Fuerza render dinámico: estos endpoints dependen de sesión (cookies) y de estado que cambia todo el tiempo en la DB (período seleccionado, progreso de sync, si el Wrapped ya está listo). Sin
-// esto, Next.js puede tratar el handler como estático/cacheable y servir la MISMA respuesta sin importar los query params o el estado real —
-// exactamente el bug de "todos los períodos muestran lo mismo" / "el botón de sync nunca se actualiza".
+// ⚠️ Fuerza render dinámico: estos endpoints dependen de sesión (cookies)
+// y de estado que cambia todo el tiempo en la DB. Sin esto, Next.js
+// puede tratar el handler como estático/cacheable y servir la MISMA
+// respuesta sin importar el estado real.
 export const dynamic = "force-dynamic";
+
+// Si un sync lleva más de esto en QUEUED/RUNNING sin actualizarse, lo
+// tratamos como abandonado (el job murió sin poder marcarse a sí mismo
+// como FAILED — ej. la app de Inngest se desincronizó a mitad de una
+// corrida, o un deploy mató la función). Antes, esto dejaba el botón
+// mostrando "Sincronizando..." para siempre y bloqueaba cualquier
+// reintento con un 409 hasta que alguien corría un UPDATE manual en la
+// base. Ahora se autorepara solo.
+const STALE_AFTER_MS = 10 * 60 * 1000; // 10 minutos
+
+type SyncStateRow = Awaited<ReturnType<typeof prisma.syncState.findUnique>>;
+
+/**
+ * Lee el syncState y, si está "colgado" (QUEUED/RUNNING hace más de
+ * STALE_AFTER_MS sin actualizarse), lo corrige en la base a FAILED antes
+ * de devolverlo. GET y POST comparten esta función para que ninguno de
+ * los dos pueda ver un estado colgado sin sanearlo.
+ */
+async function resolveSyncState(userId: string): Promise<SyncStateRow> {
+  const syncState = await prisma.syncState.findUnique({ where: { userId } });
+  if (!syncState) return syncState;
+
+  const isActive = syncState.status === "RUNNING" || syncState.status === "QUEUED";
+  const isStale = Date.now() - syncState.updatedAt.getTime() > STALE_AFTER_MS;
+
+  if (isActive && isStale) {
+    return prisma.syncState.update({
+      where: { userId },
+      data: {
+        status: "FAILED",
+        errorMessage: "La sincronización anterior no terminó a tiempo. Probá de nuevo."
+      }
+    });
+  }
+
+  return syncState;
+}
 
 /**
  * ⚠️ Este Route Handler NO sincroniza nada por sí mismo — solo valida la
@@ -33,7 +71,7 @@ export async function POST(request: Request) {
   const mode: "initial" | "incremental" | "full" =
     body?.mode === "full" || body?.mode === "incremental" ? body.mode : "initial";
 
-  const syncState = await prisma.syncState.findUnique({ where: { userId: session.user.id } });
+  const syncState = await resolveSyncState(session.user.id);
   if (syncState?.status === "RUNNING" || syncState?.status === "QUEUED") {
     return NextResponse.json({ error: "Ya hay una sincronización en curso" }, { status: 409 });
   }
@@ -81,8 +119,6 @@ export async function GET() {
     return NextResponse.json({ error: "No autenticado" }, { status: 401 });
   }
 
-  const syncState = await prisma.syncState.findUnique({ where: { userId: session.user.id } });
-  return NextResponse.json(
-    syncState ?? { status: "IDLE", progress: 0 }
-  );
+  const syncState = await resolveSyncState(session.user.id);
+  return NextResponse.json(syncState ?? { status: "IDLE", progress: 0 });
 }

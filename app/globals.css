@@ -2,157 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ── Landing: fondo aurora/mesh animado ─────────────────────── */
-.gradient-wrapper {
-  position: fixed;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 0;
-  overflow: hidden;
-}
-
-.gradient-mesh {
-  position: absolute;
-  width: 140%;
-  height: 140%;
-  top: -20%;
-  left: -20%;
-  background: linear-gradient(
-    135deg,
-    #0b0e14 0%,
-    #0e2a1b 25%,
-    #0d1117 50%,
-    #0f2d4a 75%,
-    #0b0e14 100%
-  );
-  background-size: 400% 400%;
-  animation: gradientShift 15s ease infinite;
-  opacity: 0.85;
-}
-
-.aurora-green {
-  position: absolute;
-  bottom: -15%;
-  left: -15%;
-  width: 700px;
-  height: 700px;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    rgba(57, 211, 83, 0.35) 0%,
-    rgba(46, 160, 67, 0.2) 40%,
-    rgba(11, 14, 20, 0) 70%
-  );
-  filter: blur(80px);
-  animation: floatAuroraGreen 10s ease-in-out infinite alternate;
-}
-
-.aurora-blue {
-  position: absolute;
-  top: -15%;
-  right: -10%;
-  width: 650px;
-  height: 650px;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    rgba(56, 139, 253, 0.3) 0%,
-    rgba(31, 111, 235, 0.15) 45%,
-    rgba(11, 14, 20, 0) 70%
-  );
-  filter: blur(90px);
-  animation: floatAuroraBlue 12s ease-in-out infinite alternate;
-}
-
-.aurora-center {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 500px;
-  height: 500px;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    rgba(46, 160, 67, 0.18) 0%,
-    rgba(56, 139, 253, 0.12) 50%,
-    rgba(11, 14, 20, 0) 80%
-  );
-  filter: blur(70px);
-  animation: pulseCenter 8s ease-in-out infinite alternate;
-}
-
-@keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-@keyframes floatAuroraGreen {
-  0% {
-    transform: translate(0, 0) scale(1);
-    opacity: 0.7;
-  }
-  50% {
-    transform: translate(60px, -40px) scale(1.15);
-    opacity: 1;
-  }
-  100% {
-    transform: translate(-30px, 30px) scale(0.9);
-    opacity: 0.7;
-  }
-}
-
-@keyframes floatAuroraBlue {
-  0% {
-    transform: translate(0, 0) scale(1);
-    opacity: 0.6;
-  }
-  50% {
-    transform: translate(-50px, 50px) scale(1.2);
-    opacity: 0.95;
-  }
-  100% {
-    transform: translate(30px, -20px) scale(0.95);
-    opacity: 0.6;
-  }
-}
-
-@keyframes pulseCenter {
-  0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.4; }
-  100% { transform: translate(-50%, -50%) scale(1.25); opacity: 0.8; }
-}
-
-.btn-connect {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  background: linear-gradient(135deg, #388bfd 0%, #2f81f7 100%);
-  color: #ffffff;
-  font-weight: 600;
-  font-size: 1rem;
-  padding: 14px 36px;
-  border-radius: 9999px;
-  text-decoration: none;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  cursor: pointer;
-  transition: all 0.25s ease-in-out;
-  box-shadow: 0 4px 20px rgba(56, 139, 253, 0.35), 0 0 15px rgba(56, 139, 253, 0.2);
-}
-
-.btn-connect:hover {
-  background: linear-gradient(135deg, #4493f8 0%, #388bfd 100%);
-  transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 8px 25px rgba(56, 139, 253, 0.5), 0 0 25px rgba(56, 139, 253, 0.3);
-}
-
-.btn-connect:active {
-  transform: translateY(0) scale(0.98);
-}
-
 /* ── Wrapped: campo de cubos de vidrio interactivo ──────────────────
    Ver components/wrapped/GlassCubeField.tsx para el porqué del concepto. */
 
@@ -171,6 +20,7 @@
   animation-name: cubeDrift;
   animation-timing-function: ease-in-out;
   animation-iteration-count: infinite;
+  animation-play-state: var(--play-state, running);
   will-change: transform;
   translate: calc(var(--px) * -40px * var(--cube-depth)) calc(var(--py) * -40px * var(--cube-depth));
   transition: translate 0.6s ease-out;
@@ -181,7 +31,13 @@
   inset: 0;
   border-radius: 6px;
   border: 1px solid rgba(255, 255, 255, 0.14);
-  backdrop-filter: blur(1px);
+  /* ⚠️ Corrección: acá vivía un `backdrop-filter: blur(1px)` — con hasta
+     16 cubos × 2 caras = 32 superficies, cada una recalculando blur en
+     CADA frame mientras la animación 3D corre infinito, esto satura la
+     GPU sin parar y puede tirar abajo el compositor del sistema entero
+     (no solo la pestaña). El blur de 1px además era casi imperceptible
+     — pura carga sin beneficio visual real. La opacidad + el
+     box-shadow ya dan el efecto "vidrio" sin este costo. */
   opacity: 0.55;
   box-shadow:
     inset 0 0 20px rgba(255, 255, 255, 0.06),
@@ -237,9 +93,14 @@
 .glass-panel {
   position: relative;
   z-index: 1;
-  background: rgba(13, 17, 23, 0.44);
-  backdrop-filter: blur(18px) saturate(140%);
-  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  background: rgba(13, 17, 23, 0.6);
+  /* ⚠️ Bajado de 18px a 10px: este panel está siempre encima del campo
+     de cubos animados, así que el navegador recalculaba el blur en
+     cada frame mientras los cubos se movían detrás — un solo blur
+     grande, pero sostenido para siempre. Subí un poco la opacidad del
+     fondo (0.44 → 0.6) para compensar visualmente el blur más chico. */
+  backdrop-filter: blur(10px) saturate(140%);
+  -webkit-backdrop-filter: blur(10px) saturate(140%);
   border: 1px solid rgba(255, 255, 255, 0.09);
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.06) inset,
@@ -251,12 +112,6 @@
     animation: none !important;
     translate: none !important;
     transition: none !important;
-  }
-  .gradient-mesh,
-  .aurora-green,
-  .aurora-blue,
-  .aurora-center {
-    animation: none !important;
   }
 }
 
