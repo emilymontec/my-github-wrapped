@@ -12,14 +12,14 @@ export function RhythmSlide({ data, locale }: { data: RhythmSlideData; locale: L
 
   return (
     <SlideShell kind="rhythm">
-      <p className="text-lg text-neutral-300">{dict.rhythm.eyebrow}</p>
-      <p className="font-display text-5xl font-bold text-wrapped-amber sm:text-6xl">
+      <p className="text-lg text-cool-muted">{dict.rhythm.eyebrow}</p>
+      <p className="font-display text-5xl font-bold text-cool-violetBright sm:text-6xl">
         {hourLabel && dayLabel
           ? `${dayLabel}, ${hourLabel}`
           : hourLabel ?? dayLabel ?? dict.rhythm.noPattern}
       </p>
       {data.narrative && (
-        <p className="max-w-sm text-lg leading-relaxed text-neutral-200">{data.narrative}</p>
+        <p className="max-w-sm text-lg leading-relaxed text-white">{data.narrative}</p>
       )}
     </SlideShell>
   );

@@ -72,7 +72,7 @@ export function DataExportPanel({ locale }: { locale: Locale }) {
 
   return (
     <div>
-      <p className="mb-4 text-sm leading-relaxed text-neutral-400">{dict.description}</p>
+      <p className="mb-4 text-sm leading-relaxed text-cool-muted">{dict.description}</p>
 
       {!request && (
         <button
@@ -85,7 +85,7 @@ export function DataExportPanel({ locale }: { locale: Locale }) {
       )}
 
       {isPending && (
-        <p className="text-sm text-neutral-400">
+        <p className="text-sm text-cool-muted">
           {request.status === "QUEUED" ? dict.statusQueued : dict.statusRunning}
         </p>
       )}
@@ -94,11 +94,11 @@ export function DataExportPanel({ locale }: { locale: Locale }) {
         <div className="flex items-center gap-3">
           <a
             href={`/account/export/${request.id}/download`}
-            className="rounded-full bg-wrapped-accent px-4 py-2 text-sm font-medium text-black hover:opacity-90"
+            className="rounded-full bg-cool-violet px-4 py-2 text-sm font-medium text-white hover:opacity-90"
           >
             {dict.downloadButton}
           </a>
-          <button type="button" onClick={requestExport} className="text-sm text-neutral-400 hover:text-neutral-200">
+          <button type="button" onClick={requestExport} className="text-sm text-cool-muted hover:text-white">
             {dict.requestAnother}
           </button>
         </div>
@@ -107,7 +107,7 @@ export function DataExportPanel({ locale }: { locale: Locale }) {
       {request?.status === "FAILED" && (
         <div className="flex items-center gap-3">
           <p className="text-sm text-red-400">{dict.statusFailed}</p>
-          <button type="button" onClick={requestExport} className="text-sm text-neutral-400 hover:text-neutral-200">
+          <button type="button" onClick={requestExport} className="text-sm text-cool-muted hover:text-white">
             {dict.requestAnother}
           </button>
         </div>

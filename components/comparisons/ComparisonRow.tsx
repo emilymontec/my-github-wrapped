@@ -32,20 +32,20 @@ export function ComparisonRow({ comparison, locale }: { comparison: ComparisonSu
   const canRevoke = comparison.status !== "DECLINED";
 
   return (
-    <div className="flex items-center justify-between rounded-xl border border-wrapped-border bg-wrapped-card p-4">
+    <div className="flex items-center justify-between bento-panel p-4">
       <div>
-        <p className="text-sm text-neutral-200">
+        <p className="text-sm text-white">
           {comparison.direction === "sent" ? `${dict.invitedPrefix} ` : `${dict.invitedByPrefix} `}
           <span className="font-medium text-white">{comparison.otherUsername}</span>
         </p>
-        <p className="text-xs text-neutral-500">{STATUS_LABELS[comparison.status]}</p>
+        <p className="text-xs text-cool-muted/70">{STATUS_LABELS[comparison.status]}</p>
       </div>
 
       <div className="flex items-center gap-2">
         {comparison.status === "ACCEPTED" && (
           <Link
             href={`/compare/${comparison.id}`}
-            className="rounded-full bg-wrapped-accent px-3 py-1.5 text-xs font-medium text-black hover:opacity-90"
+            className="rounded-full bg-cool-violet px-3 py-1.5 text-xs font-medium text-white hover:opacity-90"
           >
             {dict.viewComparison}
           </Link>
@@ -55,7 +55,7 @@ export function ComparisonRow({ comparison, locale }: { comparison: ComparisonSu
             type="button"
             onClick={() => respond("accept")}
             disabled={submitting}
-            className="rounded-full bg-wrapped-accent px-3 py-1.5 text-xs font-medium text-black hover:opacity-90 disabled:opacity-50"
+            className="rounded-full bg-cool-violet px-3 py-1.5 text-xs font-medium text-white hover:opacity-90 disabled:opacity-50"
           >
             {dict.accept}
           </button>
@@ -65,7 +65,7 @@ export function ComparisonRow({ comparison, locale }: { comparison: ComparisonSu
             type="button"
             onClick={() => respond("revoke")}
             disabled={submitting}
-            className="rounded-full bg-white/10 px-3 py-1.5 text-xs text-neutral-300 hover:bg-white/20 disabled:opacity-50"
+            className="rounded-full bg-white/10 px-3 py-1.5 text-xs text-cool-muted hover:bg-white/20 disabled:opacity-50"
           >
             {comparison.status === "PENDING" ? dict.cancel : dict.revoke}
           </button>

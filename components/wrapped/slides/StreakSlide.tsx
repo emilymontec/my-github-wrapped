@@ -7,13 +7,13 @@ export function StreakSlide({ data, locale }: { data: StreakSlideData; locale: L
   const dict = getDictionary(locale).wrapped.streak;
   return (
     <SlideShell kind="streak">
-      <p className="text-lg text-neutral-300">{dict.eyebrow}</p>
-      <p className="font-display text-7xl font-bold tabular-nums text-wrapped-amber sm:text-8xl">
+      <p className="text-lg text-cool-muted">{dict.eyebrow}</p>
+      <p className="font-display text-7xl font-bold tabular-nums text-cool-violetBright sm:text-8xl">
         {data.longestStreak}
       </p>
-      <p className="text-lg text-neutral-300">{dict.suffix}</p>
+      <p className="text-lg text-cool-muted">{dict.suffix}</p>
       {data.narrative && (
-        <p className="max-w-sm text-lg leading-relaxed text-neutral-200">{data.narrative}</p>
+        <p className="max-w-sm text-lg leading-relaxed text-white">{data.narrative}</p>
       )}
     </SlideShell>
   );

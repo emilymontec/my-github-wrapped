@@ -7,14 +7,14 @@ export function ClosingSlide({ data, locale }: { data: ClosingSlideData; locale:
   const dict = getDictionary(locale).wrapped.closing;
   return (
     <SlideShell kind="closing">
-      <p className="text-sm uppercase tracking-[0.2em] text-neutral-500">
+      <p className="text-sm uppercase tracking-[0.2em] text-cool-muted/70">
         {t(dict.eyebrow, { year: data.year })}
       </p>
       <p className="max-w-sm text-2xl font-medium text-white">
         {data.totalCommits.toLocaleString(locale)} commits
         {data.topLanguage ? <> {t(dict.writtenIn, { language: data.topLanguage })}</> : null}.
       </p>
-      <p className="text-neutral-400">{dict.seeYouNextYear}</p>
+      <p className="text-cool-muted">{dict.seeYouNextYear}</p>
     </SlideShell>
   );
 }

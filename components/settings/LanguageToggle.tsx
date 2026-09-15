@@ -41,7 +41,7 @@ export function LanguageToggle({ currentLocale, spanishLabel, englishLabel }: La
 
   return (
     <div className="space-y-2">
-      <div className="inline-flex rounded-full border border-wrapped-border p-1">
+      <div className="inline-flex rounded-full border border-cool-line/20 p-1">
         {(["es", "en"] as const).map((locale) => (
           <button
             key={locale}
@@ -49,7 +49,7 @@ export function LanguageToggle({ currentLocale, spanishLabel, englishLabel }: La
             disabled={pending}
             onClick={() => selectLocale(locale)}
             className={`rounded-full px-4 py-1.5 text-sm transition-colors ${
-              currentLocale === locale ? "bg-wrapped-accent text-black" : "text-neutral-400 hover:text-white"
+              currentLocale === locale ? "bg-cool-violet text-white" : "text-cool-muted hover:text-white"
             }`}
           >
             {locale === "es" ? spanishLabel : englishLabel}

@@ -52,7 +52,7 @@ export function AccountDangerZone({ username, locale }: AccountDangerZoneProps) 
 
   return (
     <div>
-      <p className="mb-4 text-sm leading-relaxed text-neutral-400">{dict.description}</p>
+      <p className="mb-4 text-sm leading-relaxed text-cool-muted">{dict.description}</p>
 
       {!confirming ? (
         <button
@@ -64,14 +64,14 @@ export function AccountDangerZone({ username, locale }: AccountDangerZoneProps) 
         </button>
       ) : (
         <div className="rounded-lg border border-red-500/30 bg-red-500/5 p-4">
-          <label className="mb-2 block text-sm text-neutral-300">
+          <label className="mb-2 block text-sm text-cool-muted">
             {t(dict.confirmLabel, { username })}
           </label>
           <input
             value={confirmText}
             onChange={(e) => setConfirmText(e.target.value)}
             placeholder={dict.confirmPlaceholder}
-            className="mb-3 w-full rounded-lg border border-wrapped-border bg-black/20 px-3 py-2 text-sm text-neutral-200 placeholder:text-neutral-600"
+            className="mb-3 w-full rounded-lg border border-cool-line/20 bg-black/20 px-3 py-2 text-sm text-white placeholder:text-cool-muted/50"
           />
           <div className="flex items-center gap-2">
             <button
@@ -81,7 +81,7 @@ export function AccountDangerZone({ username, locale }: AccountDangerZoneProps) 
                 setConfirmText("");
                 setError(null);
               }}
-              className="rounded-full px-3 py-2 text-sm text-neutral-400 hover:text-neutral-200"
+              className="rounded-full px-3 py-2 text-sm text-cool-muted hover:text-white"
             >
               {dict.cancelButton}
             </button>

@@ -24,7 +24,7 @@ export function InsightsGrid({ insights, locale }: InsightsGridProps) {
   const dict = getDictionary(locale).dashboard;
 
   if (insights.length === 0) {
-    return <p className="text-sm text-neutral-500">{dict.insightsEmpty}</p>;
+    return <p className="text-sm text-cool-muted/70">{dict.insightsEmpty}</p>;
   }
 
   return (
@@ -32,10 +32,10 @@ export function InsightsGrid({ insights, locale }: InsightsGridProps) {
       {insights.map((insight) => (
         <div
           key={insight.id}
-          className="rounded-xl border border-wrapped-border bg-wrapped-card p-5"
+          className="bento-panel p-5"
         >
-          <p className="text-[15px] leading-relaxed text-neutral-200">{insight.narrative}</p>
-          <p className="mt-3 text-xs text-neutral-500">
+          <p className="text-[15px] leading-relaxed text-white">{insight.narrative}</p>
+          <p className="mt-3 text-xs text-cool-muted/70">
             {dict.insightTypeLabels[insight.type as keyof typeof dict.insightTypeLabels] ?? insight.type}
           </p>
         </div>

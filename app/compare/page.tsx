@@ -27,14 +27,14 @@ export default async function ComparePage() {
       <PixelGridBackground variant="quiet" />
       <div className="relative z-10">
       <h1 className="mb-2 font-display text-2xl font-semibold text-white">{dict.comparisons.pageTitle}</h1>
-      <p className="mb-8 text-sm text-neutral-400">{dict.comparisons.pageDescription}</p>
+      <p className="mb-8 text-sm text-cool-muted">{dict.comparisons.pageDescription}</p>
 
       <div className="mb-8">
         <InviteForm locale={locale} />
       </div>
 
       {comparisons.length === 0 ? (
-        <p className="text-sm text-neutral-500">{dict.comparisons.emptyList}</p>
+        <p className="text-sm text-cool-muted/70">{dict.comparisons.emptyList}</p>
       ) : (
         <div className="flex flex-col gap-3">
           {comparisons.map((c) => (

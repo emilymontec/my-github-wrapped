@@ -10,44 +10,12 @@ export default async function LandingPage() {
   }
 
   const { dict } = await getRequestDictionary();
-  const year = new Date().getUTCFullYear();
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-[#06070d] font-body">
       <PixelGridBackground />
 
-      {/* Furniture compositiva tipo "bento técnico" (readouts de esquina,
-          tags pequeños) — el detalle que hace que la referencia se sienta
-          como un panel de control y no solo un hero centrado con fondo
-          decorativo. Puramente decorativo, oculto a lectores de pantalla. */}
-      <div
-        className="pointer-events-none absolute right-6 top-6 z-10 hidden text-right font-mono text-[11px] leading-tight text-cool-muted/50 sm:block"
-        aria-hidden="true"
-      >
-        <div>{year}</div>
-        <div>WRAPPED.EXE</div>
-      </div>
-
-      <div
-        className="pointer-events-none absolute left-6 top-6 z-10 hidden flex-col gap-1.5 sm:flex"
-        aria-hidden="true"
-      >
-        {["commits", "repos", "languages"].map((tag) => (
-          <span
-            key={tag}
-            className="rounded border border-cool-line/25 bg-black/30 px-2.5 py-1 text-[10px] uppercase tracking-wider text-cool-muted/70"
-          >
-            {tag}
-          </span>
-        ))}
-      </div>
-
       <div className="relative z-10 mx-auto flex min-h-screen w-full max-w-[560px] flex-col items-center justify-center px-6 text-center">
-        <span className="mb-5 inline-flex items-center gap-2 rounded-full border border-cool-violet/30 bg-cool-violet/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-cool-violetBright">
-          <span className="h-1.5 w-1.5 rounded-full bg-cool-cyan" />
-          {year}
-        </span>
-
         <h1 className="mb-3 font-display text-5xl font-bold tracking-tight text-white md:text-[3.25rem]">
           {dict.landing.title}
         </h1>

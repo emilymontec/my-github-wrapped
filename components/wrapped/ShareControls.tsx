@@ -75,25 +75,25 @@ export function ShareControls({
 
   return (
     <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/70 px-6">
-      <div className="w-full max-w-sm rounded-2xl border border-wrapped-border bg-wrapped-card p-6 text-left">
+      <div className="w-full max-w-sm bento-panel p-6 text-left">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="font-display text-lg font-semibold text-white">{dict.title}</h2>
           <button
             type="button"
             onClick={onClose}
-            className="text-sm text-neutral-400 hover:text-white"
+            className="text-sm text-cool-muted hover:text-white"
             aria-label={dict.closeAria}
           >
             ✕
           </button>
         </div>
 
-        <div className="mb-4 flex items-center justify-between rounded-lg border border-wrapped-border p-3">
+        <div className="mb-4 flex items-center justify-between rounded-lg border border-cool-line/20 p-3">
           <div>
-            <p className="text-sm text-neutral-200">
+            <p className="text-sm text-white">
               {isPublic ? dict.isPublicLabel : dict.isPrivateLabel}
             </p>
-            <p className="text-xs text-neutral-500">
+            <p className="text-xs text-cool-muted/70">
               {isPublic ? dict.isPublicDescription : dict.isPrivateDescription}
             </p>
           </div>
@@ -102,7 +102,7 @@ export function ShareControls({
             onClick={togglePublic}
             disabled={updating}
             className={`rounded-full px-3 py-1.5 text-xs font-medium disabled:opacity-50 ${
-              isPublic ? "bg-white/10 text-neutral-200" : "bg-wrapped-accent text-black"
+              isPublic ? "bg-white/10 text-white" : "bg-cool-violet text-white"
             }`}
           >
             {isPublic ? dict.makePrivate : dict.makePublic}
@@ -114,7 +114,7 @@ export function ShareControls({
             <input
               readOnly
               value={publicUrl}
-              className="min-w-0 flex-1 rounded-lg border border-wrapped-border bg-black/20 px-3 py-2 text-xs text-neutral-300"
+              className="min-w-0 flex-1 rounded-lg border border-cool-line/20 bg-black/20 px-3 py-2 text-xs text-cool-muted"
             />
             <button
               type="button"
@@ -126,15 +126,15 @@ export function ShareControls({
             <button
               type="button"
               onClick={shareLink}
-              className="shrink-0 rounded-lg bg-wrapped-accent px-3 py-2 text-xs font-medium text-black hover:opacity-90"
+              className="shrink-0 rounded-lg bg-cool-violet px-3 py-2 text-xs font-medium text-white hover:opacity-90"
             >
               {dict.shareButton}
             </button>
           </div>
         )}
 
-        <div className="border-t border-wrapped-border pt-4">
-          <p className="mb-2 text-sm text-neutral-300">{dict.downloadSectionTitle}</p>
+        <div className="border-t border-cool-line/20 pt-4">
+          <p className="mb-2 text-sm text-cool-muted">{dict.downloadSectionTitle}</p>
           <div className="mb-3 flex gap-2">
             {(Object.keys(FORMAT_LABELS) as ExportFormat[]).map((f) => (
               <button
@@ -142,7 +142,7 @@ export function ShareControls({
                 type="button"
                 onClick={() => setFormat(f)}
                 className={`rounded-full px-3 py-1 text-xs ${
-                  format === f ? "bg-wrapped-accent text-black" : "bg-white/10 text-neutral-300"
+                  format === f ? "bg-cool-violet text-white" : "bg-white/10 text-cool-muted"
                 }`}
               >
                 {FORMAT_LABELS[f]}

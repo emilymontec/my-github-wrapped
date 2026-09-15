@@ -45,11 +45,11 @@ export default async function ComparisonPage({ params }: ComparePageProps) {
       <div className="relative z-10">
       <div className="mb-8 flex items-center justify-center gap-4 text-center">
         <h1 className="font-display text-2xl font-semibold text-white">{comparison.userA.username}</h1>
-        <span className="text-neutral-500">{c.vsLabel}</span>
+        <span className="text-cool-muted/70">{c.vsLabel}</span>
         <h1 className="font-display text-2xl font-semibold text-white">{comparison.userB.username}</h1>
       </div>
 
-      <div className="rounded-xl border border-wrapped-border bg-wrapped-card p-6">
+      <div className="bento-panel p-6">
         <ComparisonMetricRow
           label={c.metricCommits}
           valueA={a.analytics.commitStats.totalCommits}
@@ -82,7 +82,7 @@ export default async function ComparisonPage({ params }: ComparePageProps) {
         />
       </div>
 
-      <p className="mt-4 text-center text-xs text-neutral-500">{c.footerNote}</p>
+      <p className="mt-4 text-center text-xs text-cool-muted/70">{c.footerNote}</p>
     </div>
     </main>
   );

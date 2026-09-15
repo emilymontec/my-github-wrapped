@@ -7,11 +7,11 @@ export function VolumeSlide({ data, locale }: { data: VolumeSlideData; locale: L
   const dict = getDictionary(locale).wrapped.volume;
   return (
     <SlideShell kind="volume">
-      <p className="text-lg text-neutral-300">{dict.eyebrow}</p>
-      <p className="font-display text-7xl font-bold tabular-nums text-wrapped-accent sm:text-8xl">
+      <p className="text-lg text-cool-muted">{dict.eyebrow}</p>
+      <p className="font-display text-7xl font-bold tabular-nums text-cool-cyan sm:text-8xl">
         {data.totalCommits.toLocaleString(locale)}
       </p>
-      <p className="text-lg text-neutral-300">
+      <p className="text-lg text-cool-muted">
         {t(dict.suffix, {
           activeDays: data.activeDays,
           avgPerWeek: data.averageCommitsPerWeek.toFixed(1)

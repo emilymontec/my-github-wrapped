@@ -23,7 +23,7 @@ export function LanguageChart({ distribution, locale }: LanguageChartProps) {
   const dict = getDictionary(locale).dashboard;
 
   if (distribution.length === 0) {
-    return <p className="text-sm text-neutral-500">{dict.chartNoLanguages}</p>;
+    return <p className="text-sm text-cool-muted/70">{dict.chartNoLanguages}</p>;
   }
 
   const top = distribution.slice(0, 7);
@@ -66,8 +66,8 @@ export function LanguageChart({ distribution, locale }: LanguageChartProps) {
               className="h-2.5 w-2.5 shrink-0 rounded-full"
               style={{ backgroundColor: COLORS[index % COLORS.length] }}
             />
-            <span className="text-neutral-200">{entry.language}</span>
-            <span className="text-neutral-500">{entry.percentage}%</span>
+            <span className="text-white">{entry.language}</span>
+            <span className="text-cool-muted/70">{entry.percentage}%</span>
           </li>
         ))}
       </ul>

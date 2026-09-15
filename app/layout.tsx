@@ -35,7 +35,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
   return (
     <html lang={locale} className={`${spaceGrotesk.variable} ${manrope.variable}`}>
-      <body className="bg-wrapped-bg text-white min-h-screen antialiased font-body">{children}</body>
+      <body className="bg-cool-ink text-white min-h-screen antialiased font-body">{children}</body>
     </html>
   );
 }

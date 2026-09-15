@@ -41,11 +41,11 @@ export default async function SettingsPage() {
       <div className="relative z-10">
       <h1 className="mb-8 font-display text-2xl font-semibold text-white">{dict.settings.pageTitle}</h1>
 
-      <section className="mb-6 rounded-xl border border-wrapped-border bg-wrapped-card p-6">
+      <section className="mb-6 bento-panel p-6">
         <h2 className="font-display text-lg font-semibold text-white">
           {dict.settings.languageSectionTitle}
         </h2>
-        <p className="mt-2 text-sm leading-relaxed text-neutral-400">
+        <p className="mt-2 text-sm leading-relaxed text-cool-muted">
           {dict.settings.languageSectionDescription}
         </p>
         <div className="mt-6">
@@ -57,11 +57,11 @@ export default async function SettingsPage() {
         </div>
       </section>
 
-      <section className="mb-6 rounded-xl border border-wrapped-border bg-wrapped-card p-6">
+      <section className="mb-6 bento-panel p-6">
         <h2 className="font-display text-lg font-semibold text-white">
           {dict.settings.notificationsSectionTitle}
         </h2>
-        <p className="mt-2 text-sm leading-relaxed text-neutral-400">
+        <p className="mt-2 text-sm leading-relaxed text-cool-muted">
           {dict.settings.notificationsSectionDescription}
         </p>
         <div className="mt-6">
@@ -73,16 +73,16 @@ export default async function SettingsPage() {
         </div>
       </section>
 
-      <section className="rounded-xl border border-wrapped-border bg-wrapped-card p-6">
+      <section className="bento-panel p-6">
         <h2 className="font-display text-lg font-semibold text-white">{dict.settings.privateRepos.title}</h2>
-        <p className="mt-2 text-sm leading-relaxed text-neutral-400">
+        <p className="mt-2 text-sm leading-relaxed text-cool-muted">
           {dict.settings.privateRepos.intro} <strong>{dict.settings.privateRepos.introBold}</strong>{" "}
           {dict.settings.privateRepos.introRest}
         </p>
-        <p className="mt-2 text-sm leading-relaxed text-neutral-400">
+        <p className="mt-2 text-sm leading-relaxed text-cool-muted">
           {dict.settings.privateRepos.note} <strong>{dict.settings.privateRepos.noteBold}</strong>{" "}
           {dict.settings.privateRepos.noteRest}{" "}
-          <span className="text-neutral-300">{dict.settings.privateRepos.noteShareLink}</span>{" "}
+          <span className="text-cool-muted">{dict.settings.privateRepos.noteShareLink}</span>{" "}
           {dict.settings.privateRepos.noteEnd}
         </p>
 
@@ -100,7 +100,7 @@ export default async function SettingsPage() {
             >
               <button
                 type="submit"
-                className="rounded-full bg-wrapped-accent px-5 py-2.5 text-sm font-medium text-black hover:opacity-90"
+                className="rounded-full bg-cool-violet px-5 py-2.5 text-sm font-medium text-white hover:opacity-90"
               >
                 {dict.settings.privateRepos.connectButton}
               </button>
@@ -111,14 +111,14 @@ export default async function SettingsPage() {
         </div>
       </section>
 
-      <section className="mb-6 rounded-xl border border-wrapped-border bg-wrapped-card p-6">
+      <section className="mb-6 bento-panel p-6">
         <h2 className="font-display text-lg font-semibold text-white">{dict.settings.dataExport.title}</h2>
         <div className="mt-4">
           <DataExportPanel locale={locale} />
         </div>
       </section>
 
-      <section className="rounded-xl border border-red-500/20 bg-wrapped-card p-6">
+      <section className="rounded-xl border border-red-500/20 bg-cool-panel p-6">
         <h2 className="font-display text-lg font-semibold text-red-400">{dict.settings.deleteAccount.title}</h2>
         <div className="mt-4">
           <AccountDangerZone username={user.username ?? ""} locale={locale} />

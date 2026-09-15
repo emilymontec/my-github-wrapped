@@ -36,7 +36,7 @@ export function BadgesGrid({ locale }: { locale: Locale }) {
   if (badges === null) return null;
 
   if (badges.length === 0) {
-    return <p className="text-sm text-neutral-500">{dict.badgesEmpty}</p>;
+    return <p className="text-sm text-cool-muted/70">{dict.badgesEmpty}</p>;
   }
 
   return (
@@ -44,11 +44,11 @@ export function BadgesGrid({ locale }: { locale: Locale }) {
       {badges.map((badge) => (
         <div
           key={badge.type}
-          className="rounded-xl border border-wrapped-border bg-wrapped-card px-4 py-3"
+          className="bento-panel px-4 py-3"
           title={badge.description}
         >
-          <p className="font-display text-sm font-semibold text-wrapped-amber">{badge.label}</p>
-          <p className="text-xs text-neutral-500">{badge.description}</p>
+          <p className="font-display text-sm font-semibold text-cool-violetBright">{badge.label}</p>
+          <p className="text-xs text-cool-muted/70">{badge.description}</p>
         </div>
       ))}
     </div>

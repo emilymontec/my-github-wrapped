@@ -42,12 +42,12 @@ export function InviteForm({ locale }: { locale: Locale }) {
         value={username}
         onChange={(e) => setUsername(e.target.value)}
         placeholder={dict.inviteInputPlaceholder}
-        className="flex-1 rounded-lg border border-wrapped-border bg-black/20 px-3 py-2 text-sm text-neutral-200 placeholder:text-neutral-600"
+        className="flex-1 rounded-lg border border-cool-line/20 bg-black/20 px-3 py-2 text-sm text-white placeholder:text-cool-muted/50"
       />
       <button
         type="submit"
         disabled={submitting}
-        className="shrink-0 rounded-lg bg-wrapped-accent px-4 py-2 text-sm font-medium text-black hover:opacity-90 disabled:opacity-50"
+        className="shrink-0 rounded-lg bg-cool-violet px-4 py-2 text-sm font-medium text-white hover:opacity-90 disabled:opacity-50"
       >
         {submitting ? dict.inviteSending : dict.inviteButton}
       </button>

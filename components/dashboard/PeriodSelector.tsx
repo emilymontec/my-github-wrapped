@@ -13,7 +13,7 @@ interface PeriodSelectorProps {
 export function PeriodSelector({ value, onChange, disabled = false, locale }: PeriodSelectorProps) {
   const labels = getPeriodLabels(locale);
   return (
-    <div className="inline-flex rounded-full border border-wrapped-border bg-wrapped-card p-1">
+    <div className="inline-flex rounded-full border border-cool-line/20 bg-cool-panel p-1">
       {PERIOD_OPTIONS.map((option) => {
         const isActive = option === value;
         return (
@@ -24,8 +24,8 @@ export function PeriodSelector({ value, onChange, disabled = false, locale }: Pe
             onClick={() => onChange(option)}
             className={`rounded-full px-3.5 py-1.5 text-sm transition-colors disabled:opacity-50 ${
               isActive
-                ? "bg-wrapped-accent text-black"
-                : "text-neutral-400 hover:text-neutral-200"
+                ? "bg-cool-violet text-white"
+                : "text-cool-muted hover:text-white"
             }`}
           >
             {labels[option]}

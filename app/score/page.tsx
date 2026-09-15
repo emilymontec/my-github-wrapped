@@ -13,15 +13,15 @@ import { PixelGridBackground } from "@/components/ui/PixelGridBackground";
  */
 export default function ScoreExplainerPage() {
   return (
-    <main className="relative mx-auto max-w-2xl px-6 py-16 text-neutral-200">
+    <main className="relative mx-auto max-w-2xl px-6 py-16 text-white">
       <PixelGridBackground variant="quiet" />
       <div className="relative z-10">
       <h1 className="font-display text-3xl font-semibold text-white">
         Cómo se calcula el Developer Activity Score
       </h1>
-      <p className="mt-2 text-sm text-neutral-500">Versión de la fórmula: v{SCORE_VERSION}</p>
+      <p className="mt-2 text-sm text-cool-muted/70">Versión de la fórmula: v{SCORE_VERSION}</p>
 
-      <p className="mt-6 leading-relaxed text-neutral-300">
+      <p className="mt-6 leading-relaxed text-cool-muted">
         Es un índice de <strong>actividad</strong>, no de productividad ni de calidad de
         código. Más commits no significa mejor código, y menos commits no significa menos
         trabajo real — por eso nunca lo llamamos &ldquo;Productivity Score&rdquo;. Combina cuatro
@@ -51,7 +51,7 @@ export default function ScoreExplainerPage() {
         />
       </div>
 
-      <p className="mt-8 text-sm leading-relaxed text-neutral-500">
+      <p className="mt-8 text-sm leading-relaxed text-cool-muted/70">
         El score final es el promedio ponderado de las cuatro dimensiones, redondeado al
         entero más cercano. Los pesos suman exactamente 1, así que el resultado siempre cae
         entre 0 y 100.
@@ -71,12 +71,12 @@ function ScoreDimension({
   description: string;
 }) {
   return (
-    <div className="rounded-xl border border-wrapped-border bg-wrapped-card p-5">
+    <div className="bento-panel p-5">
       <div className="mb-1 flex items-baseline justify-between">
         <h2 className="font-display text-lg font-semibold text-white">{name}</h2>
-        <span className="text-sm text-wrapped-accent">{Math.round(weight * 100)}% del score</span>
+        <span className="text-sm text-cool-cyan">{Math.round(weight * 100)}% del score</span>
       </div>
-      <p className="text-sm leading-relaxed text-neutral-400">{description}</p>
+      <p className="text-sm leading-relaxed text-cool-muted">{description}</p>
     </div>
   );
 }

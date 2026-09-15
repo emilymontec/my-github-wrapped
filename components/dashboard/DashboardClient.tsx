@@ -87,7 +87,7 @@ export function DashboardClient({ initialPeriod, initialData, locale }: Dashboar
             <ScoreCard score={score} locale={locale} />
           </div>
 
-          <section className="rounded-xl border border-wrapped-border bg-wrapped-card p-6">
+          <section className="bento-panel p-6">
             <h2 className="mb-4 font-display text-lg font-semibold">{dict.activitySectionTitle}</h2>
             {loading ? (
               <Skeleton className="h-[120px] w-full" />
@@ -97,7 +97,7 @@ export function DashboardClient({ initialPeriod, initialData, locale }: Dashboar
           </section>
 
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-            <section className="rounded-xl border border-wrapped-border bg-wrapped-card p-6">
+            <section className="bento-panel p-6">
               <h2 className="mb-4 font-display text-lg font-semibold">{dict.weeklyTrendSectionTitle}</h2>
               {loading ? (
                 <Skeleton className="h-[160px] w-full" />
@@ -106,7 +106,7 @@ export function DashboardClient({ initialPeriod, initialData, locale }: Dashboar
               )}
             </section>
 
-            <section className="rounded-xl border border-wrapped-border bg-wrapped-card p-6">
+            <section className="bento-panel p-6">
               <h2 className="mb-4 font-display text-lg font-semibold">{dict.languagesSectionTitle}</h2>
               {loading ? (
                 <Skeleton className="h-[180px] w-full" />

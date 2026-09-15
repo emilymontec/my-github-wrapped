@@ -7,9 +7,9 @@ export function OpeningSlide({ data, locale }: { data: OpeningSlideData; locale:
   const dict = getDictionary(locale).wrapped.opening;
   return (
     <SlideShell kind="opening">
-      <p className="text-sm uppercase tracking-[0.2em] text-neutral-500">{dict.eyebrow}</p>
+      <p className="text-sm uppercase tracking-[0.2em] text-cool-muted/70">{dict.eyebrow}</p>
       <h1 className="font-display text-5xl font-bold text-white sm:text-6xl">{data.year}</h1>
-      <p className="max-w-sm text-lg text-neutral-300">
+      <p className="max-w-sm text-lg text-cool-muted">
         {t(dict.subtitle, { username: data.username })}
       </p>
     </SlideShell>

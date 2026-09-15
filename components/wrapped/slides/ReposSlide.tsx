@@ -7,15 +7,15 @@ export function ReposSlide({ data, locale }: { data: ReposSlideData; locale: Loc
   const dict = getDictionary(locale).wrapped.repos;
   return (
     <SlideShell kind="repos">
-      <p className="text-lg text-neutral-300">{dict.eyebrow}</p>
+      <p className="text-lg text-cool-muted">{dict.eyebrow}</p>
       <p className="font-display text-4xl font-bold text-emerald-400 sm:text-5xl">
         {data.topRepository ?? "—"}
       </p>
-      <p className="text-lg text-neutral-300">
+      <p className="text-lg text-cool-muted">
         {dict.touchedPrefix} {data.activeRepositories} {dict.touchedSuffix}
       </p>
       {data.narrative && (
-        <p className="max-w-sm text-lg leading-relaxed text-neutral-200">{data.narrative}</p>
+        <p className="max-w-sm text-lg leading-relaxed text-white">{data.narrative}</p>
       )}
     </SlideShell>
   );
