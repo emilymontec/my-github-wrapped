@@ -12,6 +12,21 @@ const config: Config = {
           accent: "#58a6ff",
           amber: "#e3b341"
         },
+        // Paleta "fría" del rediseño (referencia: grid de bloques +
+        // matriz de puntos sobre negro azulado). Independiente de `heat`
+        // a propósito: heat codifica DATOS reales (intensidad de
+        // commits) y no debe cambiar de significado solo porque el
+        // chrome de la UI se rediseñó — ver comentario en globals.css.
+        cool: {
+          ink: "#05060c",
+          panel: "#0a0d16",
+          line: "#7c8cff",
+          violet: "#8b5cf6",
+          violetBright: "#a78bfa",
+          cyan: "#22d3ee",
+          blue: "#3b82f6",
+          muted: "#8892b0"
+        },
         // Escala de intensidad para el heatmap de actividad — deliberadamente
         // la misma convención visual del contribution graph de GitHub, ya que
         // es exactamente el vocabulario visual que el usuario ya reconoce

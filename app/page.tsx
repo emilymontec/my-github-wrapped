@@ -1,6 +1,7 @@
 import { auth, signIn } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { getRequestDictionary } from "@/lib/i18n/server";
+import { PixelGridBackground } from "@/components/ui/PixelGridBackground";
 
 export default async function LandingPage() {
   const session = await auth();
@@ -11,20 +12,20 @@ export default async function LandingPage() {
   const { dict } = await getRequestDictionary();
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#0b0e14] font-body">
-      <div className="gradient-wrapper">
-        <div className="gradient-mesh" />
-        <div className="aurora-green" />
-        <div className="aurora-blue" />
-        <div className="aurora-center" />
-      </div>
+    <main className="relative min-h-screen overflow-hidden bg-[#05060c] font-body">
+      <PixelGridBackground />
 
-      <div className="relative z-10 mx-auto flex min-h-screen w-full max-w-[520px] flex-col items-center justify-center px-6 text-center">
-        <h1 className="mb-3 text-5xl font-bold tracking-tight text-white md:text-[3rem]">
+      <div className="relative z-10 mx-auto flex min-h-screen w-full max-w-[560px] flex-col items-center justify-center px-6 text-center">
+        <span className="mb-5 inline-flex items-center gap-2 rounded-full border border-cool-violet/30 bg-cool-violet/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-cool-violetBright">
+          <span className="h-1.5 w-1.5 rounded-full bg-cool-cyan" />
+          {new Date().getUTCFullYear()}
+        </span>
+
+        <h1 className="mb-3 font-display text-5xl font-bold tracking-tight text-white md:text-[3.25rem]">
           {dict.landing.title}
         </h1>
 
-        <p className="mb-8 text-lg leading-relaxed text-[#9198a1]">
+        <p className="mb-10 max-w-[420px] text-lg leading-relaxed text-cool-muted">
           {dict.landing.subtitle}
         </p>
 
@@ -34,7 +35,7 @@ export default async function LandingPage() {
             await signIn("github");
           }}
         >
-          <button type="submit" className="btn-connect">
+          <button type="submit" className="btn-cool">
             <svg
               viewBox="0 0 16 16"
               width="20"
@@ -48,7 +49,7 @@ export default async function LandingPage() {
           </button>
         </form>
 
-        <p className="mt-9 max-w-[440px] text-[0.825rem] leading-relaxed text-[#6e7681]">
+        <p className="mt-9 max-w-[440px] text-[0.825rem] leading-relaxed text-cool-muted/70">
           {dict.landing.privacyNote}
         </p>
       </div>

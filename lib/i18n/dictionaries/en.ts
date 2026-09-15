@@ -203,6 +203,16 @@ export const en = {
     generateButton: "Generate my Wrapped",
     generating: "Generating…",
     generateGenericError: "Couldn't generate your Wrapped. Try again.",
+    generatingSteps: [
+      "Reading your commits…",
+      "Calculating your coding rhythm…",
+      "Mapping out your languages…",
+      "Writing your insights…",
+      "Almost there…"
+    ],
+    generateSlowWarning: "This is taking longer than usual — we're still working on it, no action needed.",
+    generateCheckNow: "Check now",
+    generateElapsed: "{seconds}s",
     opening: { eyebrow: "GitHub Wrapped", subtitle: "{username}, here's what you did this year, commit by commit." },
     volume: {
       eyebrow: "This year you wrote",

@@ -7,6 +7,7 @@ import { getInsightsForUser } from "@/lib/insights/service";
 import { SyncPanel } from "@/app/dashboard/sync-panel";
 import { DashboardClient } from "@/components/dashboard/DashboardClient";
 import { EmptyState } from "@/components/dashboard/EmptyState";
+import { PixelGridBackground } from "@/components/ui/PixelGridBackground";
 import { getRequestDictionary } from "@/lib/i18n/server";
 import { t } from "@/lib/i18n/dictionary";
 import type { PersistedInsight } from "@/lib/insights/types";
@@ -50,51 +51,54 @@ export default async function DashboardPage() {
   const { locale, dict } = await getRequestDictionary();
 
   return (
-    <main className="mx-auto max-w-4xl px-6 py-12">
-      <header className="mb-8 flex items-center justify-between">
-        <div>
-          <h1 className="font-display text-2xl font-semibold">{dict.common.appName}</h1>
-          <p className="text-neutral-400">{t(dict.dashboard.greeting, { name: session.user.name ?? "developer" })}</p>
-        </div>
-        <div className="flex items-center gap-3">
-          <Link
-            href="/settings"
-            className="rounded-full border border-wrapped-border px-4 py-2 text-sm text-neutral-300 hover:border-wrapped-accent hover:text-wrapped-accent"
-          >
-            {dict.dashboard.settingsLink}
-          </Link>
-          <Link
-            href="/compare"
-            className="rounded-full border border-wrapped-border px-4 py-2 text-sm text-neutral-300 hover:border-wrapped-accent hover:text-wrapped-accent"
-          >
-            {dict.dashboard.compareLink}
-          </Link>
-          <Link
-            href={`/wrapped/${new Date().getUTCFullYear()}`}
-            className="rounded-full border border-wrapped-border px-4 py-2 text-sm text-neutral-300 hover:border-wrapped-accent hover:text-wrapped-accent"
-          >
-            {t(dict.dashboard.viewWrappedLink, { year: new Date().getUTCFullYear() })}
-          </Link>
-        </div>
-      </header>
+    <main className="relative mx-auto min-h-screen max-w-4xl px-6 py-12">
+      <PixelGridBackground variant="quiet" />
+      <div className="relative z-10">
+        <header className="mb-8 flex items-center justify-between">
+          <div>
+            <h1 className="font-display text-2xl font-semibold text-white">{dict.common.appName}</h1>
+            <p className="text-cool-muted">{t(dict.dashboard.greeting, { name: session.user.name ?? "developer" })}</p>
+          </div>
+          <div className="flex items-center gap-3">
+            <Link
+              href="/settings"
+              className="rounded-full border border-cool-line/20 px-4 py-2 text-sm text-cool-muted transition-colors hover:border-cool-violet/60 hover:text-cool-violetBright"
+            >
+              {dict.dashboard.settingsLink}
+            </Link>
+            <Link
+              href="/compare"
+              className="rounded-full border border-cool-line/20 px-4 py-2 text-sm text-cool-muted transition-colors hover:border-cool-violet/60 hover:text-cool-violetBright"
+            >
+              {dict.dashboard.compareLink}
+            </Link>
+            <Link
+              href={`/wrapped/${new Date().getUTCFullYear()}`}
+              className="rounded-full border border-cool-line/20 px-4 py-2 text-sm text-cool-muted transition-colors hover:border-cool-violet/60 hover:text-cool-violetBright"
+            >
+              {t(dict.dashboard.viewWrappedLink, { year: new Date().getUTCFullYear() })}
+            </Link>
+          </div>
+        </header>
 
-      <div className="mb-8">
-        <SyncPanel locale={locale} />
+        <div className="mb-8">
+          <SyncPanel locale={locale} />
+        </div>
+
+        {neverSynced || !analyticsWithScore ? (
+          <EmptyState title={dict.dashboard.emptyStateTitle} description={dict.dashboard.emptyStateDescription} />
+        ) : (
+          <DashboardClient
+            initialPeriod={DEFAULT_PERIOD}
+            initialData={{
+              analytics: analyticsWithScore.analytics,
+              score: analyticsWithScore.score,
+              insights: insights as PersistedInsight[]
+            }}
+            locale={locale}
+          />
+        )}
       </div>
-
-      {neverSynced || !analyticsWithScore ? (
-        <EmptyState title={dict.dashboard.emptyStateTitle} description={dict.dashboard.emptyStateDescription} />
-      ) : (
-        <DashboardClient
-          initialPeriod={DEFAULT_PERIOD}
-          initialData={{
-            analytics: analyticsWithScore.analytics,
-            score: analyticsWithScore.score,
-            insights: insights as PersistedInsight[]
-          }}
-          locale={locale}
-        />
-      )}
     </main>
   );
 }

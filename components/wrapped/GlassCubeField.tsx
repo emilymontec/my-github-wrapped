@@ -5,18 +5,14 @@ import { useEffect, useMemo, useRef } from "react";
 /**
  * Fondo ambiental de "cubos de vidrio" para el Wrapped.
  *
- * Por qué cubos: son el mismo vocabulario visual que las casillas del
- * contribution graph de GitHub (el material del que está hecho este
- * producto), solo que en 3D y traslúcidas — no es una textura decorativa
- * genérica, es la casilla de un commit vuelta objeto. Los 4 tonos de
- * verde son exactamente la escala `heat` de tailwind.config.ts (la misma
- * que ya usa el heatmap real), así que el fondo y los datos comparten
- * paleta a propósito.
- *
- * Es LA cosa audaz de la pantalla (ver frontend-design skill: "spend your
- * boldness in one place") — por eso el resto de cada slide vive en un
- * panel de vidrio esmerilado quieto y sobrio (.glass-panel en
- * globals.css), no hay más movimiento ambiental compitiendo por atención.
+ * Paleta: violeta/cian del sistema "frío" del rediseño — NO la escala
+ * `heat` del contribution graph. Los cubos son decoración ambiental, no
+ * codifican datos reales (eso lo hace `ActivityHeatmap.tsx`, que sigue
+ * usando `heat` porque ahí el color SÍ significa "cuánto se commiteó
+ * ese día" y tiene que seguir leyéndose como el contribution graph real
+ * de GitHub). Mezclar ambas paletas en el mismo componente sería
+ * confuso: un cubo violeta flotando no debe hacer pensar "esto fue un
+ * día de mucha actividad".
  *
  * Interactividad: la parada de mouse aplica un parallax sutil (los cubos
  * más "cercanos" — z-index/escala mayor — se mueven más que los
@@ -26,7 +22,7 @@ import { useEffect, useMemo, useRef } from "react";
  * usuario lo pidió.
  */
 
-const CUBE_COLORS = ["#0e4429", "#006d32", "#26a641", "#39d353"] as const;
+const CUBE_COLORS = ["#3b82f6", "#8b5cf6", "#a78bfa", "#22d3ee"] as const;
 
 interface CubeSpec {
   id: number;

@@ -5,6 +5,7 @@ import { getWrappedPageData } from "@/lib/wrapped/service";
 import { WrappedSlideDeck } from "@/components/wrapped/WrappedSlideDeck";
 import { GenerateWrappedCta } from "@/components/wrapped/GenerateWrappedCta";
 import { getRequestLocale } from "@/lib/i18n/server";
+import { PixelGridBackground } from "@/components/ui/PixelGridBackground";
 
 interface WrappedPageProps {
   params: { year: string };
@@ -49,9 +50,12 @@ export default async function WrappedPage({ params }: WrappedPageProps) {
 
   if (data.status === "not_generated") {
     return (
-      <main className="flex min-h-screen flex-col items-center justify-center gap-6 bg-wrapped-bg px-6">
-        <h1 className="font-display text-2xl font-semibold text-white">Wrapped {year}</h1>
-        <GenerateWrappedCta year={year} isClosed={data.isClosed} locale={locale} />
+      <main className="relative flex min-h-screen flex-col items-center justify-center gap-6 bg-[#05060c] px-6">
+        <PixelGridBackground variant="quiet" />
+        <div className="relative z-10 flex flex-col items-center gap-6">
+          <h1 className="font-display text-2xl font-semibold text-white">Wrapped {year}</h1>
+          <GenerateWrappedCta year={year} isClosed={data.isClosed} locale={locale} />
+        </div>
       </main>
     );
   }

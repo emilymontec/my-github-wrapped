@@ -69,27 +69,27 @@ export function SyncPanel({ locale }: { locale: Locale }) {
   const isSyncing = state.status === "QUEUED" || state.status === "RUNNING";
 
   return (
-    <div className="rounded-xl border border-neutral-800 bg-wrapped-card p-6">
-      <div className="flex items-center justify-between">
+    <div className="bento-panel p-6">
+      <div className="flex items-center justify-between gap-4">
         <div>
-          <p className="font-medium">{dict.syncTitle}</p>
-          <p className="text-sm text-neutral-400">
+          <p className="font-display font-semibold text-white">{dict.syncTitle}</p>
+          <p className="text-sm text-cool-muted">
             {isSyncing ? dict.syncDescriptionActive : dict.syncDescriptionIdle}
           </p>
         </div>
         <button
           onClick={startSync}
           disabled={isSyncing}
-          className="rounded-full bg-wrapped-accent px-4 py-2 text-sm font-medium text-black disabled:opacity-50"
+          className="btn-cool btn-cool-sm shrink-0"
         >
           {isSyncing ? dict.syncButtonActive : dict.syncButtonIdle}
         </button>
       </div>
 
       {isSyncing && (
-        <div className="mt-4 h-2 w-full overflow-hidden rounded-full bg-neutral-800">
+        <div className="mt-4 h-2 w-full overflow-hidden rounded-full bg-white/5">
           <div
-            className="h-full bg-wrapped-accent transition-all"
+            className="h-full rounded-full bg-gradient-to-r from-cool-violet to-cool-cyan transition-all duration-500"
             style={{ width: `${state.progress}%` }}
           />
         </div>

@@ -4,6 +4,7 @@ import { listComparisonsForUser } from "@/lib/comparisons/service";
 import { InviteForm } from "@/components/comparisons/InviteForm";
 import { ComparisonRow } from "@/components/comparisons/ComparisonRow";
 import { getRequestDictionary } from "@/lib/i18n/server";
+import { PixelGridBackground } from "@/components/ui/PixelGridBackground";
 
 /**
  * Server Component — la protección de ruta vive aquí (mismo motivo que
@@ -22,7 +23,9 @@ export default async function ComparePage() {
   ]);
 
   return (
-    <main className="mx-auto max-w-2xl px-6 py-12">
+    <main className="relative mx-auto max-w-2xl px-6 py-12">
+      <PixelGridBackground variant="quiet" />
+      <div className="relative z-10">
       <h1 className="mb-2 font-display text-2xl font-semibold text-white">{dict.comparisons.pageTitle}</h1>
       <p className="mb-8 text-sm text-neutral-400">{dict.comparisons.pageDescription}</p>
 
@@ -39,6 +42,7 @@ export default async function ComparePage() {
           ))}
         </div>
       )}
+    </div>
     </main>
   );
 }

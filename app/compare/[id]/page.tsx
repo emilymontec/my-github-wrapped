@@ -4,6 +4,7 @@ import { getAcceptedComparison } from "@/lib/comparisons/service";
 import { getAnalyticsWithScore } from "@/lib/analytics/service";
 import { ComparisonMetricRow } from "@/components/comparisons/ComparisonMetricRow";
 import { getRequestDictionary } from "@/lib/i18n/server";
+import { PixelGridBackground } from "@/components/ui/PixelGridBackground";
 
 interface ComparePageProps {
   params: { id: string };
@@ -39,7 +40,9 @@ export default async function ComparisonPage({ params }: ComparePageProps) {
   const c = dict.comparisons;
 
   return (
-    <main className="mx-auto max-w-2xl px-6 py-12">
+    <main className="relative mx-auto max-w-2xl px-6 py-12">
+      <PixelGridBackground variant="quiet" />
+      <div className="relative z-10">
       <div className="mb-8 flex items-center justify-center gap-4 text-center">
         <h1 className="font-display text-2xl font-semibold text-white">{comparison.userA.username}</h1>
         <span className="text-neutral-500">{c.vsLabel}</span>
@@ -80,6 +83,7 @@ export default async function ComparisonPage({ params }: ComparePageProps) {
       </div>
 
       <p className="mt-4 text-center text-xs text-neutral-500">{c.footerNote}</p>
+    </div>
     </main>
   );
 }

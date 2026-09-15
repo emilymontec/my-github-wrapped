@@ -9,6 +9,7 @@ import { NotificationPreferencesToggles } from "@/components/settings/Notificati
 import { LanguageToggle } from "@/components/settings/LanguageToggle";
 import { DataExportPanel } from "@/components/settings/DataExportPanel";
 import { AccountDangerZone } from "@/components/settings/AccountDangerZone";
+import { PixelGridBackground } from "@/components/ui/PixelGridBackground";
 
 /**
  * ⚠️ Fase 6 — el punto de mayor sensibilidad de privacidad del producto
@@ -35,7 +36,9 @@ export default async function SettingsPage() {
   });
 
   return (
-    <main className="mx-auto max-w-2xl px-6 py-12">
+    <main className="relative mx-auto max-w-2xl px-6 py-12">
+      <PixelGridBackground variant="quiet" />
+      <div className="relative z-10">
       <h1 className="mb-8 font-display text-2xl font-semibold text-white">{dict.settings.pageTitle}</h1>
 
       <section className="mb-6 rounded-xl border border-wrapped-border bg-wrapped-card p-6">
@@ -121,6 +124,7 @@ export default async function SettingsPage() {
           <AccountDangerZone username={user.username ?? ""} locale={locale} />
         </div>
       </section>
+    </div>
     </main>
   );
 }

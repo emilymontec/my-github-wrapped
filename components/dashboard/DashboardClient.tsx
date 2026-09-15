@@ -71,7 +71,7 @@ export function DashboardClient({ initialPeriod, initialData, locale }: Dashboar
         <EmptyState title={dict.periodEmptyTitle} description={dict.periodEmptyDescription} />
       ) : (
         <>
-          <section className="grid grid-cols-2 gap-6 rounded-xl border border-wrapped-border bg-wrapped-card p-6 sm:grid-cols-4">
+          <section className="bento-panel grid grid-cols-2 gap-6 p-6 sm:grid-cols-4">
             <StatCard value={analytics.commitStats.totalCommits} label={dict.statCommits} accent />
             <StatCard value={analytics.repositoryStats.activeRepositories} label={dict.statActiveRepos} />
             <StatCard value={analytics.languageStats.languageCount} label={dict.statLanguages} />

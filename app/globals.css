@@ -266,3 +266,193 @@
   }
 }
 
+/* ── Rediseño frío: fondo compartido (login, dashboard, settings, compare) ─
+   Ver components/ui/PixelGridBackground.tsx para el porqué del concepto. */
+
+.pixel-grid-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  background: #05060c;
+  --gx: 0;
+  --gy: 0;
+}
+
+.pixel-grid-lines {
+  position: absolute;
+  inset: -2px;
+  background-image:
+    linear-gradient(rgba(124, 140, 255, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(124, 140, 255, 0.07) 1px, transparent 1px);
+  background-size: 56px 56px;
+  translate: calc(var(--gx) * -12px) calc(var(--gy) * -12px);
+  transition: translate 0.6s ease-out;
+}
+
+.pixel-grid-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 40%, transparent 0%, #05060c 78%);
+}
+
+.pixel-block {
+  position: absolute;
+  border-radius: 2px;
+  filter: blur(0.5px);
+  transition: translate 0.6s ease-out;
+}
+
+.pixel-block--tl {
+  top: -8%;
+  left: -6%;
+  width: 42vw;
+  height: 42vw;
+  max-width: 560px;
+  max-height: 560px;
+  translate: calc(var(--gx) * -20px) calc(var(--gy) * -20px);
+}
+
+.pixel-block--br {
+  bottom: -12%;
+  right: -8%;
+  width: 46vw;
+  height: 46vw;
+  max-width: 620px;
+  max-height: 620px;
+  translate: calc(var(--gx) * 16px) calc(var(--gy) * 16px);
+}
+
+.pixel-block--mid {
+  top: 38%;
+  left: 58%;
+  width: 18vw;
+  height: 18vw;
+  max-width: 220px;
+  max-height: 220px;
+  translate: calc(var(--gx) * 30px) calc(var(--gy) * 30px);
+}
+
+.pixel-block--violet {
+  background: radial-gradient(circle at 30% 30%, rgba(139, 92, 246, 0.5), rgba(139, 92, 246, 0) 70%);
+  animation: blockPulse 9s ease-in-out infinite alternate;
+}
+
+.pixel-block--cyan {
+  background: radial-gradient(circle at 70% 70%, rgba(34, 211, 238, 0.4), rgba(34, 211, 238, 0) 70%);
+  animation: blockPulse 11s ease-in-out infinite alternate-reverse;
+}
+
+.pixel-block--violet-dim {
+  background: radial-gradient(circle, rgba(167, 139, 250, 0.22), rgba(167, 139, 250, 0) 70%);
+  animation: blockPulse 7s ease-in-out infinite alternate;
+}
+
+@keyframes blockPulse {
+  0% { opacity: 0.55; transform: scale(1); }
+  100% { opacity: 0.9; transform: scale(1.08); }
+}
+
+.pixel-dots {
+  position: absolute;
+  width: 96px;
+  height: 96px;
+  background-image: radial-gradient(rgba(167, 139, 250, 0.55) 2.5px, transparent 2.5px);
+  background-size: 16px 16px;
+  opacity: 0.5;
+  animation: dotsFade 6s ease-in-out infinite alternate;
+}
+
+.pixel-dots--a {
+  top: 22%;
+  left: 8%;
+  animation-delay: -2s;
+}
+
+.pixel-dots--b {
+  bottom: 16%;
+  right: 14%;
+  background-image: radial-gradient(rgba(34, 211, 238, 0.5) 2.5px, transparent 2.5px);
+}
+
+@keyframes dotsFade {
+  0% { opacity: 0.3; }
+  100% { opacity: 0.7; }
+}
+
+/* ── Botón "frío" (reemplaza/complementa .btn-connect) ──────────────── */
+
+.btn-cool {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 1rem;
+  padding: 14px 36px;
+  border-radius: 9999px;
+  text-decoration: none;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.35), 0 0 15px rgba(34, 211, 238, 0.15);
+}
+
+.btn-cool:hover {
+  background: linear-gradient(135deg, #9f75fb 0%, #4f8dff 100%);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 28px rgba(139, 92, 246, 0.5), 0 0 25px rgba(34, 211, 238, 0.25);
+}
+
+.btn-cool:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.btn-cool:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-cool-sm {
+  padding: 9px 22px;
+  font-size: 0.875rem;
+}
+
+/* Panel "bento": la unidad de tarjeta del rediseño (dashboard, settings,
+   compare) — grid line sutil + esquina acentuada, para que se sienta de
+   la misma familia que pixel-grid-bg sin repetir el mismo componente. */
+.bento-panel {
+  position: relative;
+  border: 1px solid rgba(124, 140, 255, 0.16);
+  background: rgba(10, 13, 22, 0.6);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.bento-panel::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 28px;
+  height: 28px;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.5), transparent 70%);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pixel-block,
+  .pixel-dots,
+  .pixel-grid-lines {
+    animation: none !important;
+    translate: none !important;
+    transition: none !important;
+  }
+}
+
+
