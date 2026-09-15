@@ -175,7 +175,16 @@ export function WrappedSlideDeck(props: WrappedSlideDeckProps) {
 
         {!shareOpen && (
           <>
-            {/* Zonas de tap invisibles para desktop (click, no solo touch) */}
+            {/* Zonas de tap invisibles para desktop (click, no solo touch).
+                ⚠️ Corrección: antes eran `h-full`, es decir, cubrían TODA
+                la pantalla — incluida la franja inferior donde vive el
+                botón visible de "Reproducir automáticamente". Cualquier
+                click ahí competía con el botón real por debajo, y en
+                touch (mobile) ese tipo de superposición es aún más
+                propenso a robarse el tap. Ahora paran antes de esa franja
+                (bottom-20) y arrancan debajo de la barra de progreso /
+                botón de cerrar (top-16), así ninguna zona invisible
+                comparte pixel con un control visible real. */}
             <button
               type="button"
               aria-label={dict.prevAria}
@@ -183,7 +192,7 @@ export function WrappedSlideDeck(props: WrappedSlideDeckProps) {
                 setIsPlaying(false);
                 prev();
               }}
-              className="absolute left-0 top-0 h-full w-1/3 cursor-w-resize"
+              className="absolute left-0 top-16 bottom-20 w-1/3 cursor-w-resize"
             />
             <button
               type="button"
@@ -192,7 +201,7 @@ export function WrappedSlideDeck(props: WrappedSlideDeckProps) {
                 setIsPlaying(false);
                 next();
               }}
-              className="absolute right-0 top-0 h-full w-2/3 cursor-e-resize"
+              className="absolute right-0 top-16 bottom-20 w-2/3 cursor-e-resize"
             />
           </>
         )}

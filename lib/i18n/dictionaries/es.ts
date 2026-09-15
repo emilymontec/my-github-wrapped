@@ -13,7 +13,9 @@
  */
 export const es = {
   common: {
-    appName: "GitHub Wrapped"
+    appName: "GitHub Wrapped",
+    backToDashboard: "Volver al panel",
+    backToComparisons: "Volver a comparaciones"
   },
   landing: {
     title: "GitHub Wrapped",

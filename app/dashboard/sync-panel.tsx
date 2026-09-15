@@ -26,7 +26,7 @@ export function SyncPanel({ locale }: { locale: Locale }) {
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const fetchStatus = useCallback(async () => {
-    const res = await fetch("/sync");
+    const res = await fetch("/sync", { cache: "no-store" });
     if (!res.ok) return;
     const data: SyncState = await res.json();
     setState(data);

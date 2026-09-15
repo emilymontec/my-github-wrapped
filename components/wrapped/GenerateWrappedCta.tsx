@@ -47,7 +47,7 @@ export function GenerateWrappedCta({ year, isClosed, locale }: GenerateWrappedCt
   useEffect(() => clearAllTimers, []);
 
   async function checkStatus() {
-    const res = await fetch(`/wrapped?year=${year}`);
+    const res = await fetch(`/wrapped?year=${year}`, { cache: "no-store" });
     if (!res.ok) return false;
     const data = await res.json();
     if (data.status === "ready") {

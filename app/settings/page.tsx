@@ -10,6 +10,7 @@ import { LanguageToggle } from "@/components/settings/LanguageToggle";
 import { DataExportPanel } from "@/components/settings/DataExportPanel";
 import { AccountDangerZone } from "@/components/settings/AccountDangerZone";
 import { PixelGridBackground } from "@/components/ui/PixelGridBackground";
+import { BackLink } from "@/components/ui/BackLink";
 
 /**
  * ⚠️ Fase 6 — el punto de mayor sensibilidad de privacidad del producto
@@ -36,9 +37,10 @@ export default async function SettingsPage() {
   });
 
   return (
-    <main className="relative mx-auto max-w-2xl px-6 py-12">
+    <main className="relative mx-auto max-w-4xl px-4 py-10 sm:px-6 sm:py-12 lg:px-8">
       <PixelGridBackground variant="quiet" />
       <div className="relative z-10">
+      <BackLink href="/dashboard" label={dict.common.backToDashboard} />
       <h1 className="mb-8 font-display text-2xl font-semibold text-white">{dict.settings.pageTitle}</h1>
 
       <section className="mb-6 bento-panel p-6">

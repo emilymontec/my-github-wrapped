@@ -13,7 +13,9 @@ import type { Dictionary } from "@/lib/i18n/dictionaries/es";
  */
 export const en = {
   common: {
-    appName: "GitHub Wrapped"
+    appName: "GitHub Wrapped",
+    backToDashboard: "Back to dashboard",
+    backToComparisons: "Back to comparisons"
   },
   landing: {
     title: "GitHub Wrapped",

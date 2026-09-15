@@ -1,5 +1,6 @@
 import { SCORE_CAPS, SCORE_WEIGHTS, SCORE_VERSION } from "@/lib/analytics/score";
 import { PixelGridBackground } from "@/components/ui/PixelGridBackground";
+import { BackLink } from "@/components/ui/BackLink";
 
 /**
  * Página pública (sin auth) documentando la fórmula del Developer
@@ -13,9 +14,10 @@ import { PixelGridBackground } from "@/components/ui/PixelGridBackground";
  */
 export default function ScoreExplainerPage() {
   return (
-    <main className="relative mx-auto max-w-2xl px-6 py-16 text-white">
+    <main className="relative mx-auto max-w-4xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8 text-white">
       <PixelGridBackground variant="quiet" />
       <div className="relative z-10">
+      <BackLink href="/dashboard" label="Volver al panel" />
       <h1 className="font-display text-3xl font-semibold text-white">
         Cómo se calcula el Developer Activity Score
       </h1>

@@ -5,6 +5,7 @@ import { InviteForm } from "@/components/comparisons/InviteForm";
 import { ComparisonRow } from "@/components/comparisons/ComparisonRow";
 import { getRequestDictionary } from "@/lib/i18n/server";
 import { PixelGridBackground } from "@/components/ui/PixelGridBackground";
+import { BackLink } from "@/components/ui/BackLink";
 
 /**
  * Server Component — la protección de ruta vive aquí (mismo motivo que
@@ -23,9 +24,10 @@ export default async function ComparePage() {
   ]);
 
   return (
-    <main className="relative mx-auto max-w-2xl px-6 py-12">
+    <main className="relative mx-auto max-w-4xl px-4 py-10 sm:px-6 sm:py-12 lg:px-8">
       <PixelGridBackground variant="quiet" />
       <div className="relative z-10">
+      <BackLink href="/dashboard" label={dict.common.backToDashboard} />
       <h1 className="mb-2 font-display text-2xl font-semibold text-white">{dict.comparisons.pageTitle}</h1>
       <p className="mb-8 text-sm text-cool-muted">{dict.comparisons.pageDescription}</p>
 

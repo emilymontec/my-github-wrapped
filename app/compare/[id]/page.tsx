@@ -5,6 +5,7 @@ import { getAnalyticsWithScore } from "@/lib/analytics/service";
 import { ComparisonMetricRow } from "@/components/comparisons/ComparisonMetricRow";
 import { getRequestDictionary } from "@/lib/i18n/server";
 import { PixelGridBackground } from "@/components/ui/PixelGridBackground";
+import { BackLink } from "@/components/ui/BackLink";
 
 interface ComparePageProps {
   params: { id: string };
@@ -40,9 +41,10 @@ export default async function ComparisonPage({ params }: ComparePageProps) {
   const c = dict.comparisons;
 
   return (
-    <main className="relative mx-auto max-w-2xl px-6 py-12">
+    <main className="relative mx-auto max-w-4xl px-4 py-10 sm:px-6 sm:py-12 lg:px-8">
       <PixelGridBackground variant="quiet" />
       <div className="relative z-10">
+      <BackLink href="/compare" label={dict.common.backToComparisons} />
       <div className="mb-8 flex items-center justify-center gap-4 text-center">
         <h1 className="font-display text-2xl font-semibold text-white">{comparison.userA.username}</h1>
         <span className="text-cool-muted/70">{c.vsLabel}</span>

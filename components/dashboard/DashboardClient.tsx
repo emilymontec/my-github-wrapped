@@ -46,7 +46,13 @@ export function DashboardClient({ initialPeriod, initialData, locale }: Dashboar
     setError(null);
 
     try {
-      const res = await fetch(`/analytics?period=${next}`);
+      // ⚠️ cache: "no-store" — sin esto, el navegador (o un proxy/CDN de
+      // por medio) puede servir una respuesta guardada de un período
+      // anterior en vez de pedir la nueva. Combinado con el
+      // `export const dynamic = "force-dynamic"` del lado del servidor
+      // (app/analytics/route.ts), esto cierra el bug de "los 3 períodos
+      // muestran lo mismo" en ambas puntas.
+      const res = await fetch(`/analytics?period=${next}`, { cache: "no-store" });
       if (!res.ok) throw new Error(dict.periodLoadError);
       const data: AnalyticsWithScore = await res.json();
       setAnalytics(data.analytics);
