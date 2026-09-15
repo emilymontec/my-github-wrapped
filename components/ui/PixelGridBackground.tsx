@@ -3,22 +3,27 @@
 import { useEffect, useRef } from "react";
 
 /**
- * Fondo compartido del rediseño "frío": grid técnico + bloques de color
- * sólidos anclados a esquinas + un par de matrices de puntos — el mismo
- * vocabulario de la referencia (bento grid, bloques geométricos, dot
- * matrix) pero en violeta/cian sobre negro azulado en vez de verde-lima,
- * y sin logos/branding ajenos.
+ * Fondo compartido del rediseño "frío": grid técnico + paneles sólidos de
+ * borde duro con muescas rectangulares recortadas (silueta escalonada,
+ * tipo Tetris/bento) + matrices de puntos — el mismo vocabulario de la
+ * referencia (bloques 2D planos, grid visible, dot matrix), en
+ * violeta/azul/cian sobre negro azulado en vez de verde-lima.
+ *
+ * A propósito NO usa blur ni glow radial difuminado en los paneles: cada
+ * forma tiene un `clip-path` con esquinas exactas — es lo que hace que
+ * lea como "bloque 2D" y no como "mancha de luz ambiental" (ver
+ * globals.css, sección .pixel-shape). La única transición de color suave
+ * que existe es la franja inferior (.pixel-glow-strip), que imita la
+ * "fuente de luz" del pie de la referencia sin desenfocar ningún borde.
  *
  * Deliberadamente NO es el mismo componente que GlassCubeField (el de
- * las slides del Wrapped): ese es vidrio 3D con la paleta heat porque
- * ahí el cubo ES la casilla de un commit. Acá el bloque es plano y 2D
- * porque el lenguaje es "panel de control", no "año en revisión" — daría
- * lo mismo forzar ambos a compartir componente que forzar el mismo tipo
- * de letra para un titular y una tabla.
+ * las slides del Wrapped): ese es vidrio 3D con blur porque ahí el cubo
+ * ES la casilla de un commit vuelta objeto. Acá el bloque es plano y sin
+ * transparencia porque el lenguaje es "panel de control", no "año en
+ * revisión".
  *
- * Interactivo: parallax sutil con el mouse (igual mecanismo que
- * GlassCubeField — custom properties vía ref, sin re-render). Respeta
- * prefers-reduced-motion.
+ * Interactivo: parallax sutil con el mouse (custom properties vía ref,
+ * sin re-render). Respeta prefers-reduced-motion.
  */
 export function PixelGridBackground({ variant = "default" }: { variant?: "default" | "quiet" }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -50,11 +55,12 @@ export function PixelGridBackground({ variant = "default" }: { variant?: "defaul
   return (
     <div ref={ref} className="pixel-grid-bg" aria-hidden="true">
       <div className="pixel-grid-lines" />
-      <div className="pixel-block pixel-block--violet pixel-block--tl" />
-      <div className="pixel-block pixel-block--cyan pixel-block--br" />
+      <div className="pixel-glow-strip" />
+      <div className="pixel-shape pixel-shape--tl" />
+      <div className="pixel-shape pixel-shape--tr" />
       {variant === "default" && (
         <>
-          <div className="pixel-block pixel-block--violet-dim pixel-block--mid" />
+          <div className="pixel-shape pixel-shape--mid" />
           <div className="pixel-dots pixel-dots--a" />
           <div className="pixel-dots pixel-dots--b" />
         </>
