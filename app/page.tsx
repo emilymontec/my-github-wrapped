@@ -3,7 +3,6 @@ import { redirect } from "next/navigation";
 import { getRequestDictionary } from "@/lib/i18n/server";
 import { PixelGridBackground } from "@/components/ui/PixelGridBackground";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
-import { PaletteToggle } from "@/components/theme/PaletteToggle";
 
 export default async function LandingPage() {
   const session = await auth();
@@ -18,7 +17,6 @@ export default async function LandingPage() {
       <PixelGridBackground />
 
       <div className="absolute right-6 top-6 z-10 flex items-center gap-2.5">
-        <PaletteToggle />
         <ThemeToggle label={dict.common.themeToggle} />
       </div>
 

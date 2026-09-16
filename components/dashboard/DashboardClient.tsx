@@ -53,7 +53,7 @@ export function DashboardClient({ initialPeriod, initialData, locale }: Dashboar
       // `export const dynamic = "force-dynamic"` del lado del servidor
       // (app/analytics/route.ts), esto cierra el bug de "los 3 períodos
       // muestran lo mismo" en ambas puntas.
-      const res = await fetch(`/analytics?period=${next}`, { cache: "no-store" });
+      const res = await fetch(`/api/analytics?period=${next}`, { cache: "no-store" });
       if (!res.ok) throw new Error(dict.periodLoadError);
       const data: AnalyticsWithScore = await res.json();
       setAnalytics(data.analytics);
