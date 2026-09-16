@@ -66,7 +66,7 @@ export function LanguageChart({ distribution, locale }: LanguageChartProps) {
               className="h-2.5 w-2.5 shrink-0 rounded-full"
               style={{ backgroundColor: COLORS[index % COLORS.length] }}
             />
-            <span className="text-white">{entry.language}</span>
+            <span className="text-cool-text">{entry.language}</span>
             <span className="text-cool-muted/70">{entry.percentage}%</span>
           </li>
         ))}

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { PeriodOption } from "@/lib/dashboard/period";
+import { getPeriodLabels } from "@/lib/dashboard/period";
 import type { DashboardData } from "@/lib/dashboard/types";
 import type { AnalyticsWithScore } from "@/lib/analytics/service";
 import { PeriodSelector } from "@/components/dashboard/PeriodSelector";
@@ -77,11 +78,16 @@ export function DashboardClient({ initialPeriod, initialData, locale }: Dashboar
         <EmptyState title={dict.periodEmptyTitle} description={dict.periodEmptyDescription} />
       ) : (
         <>
-          <section className="bento-panel grid grid-cols-2 gap-6 p-6 sm:grid-cols-4">
-            <StatCard value={analytics.commitStats.totalCommits} label={dict.statCommits} accent />
-            <StatCard value={analytics.repositoryStats.activeRepositories} label={dict.statActiveRepos} />
-            <StatCard value={analytics.languageStats.languageCount} label={dict.statLanguages} />
-            <StatCard value={analytics.commitStats.activeDays} label={dict.statActiveDays} />
+          <section className="bento-panel p-6">
+            <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-cool-muted/60">
+              {getPeriodLabels(locale)[period]}
+            </p>
+            <div className="grid grid-cols-2 gap-6 sm:grid-cols-4">
+              <StatCard value={analytics.commitStats.totalCommits} label={dict.statCommits} accent />
+              <StatCard value={analytics.repositoryStats.activeRepositories} label={dict.statActiveRepos} />
+              <StatCard value={analytics.languageStats.languageCount} label={dict.statLanguages} />
+              <StatCard value={analytics.commitStats.activeDays} label={dict.statActiveDays} />
+            </div>
           </section>
 
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">

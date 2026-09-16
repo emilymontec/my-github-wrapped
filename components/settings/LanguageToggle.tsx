@@ -49,7 +49,7 @@ export function LanguageToggle({ currentLocale, spanishLabel, englishLabel }: La
             disabled={pending}
             onClick={() => selectLocale(locale)}
             className={`rounded-full px-4 py-1.5 text-sm transition-colors ${
-              currentLocale === locale ? "bg-cool-violet text-white" : "text-cool-muted hover:text-white"
+              currentLocale === locale ? "bg-cool-violet text-white" : "text-cool-muted hover:text-cool-text"
             }`}
           >
             {locale === "es" ? spanishLabel : englishLabel}

@@ -22,7 +22,16 @@ import { useEffect, useMemo, useRef } from "react";
  * usuario lo pidió.
  */
 
-const CUBE_COLORS = ["#3b82f6", "#8b5cf6", "#a78bfa", "#22d3ee"] as const;
+// ⚠️ Antes eran hex fijos -- ahora son var() de la paleta de acento
+// elegida (ver [data-palette] en globals.css), para que el Wrapped
+// también cambie de color cuando se cambia la paleta, no solo el resto
+// de la app. `var()` funciona en un style inline igual que en CSS.
+const CUBE_COLORS = [
+  "rgb(var(--color-blue))",
+  "rgb(var(--color-violet))",
+  "rgb(var(--color-violet-bright))",
+  "rgb(var(--color-cyan))"
+] as const;
 
 interface CubeSpec {
   id: number;

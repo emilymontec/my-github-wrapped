@@ -82,7 +82,7 @@ function ToggleRow({
   return (
     <div className="flex items-center justify-between gap-4">
       <div>
-        <p className="text-sm text-white">{label}</p>
+        <p className="text-sm text-cool-text">{label}</p>
         <p className="text-xs text-cool-muted/70">{description}</p>
       </div>
       <button
@@ -90,12 +90,12 @@ function ToggleRow({
         role="switch"
         aria-checked={checked}
         onClick={onChange}
-        className={`relative h-6 w-11 shrink-0 rounded-md border-2 transition-colors ${
+        className={`relative h-6 w-11 shrink-0 rounded-md border-2 p-0 transition-colors ${
           checked ? "border-cool-violet bg-cool-violet" : "border-cool-line/25 bg-transparent"
         }`}
       >
         <span
-          className={`absolute top-0.5 h-4 w-4 rounded-sm bg-white shadow-sm transition-transform ${
+          className={`absolute left-0 top-0.5 h-4 w-4 rounded-sm bg-white shadow-sm transition-transform ${
             checked ? "translate-x-[22px]" : "translate-x-0.5"
           }`}
         />

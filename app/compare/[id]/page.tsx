@@ -46,9 +46,9 @@ export default async function ComparisonPage({ params }: ComparePageProps) {
       <div className="relative z-10">
       <BackLink href="/compare" label={dict.common.backToComparisons} />
       <div className="mb-8 flex items-center justify-center gap-4 text-center">
-        <h1 className="font-display text-2xl font-semibold text-white">{comparison.userA.username}</h1>
+        <h1 className="font-display text-2xl font-semibold text-cool-text">{comparison.userA.username}</h1>
         <span className="text-cool-muted/70">{c.vsLabel}</span>
-        <h1 className="font-display text-2xl font-semibold text-white">{comparison.userB.username}</h1>
+        <h1 className="font-display text-2xl font-semibold text-cool-text">{comparison.userB.username}</h1>
       </div>
 
       <div className="bento-panel p-6">

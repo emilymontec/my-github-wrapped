@@ -50,10 +50,10 @@ export default async function WrappedPage({ params }: WrappedPageProps) {
 
   if (data.status === "not_generated") {
     return (
-      <main className="relative flex min-h-screen flex-col items-center justify-center gap-6 bg-[#05060c] px-6">
+      <main className="relative flex min-h-screen flex-col items-center justify-center gap-6 bg-cool-ink px-6">
         <PixelGridBackground variant="quiet" />
         <div className="relative z-10 flex flex-col items-center gap-6">
-          <h1 className="font-display text-2xl font-semibold text-white">Wrapped {year}</h1>
+          <h1 className="font-display text-2xl font-semibold text-cool-text">Wrapped {year}</h1>
           <GenerateWrappedCta year={year} isClosed={data.isClosed} locale={locale} />
         </div>
       </main>

@@ -2,6 +2,8 @@ import { auth, signIn } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { getRequestDictionary } from "@/lib/i18n/server";
 import { PixelGridBackground } from "@/components/ui/PixelGridBackground";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
+import { PaletteToggle } from "@/components/theme/PaletteToggle";
 
 export default async function LandingPage() {
   const session = await auth();
@@ -12,11 +14,16 @@ export default async function LandingPage() {
   const { dict } = await getRequestDictionary();
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#06070d] font-body">
+    <main className="relative min-h-screen overflow-hidden bg-cool-ink font-body">
       <PixelGridBackground />
 
+      <div className="absolute right-6 top-6 z-10 flex items-center gap-2.5">
+        <PaletteToggle />
+        <ThemeToggle label={dict.common.themeToggle} />
+      </div>
+
       <div className="relative z-10 mx-auto flex min-h-screen w-full max-w-[560px] flex-col items-center justify-center px-6 text-center">
-        <h1 className="mb-3 font-display text-5xl font-bold tracking-tight text-white md:text-[3.25rem]">
+        <h1 className="mb-3 font-display text-5xl font-bold tracking-tight text-cool-text md:text-[3.25rem]">
           {dict.landing.title}
         </h1>
 

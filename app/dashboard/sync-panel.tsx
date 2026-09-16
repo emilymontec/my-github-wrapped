@@ -111,7 +111,7 @@ export function SyncPanel({ locale }: { locale: Locale }) {
     <div className="bento-panel p-5">
       <div className="flex items-center justify-between gap-4">
         <div className="min-w-0">
-          <p className="font-display text-sm font-semibold text-white">{dict.syncTitle}</p>
+          <p className="font-display text-sm font-semibold text-cool-text">{dict.syncTitle}</p>
           <p className="truncate text-sm text-cool-muted">
             {isSyncing
               ? dict.syncDescriptionActive

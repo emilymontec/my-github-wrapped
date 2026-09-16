@@ -53,7 +53,7 @@ export function PrivateReposToggle({ initialEnabled, enabledAt, locale }: Privat
     <div>
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm text-white">
+          <p className="text-sm text-cool-text">
             {enabled ? dict.includedLabel : dict.notIncludedLabel}
           </p>
           {enabled && enabledAt && (
@@ -68,7 +68,7 @@ export function PrivateReposToggle({ initialEnabled, enabledAt, locale }: Privat
             type="button"
             onClick={() => setConfirming(true)}
             className={`rounded-full px-4 py-2 text-sm font-medium ${
-              enabled ? "bg-white/10 text-white hover:bg-white/20" : "bg-cool-violet text-white hover:opacity-90"
+              enabled ? "bg-cool-muted/10 text-cool-text hover:bg-cool-muted/20" : "bg-cool-violet text-white hover:opacity-90"
             }`}
           >
             {enabled ? dict.disableButton : dict.enableButton}
@@ -78,7 +78,7 @@ export function PrivateReposToggle({ initialEnabled, enabledAt, locale }: Privat
             <button
               type="button"
               onClick={() => setConfirming(false)}
-              className="rounded-full px-3 py-2 text-sm text-cool-muted hover:text-white"
+              className="rounded-full px-3 py-2 text-sm text-cool-muted hover:text-cool-text"
             >
               {dict.cancelButton}
             </button>

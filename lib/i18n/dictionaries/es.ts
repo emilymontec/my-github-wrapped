@@ -15,7 +15,8 @@ export const es = {
   common: {
     appName: "GitHub Wrapped",
     backToDashboard: "Volver al panel",
-    backToComparisons: "Volver a comparaciones"
+    backToComparisons: "Volver a comparaciones",
+    themeToggle: "Cambiar tema"
   },
   landing: {
     title: "GitHub Wrapped",
@@ -165,6 +166,7 @@ export const es = {
     streakDaysInARow: "días seguidos, ahora mismo",
     streakRecordNow: "récord (¡es ahora!)",
     streakRecordOfPeriod: "récord del período",
+    streakRecordOfPeriodValue: "récord del período: {value} días",
     scoreLabel: "Developer Activity Score",
     scoreHowItsCalculated: "Cómo se calcula",
     scoreDimensions: {

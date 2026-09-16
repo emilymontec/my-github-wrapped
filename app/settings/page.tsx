@@ -11,6 +11,8 @@ import { DataExportPanel } from "@/components/settings/DataExportPanel";
 import { AccountDangerZone } from "@/components/settings/AccountDangerZone";
 import { PixelGridBackground } from "@/components/ui/PixelGridBackground";
 import { BackLink } from "@/components/ui/BackLink";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
+import { PaletteToggle } from "@/components/theme/PaletteToggle";
 
 /**
  * ⚠️ Fase 6 — el punto de mayor sensibilidad de privacidad del producto
@@ -41,10 +43,16 @@ export default async function SettingsPage() {
       <PixelGridBackground variant="quiet" />
       <div className="relative z-10">
       <BackLink href="/dashboard" label={dict.common.backToDashboard} />
-      <h1 className="mb-8 font-display text-2xl font-semibold text-white">{dict.settings.pageTitle}</h1>
+      <div className="mb-8 flex items-center justify-between">
+        <h1 className="font-display text-2xl font-semibold text-cool-text">{dict.settings.pageTitle}</h1>
+        <div className="flex items-center gap-2.5">
+          <PaletteToggle />
+          <ThemeToggle label={dict.common.themeToggle} />
+        </div>
+      </div>
 
       <section className="mb-6 bento-panel p-6">
-        <h2 className="font-display text-lg font-semibold text-white">
+        <h2 className="font-display text-lg font-semibold text-cool-text">
           {dict.settings.languageSectionTitle}
         </h2>
         <p className="mt-2 text-sm leading-relaxed text-cool-muted">
@@ -60,7 +68,7 @@ export default async function SettingsPage() {
       </section>
 
       <section className="mb-6 bento-panel p-6">
-        <h2 className="font-display text-lg font-semibold text-white">
+        <h2 className="font-display text-lg font-semibold text-cool-text">
           {dict.settings.notificationsSectionTitle}
         </h2>
         <p className="mt-2 text-sm leading-relaxed text-cool-muted">
@@ -76,7 +84,7 @@ export default async function SettingsPage() {
       </section>
 
       <section className="bento-panel p-6">
-        <h2 className="font-display text-lg font-semibold text-white">{dict.settings.privateRepos.title}</h2>
+        <h2 className="font-display text-lg font-semibold text-cool-text">{dict.settings.privateRepos.title}</h2>
         <p className="mt-2 text-sm leading-relaxed text-cool-muted">
           {dict.settings.privateRepos.intro} <strong>{dict.settings.privateRepos.introBold}</strong>{" "}
           {dict.settings.privateRepos.introRest}
@@ -114,7 +122,7 @@ export default async function SettingsPage() {
       </section>
 
       <section className="mb-6 bento-panel p-6">
-        <h2 className="font-display text-lg font-semibold text-white">{dict.settings.dataExport.title}</h2>
+        <h2 className="font-display text-lg font-semibold text-cool-text">{dict.settings.dataExport.title}</h2>
         <div className="mt-4">
           <DataExportPanel locale={locale} />
         </div>

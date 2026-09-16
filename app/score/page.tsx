@@ -14,11 +14,11 @@ import { BackLink } from "@/components/ui/BackLink";
  */
 export default function ScoreExplainerPage() {
   return (
-    <main className="relative mx-auto max-w-4xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8 text-white">
+    <main className="relative mx-auto max-w-4xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8 text-cool-text">
       <PixelGridBackground variant="quiet" />
       <div className="relative z-10">
       <BackLink href="/dashboard" label="Volver al panel" />
-      <h1 className="font-display text-3xl font-semibold text-white">
+      <h1 className="font-display text-3xl font-semibold text-cool-text">
         Cómo se calcula el Developer Activity Score
       </h1>
       <p className="mt-2 text-sm text-cool-muted/70">Versión de la fórmula: v{SCORE_VERSION}</p>
@@ -75,7 +75,7 @@ function ScoreDimension({
   return (
     <div className="bento-panel p-5">
       <div className="mb-1 flex items-baseline justify-between">
-        <h2 className="font-display text-lg font-semibold text-white">{name}</h2>
+        <h2 className="font-display text-lg font-semibold text-cool-text">{name}</h2>
         <span className="text-sm text-cool-cyan">{Math.round(weight * 100)}% del score</span>
       </div>
       <p className="text-sm leading-relaxed text-cool-muted">{description}</p>

@@ -132,7 +132,7 @@ export function WrappedSlideDeck(props: WrappedSlideDeckProps) {
   const closeHref = mode === "private" ? "/dashboard" : "/";
 
   return (
-    <div className="fixed inset-0 z-50 select-none bg-cool-ink">
+    <div data-theme="dark" className="fixed inset-0 z-50 select-none bg-cool-ink">
       {/* Barra de progreso estilo "stories" */}
       <div className="absolute left-0 right-0 top-0 z-10 flex gap-1 p-3">
         {slides.map((_, i) => (

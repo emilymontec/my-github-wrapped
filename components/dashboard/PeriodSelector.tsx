@@ -25,7 +25,7 @@ export function PeriodSelector({ value, onChange, disabled = false, locale }: Pe
             className={`rounded-full px-3.5 py-1.5 text-sm transition-colors disabled:opacity-50 ${
               isActive
                 ? "bg-cool-violet text-white"
-                : "text-cool-muted hover:text-white"
+                : "text-cool-muted hover:text-cool-text"
             }`}
           >
             {labels[option]}

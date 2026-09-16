@@ -17,15 +17,28 @@ const config: Config = {
         // a propósito: heat codifica DATOS reales (intensidad de
         // commits) y no debe cambiar de significado solo porque el
         // chrome de la UI se rediseñó — ver comentario en globals.css.
+        //
+        // ⚠️ Sistema de temas: estos valores son `rgb(var(--x) / <alpha-value>)`
+        // en vez de hex fijo -- así CUALQUIER clase que ya use `cool.*`
+        // (bg-cool-panel, text-cool-muted, border-cool-line/20, etc.,
+        // usadas en decenas de componentes) responde sola al cambio de
+        // tema sin tener que tocar cada archivo. Las variables reales
+        // viven en `:root` / `[data-theme="light"]` en globals.css.
         cool: {
-          ink: "#05060c",
-          panel: "#0a0d16",
-          line: "#7c8cff",
-          violet: "#8b5cf6",
-          violetBright: "#a78bfa",
-          cyan: "#22d3ee",
-          blue: "#3b82f6",
-          muted: "#8892b0"
+          ink: "rgb(var(--color-ink) / <alpha-value>)",
+          panel: "rgb(var(--color-panel) / <alpha-value>)",
+          line: "rgb(var(--color-line) / <alpha-value>)",
+          violet: "rgb(var(--color-violet) / <alpha-value>)",
+          violetBright: "rgb(var(--color-violet-bright) / <alpha-value>)",
+          cyan: "rgb(var(--color-cyan) / <alpha-value>)",
+          blue: "rgb(var(--color-blue) / <alpha-value>)",
+          muted: "rgb(var(--color-muted) / <alpha-value>)",
+          // Texto primario: blanco en oscuro, casi-negro en claro. Para
+          // texto de contenido (títulos, párrafos) sobre el fondo de
+          // página -- NO para texto sobre un botón de color sólido
+          // (ese debe seguir siendo blanco fijo en los dos temas, ver
+          // .btn-cool en globals.css).
+          text: "rgb(var(--color-text) / <alpha-value>)"
         },
         // Escala de intensidad para el heatmap de actividad — deliberadamente
         // la misma convención visual del contribution graph de GitHub, ya que

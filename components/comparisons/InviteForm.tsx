@@ -42,7 +42,7 @@ export function InviteForm({ locale }: { locale: Locale }) {
         value={username}
         onChange={(e) => setUsername(e.target.value)}
         placeholder={dict.inviteInputPlaceholder}
-        className="flex-1 rounded-lg border border-cool-line/20 bg-black/20 px-3 py-2 text-sm text-white placeholder:text-cool-muted/50"
+        className="flex-1 rounded-lg border border-cool-line/20 bg-cool-muted/10 px-3 py-2 text-sm text-cool-text placeholder:text-cool-muted/50"
       />
       <button
         type="submit"

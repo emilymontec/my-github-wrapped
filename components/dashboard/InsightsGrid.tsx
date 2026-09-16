@@ -34,7 +34,7 @@ export function InsightsGrid({ insights, locale }: InsightsGridProps) {
           key={insight.id}
           className="bento-panel p-5"
         >
-          <p className="text-[15px] leading-relaxed text-white">{insight.narrative}</p>
+          <p className="text-[15px] leading-relaxed text-cool-text">{insight.narrative}</p>
           <p className="mt-3 text-xs text-cool-muted/70">
             {dict.insightTypeLabels[insight.type as keyof typeof dict.insightTypeLabels] ?? insight.type}
           </p>

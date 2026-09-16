@@ -11,6 +11,8 @@ import { PixelGridBackground } from "@/components/ui/PixelGridBackground";
 import { getRequestDictionary } from "@/lib/i18n/server";
 import { t } from "@/lib/i18n/dictionary";
 import type { PersistedInsight } from "@/lib/insights/types";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
+import { PaletteToggle } from "@/components/theme/PaletteToggle";
 
 const DEFAULT_PERIOD = "last30" as const;
 
@@ -56,10 +58,12 @@ export default async function DashboardPage() {
       <div className="relative z-10">
         <header className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="font-display text-2xl font-semibold text-white">{dict.common.appName}</h1>
+            <h1 className="font-display text-2xl font-semibold text-cool-text">{dict.common.appName}</h1>
             <p className="text-cool-muted">{t(dict.dashboard.greeting, { name: session.user.name ?? "developer" })}</p>
           </div>
           <div className="flex flex-wrap items-center gap-2.5">
+            <PaletteToggle />
+            <ThemeToggle label={dict.common.themeToggle} />
             <Link href="/settings" className="btn-flat-outline">
               {dict.dashboard.settingsLink}
             </Link>

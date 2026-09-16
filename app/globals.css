@@ -2,6 +2,133 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Sistema de temas: DOS ejes independientes ──────────────────────
+   1) TEMA (claro/oscuro) -- `[data-theme]` en <html> -- controla solo
+      colores de SUPERFICIE: fondo, panel, texto, bordes neutros.
+   2) PALETA (violeta/amarillo/rojo/verde) -- `[data-palette]` en <html>
+      -- controla solo colores de ACENTO: el violeta/cian que se usa en
+      botones, badges, cubos del Wrapped y bloques decorativos del fondo.
+
+   Se separan a propósito en dos atributos distintos (no un solo
+   "tema") porque son ortogonales: cualquier paleta debe poder
+   combinarse con cualquier tema, Y el Wrapped -- que fuerza SIEMPRE
+   superficie oscura (ver más abajo) -- debe poder seguir mostrando
+   CUALQUIER paleta elegida. Si fueran un solo eje, forzar oscuro
+   también resetearía el acento a violeta sin importar qué paleta
+   hubiera elegido el usuario.
+
+   Los valores de acento son más oscuros/saturados en tema claro que en
+   oscuro -- el mismo tono que contrasta bien sobre negro se ve lavado
+   sobre blanco; esto no es un descuido, es contraste real (texto de
+   acento sobre fondo blanco necesita ser más oscuro para pasar WCAG AA).
+   Por eso cada paleta tiene versión oscura Y clara. */
+
+:root {
+  /* -- Tema: oscuro (default) -- */
+  --color-ink: 5 6 12;
+  --color-panel: 10 13 22;
+  --color-line: 124 140 255;
+  --color-muted: 136 146 176;
+  --color-text: 255 255 255;
+
+  /* -- Paleta: violeta (default) + oscuro -- */
+  --color-violet: 139 92 246;
+  --color-violet-bright: 167 139 250;
+  --color-cyan: 34 211 238;
+  --color-blue: 59 130 246;
+  --color-btn-shadow: 59 31 143;
+}
+
+[data-theme="light"] {
+  /* -- Tema: claro -- */
+  --color-ink: 244 245 250;
+  --color-panel: 255 255 255;
+  --color-line: 100 106 160;
+  --color-muted: 90 96 120;
+  --color-text: 15 17 26;
+
+  /* -- Paleta: violeta (default) + claro -- */
+  --color-violet: 124 58 237;
+  --color-violet-bright: 109 40 217;
+  --color-cyan: 8 145 178;
+  --color-blue: 37 99 235;
+  --color-btn-shadow: 199 184 247;
+}
+
+/* -- Paletas alternativas, oscuro -- */
+[data-palette="yellow"] {
+  --color-violet: 245 158 11;
+  --color-violet-bright: 251 191 36;
+  --color-cyan: 251 146 60;
+  --color-blue: 180 83 9;
+  --color-btn-shadow: 120 53 15;
+}
+
+[data-palette="red"] {
+  --color-violet: 239 68 68;
+  --color-violet-bright: 248 113 113;
+  --color-cyan: 251 191 36;
+  --color-blue: 185 28 28;
+  --color-btn-shadow: 127 29 29;
+}
+
+[data-palette="green"] {
+  --color-violet: 34 197 94;
+  --color-violet-bright: 74 222 128;
+  --color-cyan: 45 212 191;
+  --color-blue: 21 128 61;
+  --color-btn-shadow: 20 83 45;
+}
+
+/* -- Paletas alternativas, claro (más oscuras/saturadas para contraste) -- */
+[data-theme="light"][data-palette="yellow"] {
+  --color-violet: 180 83 9;
+  --color-violet-bright: 146 64 14;
+  --color-cyan: 194 65 12;
+  --color-blue: 154 52 18;
+  --color-btn-shadow: 254 215 170;
+}
+
+[data-theme="light"][data-palette="red"] {
+  --color-violet: 185 28 28;
+  --color-violet-bright: 153 27 27;
+  --color-cyan: 180 83 9;
+  --color-blue: 127 29 29;
+  --color-btn-shadow: 254 202 202;
+}
+
+[data-theme="light"][data-palette="green"] {
+  --color-violet: 21 128 61;
+  --color-violet-bright: 22 101 52;
+  --color-cyan: 15 118 110;
+  --color-blue: 20 83 45;
+  --color-btn-shadow: 187 247 208;
+}
+
+/* La experiencia del Wrapped en sí (cubos de vidrio, panel esmerilado)
+   se diseñó asumiendo fondo oscuro siempre -- mismo criterio que usa
+   Spotify Wrapped, que tampoco seguía el tema del sistema. Forzamos
+   `data-theme="dark"` en la raíz del modal (ver
+   components/wrapped/WrappedSlideDeck.tsx).
+   ⚠️ A propósito este bloque SOLO toca variables de SUPERFICIE, nunca
+   de acento -- si tocara --color-violet/cyan/etc, resetearía la paleta
+   elegida a violeta sin importar qué hubiera elegido el usuario. Al no
+   tocarlas, el Wrapped hereda el acento de lo que sea que
+   `[data-palette]` haya puesto en <html>, y solo el fondo/texto vuelve
+   a oscuro. */
+[data-theme="dark"] {
+  --color-ink: 5 6 12;
+  --color-panel: 10 13 22;
+  --color-line: 124 140 255;
+  --color-muted: 136 146 176;
+  --color-text: 255 255 255;
+}
+
+body {
+  background: rgb(var(--color-ink));
+  color: rgb(var(--color-text));
+}
+
 /* ── Wrapped: campo de cubos de vidrio interactivo ──────────────────
    Ver components/wrapped/GlassCubeField.tsx para el porqué del concepto. */
 
@@ -88,6 +215,14 @@
   100% { transform: translate(0, 0) rotate3d(1, 1, 0, 360deg); }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .cube {
+    animation: none !important;
+    translate: none !important;
+    transition: none !important;
+  }
+}
+
 /* ── Wrapped: panel de contenido esmerilado ──────────────────────── */
 
 .glass-panel {
@@ -107,11 +242,47 @@
     0 24px 60px rgba(0, 0, 0, 0.45);
 }
 
+/* ── Dashboard: racha animada (estilo Duolingo/TikTok) ──────────────
+   A propósito solo anima `transform`/`opacity` -- nada de blur ni
+   backdrop-filter (ver el bug de freeze de GPU en GlassCubeField, esto
+   es UN solo elemento chico así que el costo es mínimo de por sí, pero
+   se mantiene la misma disciplina). */
+@keyframes flameFlicker {
+  0%, 100% { transform: scale(1) rotate(-1deg); }
+  25% { transform: scale(1.05) rotate(1deg); }
+  50% { transform: scale(0.97) rotate(-2deg); }
+  75% { transform: scale(1.03) rotate(1deg); }
+}
+
+@keyframes flameGlowPulse {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 0.85; transform: scale(1.15); }
+}
+
+@keyframes recordBadgePop {
+  0% { transform: scale(0.8); opacity: 0; }
+  60% { transform: scale(1.08); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.flame-icon {
+  animation: flameFlicker 2.4s ease-in-out infinite;
+  transform-origin: 50% 85%;
+}
+
+.flame-glow {
+  animation: flameGlowPulse 2.4s ease-in-out infinite;
+}
+
+.record-badge {
+  animation: recordBadgePop 0.4s ease-out;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .cube {
+  .flame-icon,
+  .flame-glow,
+  .record-badge {
     animation: none !important;
-    translate: none !important;
-    transition: none !important;
   }
 }
 
@@ -120,9 +291,6 @@
     perspective: 800px;
   }
 }
-
-/* ── Rediseño frío: fondo compartido (login, dashboard, settings, compare) ─
-   Ver components/ui/PixelGridBackground.tsx para el porqué del concepto. */
 
 /* ── Rediseño frío: fondo compartido (login, dashboard, settings, compare) ─
    Bloques 2D de bordes duros, sin blur ni glow radial — el lenguaje real
@@ -137,7 +305,7 @@
   inset: 0;
   z-index: 0;
   overflow: hidden;
-  background: #06070d;
+  background: rgb(var(--color-ink));
   --gx: 0;
   --gy: 0;
 }
@@ -146,8 +314,8 @@
   position: absolute;
   inset: -2px;
   background-image:
-    linear-gradient(rgba(124, 140, 255, 0.1) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(124, 140, 255, 0.1) 1px, transparent 1px);
+    linear-gradient(rgb(var(--color-line) / 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(var(--color-line) / 0.1) 1px, transparent 1px);
   background-size: 64px 64px;
   translate: calc(var(--gx) * -10px) calc(var(--gy) * -10px);
   transition: translate 0.6s ease-out;
@@ -168,7 +336,7 @@
   max-width: 440px;
   max-height: 380px;
   clip-path: polygon(0 0, 100% 0, 100% 58%, 66% 58%, 66% 100%, 0 100%);
-  background: linear-gradient(155deg, #8b5cf6 0%, #6d28d9 100%);
+  background: linear-gradient(155deg, rgb(var(--color-violet)) 0%, rgb(var(--color-btn-shadow)) 100%);
   translate: calc(var(--gx) * -18px) calc(var(--gy) * -18px);
 }
 
@@ -180,7 +348,7 @@
   max-width: 340px;
   max-height: 280px;
   clip-path: polygon(0 0, 100% 0, 100% 100%, 42% 100%, 42% 48%, 0 48%);
-  background: linear-gradient(200deg, #3b82f6 0%, #1d4ed8 100%);
+  background: linear-gradient(200deg, rgb(var(--color-blue)) 0%, rgb(var(--color-btn-shadow)) 100%);
   translate: calc(var(--gx) * 22px) calc(var(--gy) * -14px);
 }
 
@@ -192,7 +360,7 @@
   max-width: 160px;
   max-height: 160px;
   clip-path: polygon(0 0, 100% 0, 100% 100%, 45% 100%, 45% 40%, 0 40%);
-  background: #a78bfa;
+  background: rgb(var(--color-violet-bright));
   translate: calc(var(--gx) * 26px) calc(var(--gy) * 26px);
 }
 
@@ -207,9 +375,9 @@
   height: 38vh;
   background: linear-gradient(
     to top,
-    rgba(34, 211, 238, 0.28) 0%,
-    rgba(59, 130, 246, 0.14) 35%,
-    rgba(59, 130, 246, 0) 100%
+    rgb(var(--color-cyan) / 0.28) 0%,
+    rgb(var(--color-blue) / 0.14) 35%,
+    rgb(var(--color-blue) / 0) 100%
   );
   translate: calc(var(--gx) * 8px) 0;
 }
@@ -218,7 +386,7 @@
   position: absolute;
   width: 104px;
   height: 104px;
-  background-image: radial-gradient(rgba(255, 255, 255, 0.9) 1.6px, transparent 1.6px);
+  background-image: radial-gradient(rgb(var(--color-text) / 0.55) 1.6px, transparent 1.6px);
   background-size: 13px 13px;
   opacity: 0.4;
 }
@@ -231,13 +399,13 @@
 .pixel-dots--b {
   bottom: 20%;
   right: 16%;
-  background-image: radial-gradient(rgba(167, 139, 250, 0.9) 1.6px, transparent 1.6px);
+  background-image: radial-gradient(rgb(var(--color-violet-bright) / 0.9) 1.6px, transparent 1.6px);
 }
 
 .pixel-grid-vignette {
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse at 50% 34%, transparent 0%, #06070d 82%);
+  background: radial-gradient(ellipse at 50% 34%, transparent 0%, rgb(var(--color-ink)) 82%);
 }
 
 /* ── Botón "frío" — plano, sin gradiente ni glow ─────────────────────
@@ -252,50 +420,50 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  background: #8b5cf6;
+  background: rgb(var(--color-violet));
   color: #ffffff;
   font-weight: 600;
   font-size: 1rem;
   padding: 14px 32px;
   border-radius: 8px;
   text-decoration: none;
-  border: 2px solid #05060c;
+  border: 2px solid rgb(var(--color-ink));
   cursor: pointer;
   transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
-  box-shadow: 4px 4px 0 #3b1f8f;
+  box-shadow: 4px 4px 0 rgb(var(--color-btn-shadow));
 }
 
 .btn-cool:hover {
-  background: #9666f7;
+  background: rgb(var(--color-violet-bright));
   transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0 #3b1f8f;
+  box-shadow: 6px 6px 0 rgb(var(--color-btn-shadow));
 }
 
 .btn-cool:active {
   transform: translate(1px, 1px);
-  box-shadow: 2px 2px 0 #3b1f8f;
+  box-shadow: 2px 2px 0 rgb(var(--color-btn-shadow));
 }
 
 .btn-cool:disabled {
   opacity: 0.5;
   cursor: not-allowed;
   transform: none;
-  box-shadow: 4px 4px 0 #3b1f8f;
+  box-shadow: 4px 4px 0 rgb(var(--color-btn-shadow));
 }
 
 .btn-cool-sm {
   padding: 9px 20px;
   font-size: 0.875rem;
-  box-shadow: 3px 3px 0 #3b1f8f;
+  box-shadow: 3px 3px 0 rgb(var(--color-btn-shadow));
   border-radius: 6px;
 }
 
 .btn-cool-sm:hover {
-  box-shadow: 4px 4px 0 #3b1f8f;
+  box-shadow: 4px 4px 0 rgb(var(--color-btn-shadow));
 }
 
 .btn-cool-sm:active {
-  box-shadow: 1px 1px 0 #3b1f8f;
+  box-shadow: 1px 1px 0 rgb(var(--color-btn-shadow));
 }
 
 /* Secundario: mismo lenguaje plano, sin relleno — para acciones que no
@@ -307,19 +475,19 @@
   justify-content: center;
   gap: 0.5rem;
   background: transparent;
-  color: #c7cbe0;
+  color: rgb(var(--color-muted));
   font-weight: 600;
   font-size: 0.875rem;
   padding: 9px 20px;
   border-radius: 6px;
-  border: 2px solid rgba(124, 140, 255, 0.25);
+  border: 2px solid rgb(var(--color-line) / 0.25);
   cursor: pointer;
   transition: border-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
 }
 
 .btn-flat-outline:hover {
-  border-color: #8b5cf6;
-  color: #a78bfa;
+  border-color: rgb(var(--color-violet));
+  color: rgb(var(--color-violet-bright));
   transform: translate(-1px, -1px);
 }
 
@@ -330,8 +498,8 @@
    mismo sistema que el fondo. */
 .bento-panel {
   position: relative;
-  border: 2px solid rgba(124, 140, 255, 0.18);
-  background: #0a0d16;
+  border: 2px solid rgb(var(--color-line) / 0.18);
+  background: rgb(var(--color-panel));
   border-radius: 10px;
   overflow: hidden;
 }
@@ -343,7 +511,7 @@
   left: 0;
   width: 20px;
   height: 20px;
-  background: #8b5cf6;
+  background: rgb(var(--color-violet));
   clip-path: polygon(0 0, 100% 0, 0 100%);
   pointer-events: none;
 }

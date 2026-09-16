@@ -78,7 +78,7 @@ export function DataExportPanel({ locale }: { locale: Locale }) {
         <button
           type="button"
           onClick={requestExport}
-          className="rounded-full bg-white/10 px-4 py-2 text-sm text-white hover:bg-white/20"
+          className="rounded-full bg-cool-muted/10 px-4 py-2 text-sm text-cool-text hover:bg-cool-muted/20"
         >
           {dict.requestButton}
         </button>
@@ -98,7 +98,7 @@ export function DataExportPanel({ locale }: { locale: Locale }) {
           >
             {dict.downloadButton}
           </a>
-          <button type="button" onClick={requestExport} className="text-sm text-cool-muted hover:text-white">
+          <button type="button" onClick={requestExport} className="text-sm text-cool-muted hover:text-cool-text">
             {dict.requestAnother}
           </button>
         </div>
@@ -107,7 +107,7 @@ export function DataExportPanel({ locale }: { locale: Locale }) {
       {request?.status === "FAILED" && (
         <div className="flex items-center gap-3">
           <p className="text-sm text-red-400">{dict.statusFailed}</p>
-          <button type="button" onClick={requestExport} className="text-sm text-cool-muted hover:text-white">
+          <button type="button" onClick={requestExport} className="text-sm text-cool-muted hover:text-cool-text">
             {dict.requestAnother}
           </button>
         </div>

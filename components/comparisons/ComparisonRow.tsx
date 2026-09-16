@@ -34,9 +34,9 @@ export function ComparisonRow({ comparison, locale }: { comparison: ComparisonSu
   return (
     <div className="flex items-center justify-between bento-panel p-4">
       <div>
-        <p className="text-sm text-white">
+        <p className="text-sm text-cool-text">
           {comparison.direction === "sent" ? `${dict.invitedPrefix} ` : `${dict.invitedByPrefix} `}
-          <span className="font-medium text-white">{comparison.otherUsername}</span>
+          <span className="font-medium text-cool-text">{comparison.otherUsername}</span>
         </p>
         <p className="text-xs text-cool-muted/70">{STATUS_LABELS[comparison.status]}</p>
       </div>

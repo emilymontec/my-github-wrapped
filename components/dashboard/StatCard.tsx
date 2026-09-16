@@ -11,7 +11,7 @@ export function StatCard({ value, label, accent = false }: StatCardProps) {
     <div className="flex flex-col gap-1">
       <span
         className={`font-display text-4xl font-semibold tabular-nums ${
-          accent ? "text-cool-cyan" : "text-white"
+          accent ? "text-cool-cyan" : "text-cool-text"
         }`}
       >
         {typeof value === "number" ? <AnimatedStat value={value} /> : value}

@@ -28,7 +28,7 @@ export default async function ComparePage() {
       <PixelGridBackground variant="quiet" />
       <div className="relative z-10">
       <BackLink href="/dashboard" label={dict.common.backToDashboard} />
-      <h1 className="mb-2 font-display text-2xl font-semibold text-white">{dict.comparisons.pageTitle}</h1>
+      <h1 className="mb-2 font-display text-2xl font-semibold text-cool-text">{dict.comparisons.pageTitle}</h1>
       <p className="mb-8 text-sm text-cool-muted">{dict.comparisons.pageDescription}</p>
 
       <div className="mb-8">

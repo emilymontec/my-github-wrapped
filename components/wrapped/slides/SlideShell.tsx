@@ -9,13 +9,22 @@ import { GlassCubeField } from "@/components/wrapped/GlassCubeField";
 // azul/violeta/cian, para que todo el producto (login, dashboard, wrapped)
 // comparta un único lenguaje cromático — cada slide se sigue
 // distinguiendo por el matiz, no por temperatura de color distinta.
+// ⚠️ Antes cada slide tenía un hex fijo distinto para su tono medio
+// (rhythm=teal, languages=violeta, repos=cian, etc.) -- ahora todos
+// derivan de las mismas 4 variables de paleta de acento (ver
+// [data-palette] en globals.css) con opacidad baja para aproximar el
+// "lavado" oscuro que tenían los hex originales, en vez de mostrar el
+// acento a saturación completa. Se pierde algo de variedad tonal
+// exacta entre slides, pero ahora TODAS responden a la paleta elegida
+// -- que es justamente lo que se pidió (que el Wrapped cambie de color
+// junto con el resto de la app, no solo el chrome del dashboard).
 const GRADIENTS: Record<string, string> = {
-  opening: "from-[#0d1117] via-[#0d1117] to-[#0f2942]",
-  volume: "from-[#0d1117] via-[#123a6b] to-[#0d1117]",
-  rhythm: "from-[#0d1117] via-[#0a3d45] to-[#0d1117]",
-  languages: "from-[#0d1117] via-[#241454] to-[#0d1117]",
-  repos: "from-[#0d1117] via-[#0a4a5c] to-[#0d1117]",
-  streak: "from-[#0d1117] via-[#1c1140] to-[#0d1117]",
+  opening: "from-[#0d1117] via-[rgb(var(--color-blue)/0.35)] to-[#0d1117]",
+  volume: "from-[#0d1117] via-[rgb(var(--color-blue)/0.55)] to-[#0d1117]",
+  rhythm: "from-[#0d1117] via-[rgb(var(--color-cyan)/0.45)] to-[#0d1117]",
+  languages: "from-[#0d1117] via-[rgb(var(--color-violet)/0.5)] to-[#0d1117]",
+  repos: "from-[#0d1117] via-[rgb(var(--color-cyan)/0.55)] to-[#0d1117]",
+  streak: "from-[#0d1117] via-[rgb(var(--color-violet)/0.55)] to-[#0d1117]",
   closing: "from-[#0d1117] via-[#161b22] to-[#0d1117]"
 };
 
