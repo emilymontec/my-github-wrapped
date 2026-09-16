@@ -46,10 +46,21 @@ export default async function SettingsPage() {
       <div className="mb-8 flex items-center justify-between">
         <h1 className="font-display text-2xl font-semibold text-cool-text">{dict.settings.pageTitle}</h1>
         <div className="flex items-center gap-2.5">
-          <PaletteToggle />
           <ThemeToggle label={dict.common.themeToggle} />
         </div>
       </div>
+
+      <section className="mb-6 bento-panel p-6">
+        <h2 className="font-display text-lg font-semibold text-cool-text">
+          {dict.settings.appearanceSectionTitle}
+        </h2>
+        <p className="mt-2 text-sm leading-relaxed text-cool-muted">
+          {dict.settings.appearanceSectionDescription}
+        </p>
+        <div className="mt-6">
+          <PaletteToggle />
+        </div>
+      </section>
 
       <section className="mb-6 bento-panel p-6">
         <h2 className="font-display text-lg font-semibold text-cool-text">

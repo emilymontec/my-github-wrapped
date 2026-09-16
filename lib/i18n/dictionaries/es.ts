@@ -38,6 +38,8 @@ export const es = {
     languageSectionDescription: "Elige el idioma de la interfaz y de los emails que te enviamos.",
     languageSpanish: "Español",
     languageEnglish: "English",
+    appearanceSectionTitle: "Apariencia",
+    appearanceSectionDescription: "Elige el color de acento de la interfaz. El modo claro/oscuro se cambia desde el botón en la parte superior.",
     preferenceUpdateError: "No se pudo actualizar la preferencia.",
     privateRepos: {
       title: "Repositorios privados",

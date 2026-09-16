@@ -38,6 +38,8 @@ export const en = {
     languageSectionDescription: "Choose the language for the interface and the emails we send you.",
     languageSpanish: "Español",
     languageEnglish: "English",
+    appearanceSectionTitle: "Appearance",
+    appearanceSectionDescription: "Choose the accent color for the interface. Light/dark mode is switched from the button at the top.",
     preferenceUpdateError: "Couldn't update the preference.",
     privateRepos: {
       title: "Private repositories",
