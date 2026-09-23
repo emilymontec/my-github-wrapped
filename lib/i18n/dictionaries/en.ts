@@ -34,6 +34,8 @@ export const en = {
     wrappedReadyDescription: "An email when the Wrapped for a just-closed year is generated.",
     streakMilestoneLabel: "New commit streaks",
     streakMilestoneDescription: "An email when you reach a 7, 30, or 100 day streak.",
+    comparisonInviteLabel: "Comparison invitations",
+    comparisonInviteDescription: "An email when someone invites you to compare your activity with theirs.",
     languageSectionTitle: "Language",
     languageSectionDescription: "Choose the language for the interface and the emails we send you.",
     languageSpanish: "Español",
@@ -111,6 +113,15 @@ export const en = {
       cta: "View my dashboard",
       footer:
         "You're receiving this email because you have notifications enabled on GitHub Wrapped. You can turn them off at any time from your settings."
+    },
+    comparisonInvite: {
+      subject: "{username} invited you to compare on GitHub Wrapped",
+      greetingNamed: "Hi {name}",
+      greetingGeneric: "Hi",
+      body: "{username} wants to compare their GitHub activity with yours. The comparison only shows if you accept too — you can decline or revoke it anytime.",
+      cta: "View invitation",
+      footer:
+        "You're receiving this email because someone invited you to compare on GitHub Wrapped. If you weren't expecting this, feel free to ignore it."
     }
   },
   badges: {
@@ -278,16 +289,32 @@ export const en = {
     accept: "Accept",
     cancel: "Cancel",
     revoke: "Revoke",
-    inviteInputPlaceholder: "GitHub username",
+    inviteInputPlaceholder: "GitHub username or email",
     inviteButton: "Invite to compare",
     inviteSending: "Sending…",
     inviteGenericError: "Couldn't send the invitation.",
+    inviteEmailSent: "Done — we sent an invite email.",
+    inviteEmailFailed:
+      "The invite was created but we couldn't send the email. The link is still valid for 7 days — try again later.",
     vsLabel: "vs",
     metricCommits: "Commits",
     metricActiveDays: "Active days",
     metricLongestStreak: "Longest streak",
     metricTopLanguage: "Top language",
     metricActivityScore: "Activity Score",
-    footerNote: "Based on each person's public activity over the last 12 months."
+    footerNote: "Based on each person's public activity over the last 12 months.",
+    invitePage: {
+      heading: "{username} invited you to compare",
+      description:
+        "You'll be able to see your GitHub activity side by side with {username}'s. The comparison only shows if you accept too.",
+      signInToAccept: "Sign in with GitHub to accept",
+      accept: "Accept and compare",
+      decline: "No thanks",
+      declined: "You declined this invitation.",
+      notFound: "This invitation doesn't exist, or the link is wrong.",
+      expired: "This invitation expired. Ask the person who invited you to send a new one.",
+      alreadyResolved: "This invitation was already resolved.",
+      viewComparisons: "View my comparisons"
+    }
   }
 } satisfies Dictionary;

@@ -57,6 +57,46 @@ export async function listComparisonsForUser(userId: string): Promise<Comparison
 
 export type CreateComparisonError = "not_found" | "self" | "already_exists";
 
+/**
+ * Núcleo de "crear/reabrir un vínculo de comparación", extraído para que
+ * tanto invitar por username (`createComparisonRequest`, abajo) como
+ * invitar por email de un usuario YA existente
+ * (`lib/comparisons/invites.ts::createComparisonInvite`) pasen por la
+ * MISMA lógica de unicidad/reapertura -- dos caminos hacia el mismo
+ * efecto no deberían poder divergir en esta regla.
+ */
+export async function createComparisonRequestForTargetId(
+  requesterId: string,
+  targetId: string
+): Promise<{ id: string; createdAt: Date; reused: boolean } | { error: CreateComparisonError }> {
+  if (targetId === requesterId) return { error: "self" };
+
+  const existing = await prisma.comparisonLink.findFirst({
+    where: {
+      OR: [
+        { userAId: requesterId, userBId: targetId },
+        { userAId: targetId, userBId: requesterId }
+      ]
+    }
+  });
+
+  if (existing) {
+    if (existing.status !== "DECLINED") return { error: "already_exists" };
+    // Un vínculo previamente rechazado se puede volver a invitar —
+    // reabre el mismo registro en vez de acumular filas históricas.
+    const reopened = await prisma.comparisonLink.update({
+      where: { id: existing.id },
+      data: { status: "PENDING", createdAt: new Date(), respondedAt: null }
+    });
+    return { id: reopened.id, createdAt: reopened.createdAt, reused: true };
+  }
+
+  const created = await prisma.comparisonLink.create({
+    data: { userAId: requesterId, userBId: targetId }
+  });
+  return { id: created.id, createdAt: created.createdAt, reused: false };
+}
+
 export async function createComparisonRequest(
   requesterId: string,
   targetUsername: string
@@ -66,32 +106,10 @@ export async function createComparisonRequest(
     select: { id: true }
   });
   if (!target) return { error: "not_found" };
-  if (target.id === requesterId) return { error: "self" };
 
-  const existing = await prisma.comparisonLink.findFirst({
-    where: {
-      OR: [
-        { userAId: requesterId, userBId: target.id },
-        { userAId: target.id, userBId: requesterId }
-      ]
-    }
-  });
-
-  if (existing) {
-    if (existing.status !== "DECLINED") return { error: "already_exists" };
-    // Un vínculo previamente rechazado se puede volver a invitar —
-    // reabre el mismo registro en vez de acumular filas históricas.
-    await prisma.comparisonLink.update({
-      where: { id: existing.id },
-      data: { status: "PENDING", createdAt: new Date(), respondedAt: null }
-    });
-    return { id: existing.id };
-  }
-
-  const created = await prisma.comparisonLink.create({
-    data: { userAId: requesterId, userBId: target.id }
-  });
-  return { id: created.id };
+  const result = await createComparisonRequestForTargetId(requesterId, target.id);
+  if ("error" in result) return result;
+  return { id: result.id };
 }
 
 export type RespondError = "not_found" | "forbidden" | "only_recipient_can_accept" | "invalid_state";

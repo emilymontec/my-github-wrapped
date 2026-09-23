@@ -7,6 +7,7 @@ import type { Locale } from "@/lib/i18n/locales";
 interface NotificationPreferencesTogglesProps {
   initialWrappedReadyEmail: boolean;
   initialStreakMilestoneEmail: boolean;
+  initialComparisonInviteEmail: boolean;
   locale: Locale;
 }
 
@@ -21,15 +22,17 @@ interface NotificationPreferencesTogglesProps {
 export function NotificationPreferencesToggles({
   initialWrappedReadyEmail,
   initialStreakMilestoneEmail,
+  initialComparisonInviteEmail,
   locale
 }: NotificationPreferencesTogglesProps) {
   const dict = getDictionary(locale).settings;
   const [wrappedReadyEmail, setWrappedReadyEmail] = useState(initialWrappedReadyEmail);
   const [streakMilestoneEmail, setStreakMilestoneEmail] = useState(initialStreakMilestoneEmail);
+  const [comparisonInviteEmail, setComparisonInviteEmail] = useState(initialComparisonInviteEmail);
   const [error, setError] = useState<string | null>(null);
 
   async function toggle(
-    key: "wrappedReadyEmail" | "streakMilestoneEmail",
+    key: "wrappedReadyEmail" | "streakMilestoneEmail" | "comparisonInviteEmail",
     current: boolean,
     setCurrent: (v: boolean) => void
   ) {
@@ -62,6 +65,12 @@ export function NotificationPreferencesToggles({
         description={dict.streakMilestoneDescription}
         checked={streakMilestoneEmail}
         onChange={() => toggle("streakMilestoneEmail", streakMilestoneEmail, setStreakMilestoneEmail)}
+      />
+      <ToggleRow
+        label={dict.comparisonInviteLabel}
+        description={dict.comparisonInviteDescription}
+        checked={comparisonInviteEmail}
+        onChange={() => toggle("comparisonInviteEmail", comparisonInviteEmail, setComparisonInviteEmail)}
       />
       {error && <p className="text-sm text-red-400">{error}</p>}
     </div>

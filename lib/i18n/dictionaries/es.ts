@@ -29,17 +29,19 @@ export const es = {
     pageTitle: "Configuración",
     notificationsSectionTitle: "Notificaciones",
     notificationsSectionDescription:
-      "Elige qué avisos por email quieres recibir. Puedes desactivarlos en cualquier momento.",
+      "Elegí qué avisos por email querés recibir. Podés desactivarlos en cualquier momento.",
     wrappedReadyLabel: "Tu Wrapped anual está listo",
     wrappedReadyDescription: "Un email cuando se genera el Wrapped de un año recién cerrado.",
     streakMilestoneLabel: "Nuevas rachas de commits",
     streakMilestoneDescription: "Un email cuando alcanzás una racha de 7, 30 o 100 días seguidos.",
+    comparisonInviteLabel: "Invitaciones a comparar",
+    comparisonInviteDescription: "Un email cuando alguien te invita a comparar tu actividad con la suya.",
     languageSectionTitle: "Idioma",
-    languageSectionDescription: "Elige el idioma de la interfaz y de los emails que te enviamos.",
+    languageSectionDescription: "Elegí el idioma de la interfaz y de los emails que te enviamos.",
     languageSpanish: "Español",
     languageEnglish: "English",
     appearanceSectionTitle: "Apariencia",
-    appearanceSectionDescription: "Elige el color de acento de la interfaz. El modo claro/oscuro se cambia desde el botón en la parte superior.",
+    appearanceSectionDescription: "Elegí el color de acento de la interfaz. El modo claro/oscuro se cambia desde el botón en la parte superior.",
     preferenceUpdateError: "No se pudo actualizar la preferencia.",
     privateRepos: {
       title: "Repositorios privados",
@@ -111,6 +113,15 @@ export const es = {
       cta: "Ver mi dashboard",
       footer:
         "Recibiste este email porque tenés notificaciones activadas en GitHub Wrapped. Podés desactivarlas en cualquier momento desde tu configuración."
+    },
+    comparisonInvite: {
+      subject: "{username} te invitó a comparar en GitHub Wrapped",
+      greetingNamed: "Hola {name}",
+      greetingGeneric: "Hola",
+      body: "{username} quiere comparar su actividad de GitHub con la tuya. La comparación solo se muestra si vos también aceptás — podés rechazarla o revocarla cuando quieras.",
+      cta: "Ver invitación",
+      footer:
+        "Recibiste este email porque alguien te invitó a comparar en GitHub Wrapped. Si no esperabas esto, podés ignorarlo con tranquilidad."
     }
   },
   badges: {
@@ -151,7 +162,7 @@ export const es = {
     emptyStateDescription: "Sincroniza tu cuenta de GitHub arriba para ver tu actividad, lenguajes y rachas.",
     periodEmptyTitle: "Sin actividad en este período",
     periodEmptyDescription:
-      "Prueba con un rango más amplio, o espera a que termine la sincronización si acabas de conectar tu cuenta.",
+      "Probá con un rango más amplio, o esperá a que termine la sincronización si acabás de conectar tu cuenta.",
     periodLoadError: "No se pudo cargar el período seleccionado. Intenta de nuevo.",
     statCommits: "Commits",
     statActiveRepos: "Repos activos",
@@ -251,7 +262,7 @@ export const es = {
       isPublicLabel: "Tu Wrapped es público",
       isPrivateLabel: "Tu Wrapped es privado",
       isPublicDescription: "Cualquiera con el link puede verlo.",
-      isPrivateDescription: "Solo tú puedes verlo.",
+      isPrivateDescription: "Solo vos podés verlo.",
       makePrivate: "Hacer privado",
       makePublic: "Hacer público",
       copy: "Copiar",
@@ -279,17 +290,33 @@ export const es = {
     accept: "Aceptar",
     cancel: "Cancelar",
     revoke: "Revocar",
-    inviteInputPlaceholder: "username de GitHub",
+    inviteInputPlaceholder: "username de GitHub o email",
     inviteButton: "Invitar a comparar",
     inviteSending: "Enviando…",
     inviteGenericError: "No se pudo enviar la invitación.",
+    inviteEmailSent: "Listo — le mandamos un email de invitación.",
+    inviteEmailFailed:
+      "Creamos la invitación pero no pudimos mandar el email. El link sigue siendo válido por 7 días — probá de nuevo más tarde.",
     vsLabel: "vs",
     metricCommits: "Commits",
     metricActiveDays: "Días activos",
     metricLongestStreak: "Racha más larga",
     metricTopLanguage: "Lenguaje principal",
     metricActivityScore: "Activity Score",
-    footerNote: "Basado en los últimos 12 meses de actividad pública de cada uno."
+    footerNote: "Basado en los últimos 12 meses de actividad pública de cada uno.",
+    invitePage: {
+      heading: "{username} te invitó a comparar",
+      description:
+        "Vas a poder ver tu actividad de GitHub una al lado de la otra con la de {username}. La comparación solo se muestra si vos también aceptás.",
+      signInToAccept: "Iniciá sesión con GitHub para aceptar",
+      accept: "Aceptar y comparar",
+      decline: "No, gracias",
+      declined: "Rechazaste esta invitación.",
+      notFound: "Esta invitación no existe o el link está mal copiado.",
+      expired: "Esta invitación venció. Pedile a la persona que te invitó que te mande una nueva.",
+      alreadyResolved: "Esta invitación ya se resolvió.",
+      viewComparisons: "Ver mis comparaciones"
+    }
   }
 };
 

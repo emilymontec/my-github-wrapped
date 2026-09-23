@@ -6,7 +6,7 @@
  * requerir migración cuando se agregue un tipo nuevo, mientras el código
  * sí tiene el tipo cerrado en tiempo de compilación.
  */
-export const NOTIFICATION_TYPES = ["wrapped_ready", "streak_milestone"] as const;
+export const NOTIFICATION_TYPES = ["wrapped_ready", "streak_milestone", "comparison_invite"] as const;
 
 export type NotificationType = (typeof NOTIFICATION_TYPES)[number];
 

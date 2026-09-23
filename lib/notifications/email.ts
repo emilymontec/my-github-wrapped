@@ -1,26 +1,30 @@
 import type { EmailContent } from "@/lib/notifications/templates";
 
 /**
- * ⚠️ Mismo patrón que `lib/insights/narrate.ts::callHuggingFace`: `fetch`
- * directo a la API REST del proveedor (Mailgun), sin agregar un SDK como
- * dependencia nueva -- esto es una sola llamada HTTP, y mantenerlo como
- * `fetch` puro es lo que permite mockearlo en tests exactamente igual
- * que ya se mockea la llamada a Hugging Face, sin duplicar
- * infraestructura de testing.
+ * ⚠️ Migrado de Mailgun a Mailjet (antes: `MAILGUN_API_KEY` + Basic Auth
+ * con usuario literal "api" + body form-urlencoded contra
+ * `/v3/{domain}/messages`). Mailjet usa Send API v3.1: Basic Auth con
+ * las DOS API keys de la cuenta (pública = usuario, privada = password
+ * -- a diferencia de Mailgun, acá NO hay un usuario literal fijo) y el
+ * body es JSON, no form-urlencoded. El motivo del cambio es de producto,
+ * no técnico: la cuenta de Mailgun usada hasta ahora estaba en modo
+ * sandbox (solo manda a destinatarios autorizados a mano), y Mailjet no
+ * tiene esa restricción en su plan gratuito -- no hace falta verificar
+ * un dominio propio para empezar a mandar a cualquier destinatario.
  *
- * Igual que `HUGGINGFACE_API_KEY`, la config de Mailgun es opcional: sin
- * ella, el envío de emails cae a un no-op documentado (se loguea
- * localmente y se devuelve `sent: false`) en vez de tirar la
- * sincronización o el cron que lo dispara. Un email que no se pudo
- * mandar nunca debe convertir un job exitoso (Wrapped generado, badge
- * otorgado) en uno fallido -- las notificaciones son una capa de aviso
- * encima de datos que ya existen.
+ * Igual que antes: config opcional, sin ella el envío cae a un no-op
+ * documentado (se loguea localmente y se devuelve `sent: false`) en vez
+ * de tirar la sincronización o el cron que lo dispara. Un email que no
+ * se pudo mandar nunca debe convertir un job exitoso (Wrapped generado,
+ * badge otorgado) en uno fallido -- las notificaciones son una capa de
+ * aviso encima de datos que ya existen.
  *
- * Mailgun usa Basic Auth (usuario literal "api" + la API key como
- * password) y espera el body como `application/x-www-form-urlencoded`
- * (o multipart), no JSON -- a diferencia de Resend. `MAILGUN_BASE_URL`
- * es configurable porque las cuentas creadas en la región EU de Mailgun
- * deben usar `api.eu.mailgun.net` en vez de `api.mailgun.net`.
+ * Se mantiene como `fetch` directo a la API REST (sin el SDK oficial
+ * `node-mailjet`) por el mismo motivo que ya aplicaba con Mailgun: es
+ * una sola llamada HTTP, y mantenerlo como `fetch` puro es lo que
+ * permite mockearlo en tests exactamente igual que ya se mockea la
+ * llamada a Hugging Face / Mailgun, sin agregar una dependencia nueva
+ * ni duplicar infraestructura de testing.
  */
 
 export interface SendEmailResult {
@@ -28,40 +32,63 @@ export interface SendEmailResult {
   reason?: "not_configured" | "provider_error";
 }
 
-export async function sendEmail(to: string, content: EmailContent): Promise<SendEmailResult> {
-  const apiKey = process.env.MAILGUN_API_KEY;
-  const domain = process.env.MAILGUN_DOMAIN;
-  const from = process.env.MAILGUN_FROM_EMAIL;
-  const baseUrl = process.env.MAILGUN_BASE_URL || "https://api.mailgun.net";
+interface MailjetSendResponse {
+  Messages?: Array<{ Status?: string; Errors?: Array<{ ErrorMessage?: string }> }>;
+}
 
-  if (!apiKey || !domain || !from) {
+export async function sendEmail(to: string, content: EmailContent): Promise<SendEmailResult> {
+  const apiKey = process.env.MJ_APIKEY_PUBLIC;
+  const apiSecret = process.env.MJ_APIKEY_PRIVATE;
+  const fromEmail = process.env.MAILJET_FROM_EMAIL;
+  // Opcional -- Mailjet acepta `From` sin `Name`, así que no es parte
+  // del gate de "no_configured" como sí lo son las tres de arriba.
+  const fromName = process.env.MAILJET_FROM_NAME || "GitHub Wrapped";
+
+  if (!apiKey || !apiSecret || !fromEmail) {
     console.warn(
-      "[notifications] MAILGUN_API_KEY, MAILGUN_DOMAIN o MAILGUN_FROM_EMAIL no configurados -- email no enviado (no-op documentado)."
+      "[notifications] MJ_APIKEY_PUBLIC, MJ_APIKEY_PRIVATE o MAILJET_FROM_EMAIL no configurados -- email no enviado (no-op documentado)."
     );
     return { sent: false, reason: "not_configured" };
   }
 
   try {
-    const body = new URLSearchParams({
-      from,
-      to,
-      subject: content.subject,
-      html: content.html,
-      text: content.text
-    });
-
-    const response = await fetch(`${baseUrl}/v3/${domain}/messages`, {
+    const response = await fetch("https://api.mailjet.com/v3.1/send", {
       method: "POST",
       headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        // Basic Auth: usuario literal "api", password = la API key de Mailgun.
-        Authorization: `Basic ${Buffer.from(`api:${apiKey}`).toString("base64")}`
+        "Content-Type": "application/json",
+        // Basic Auth: usuario = API key pública, password = API key
+        // privada -- a diferencia de Mailgun, acá NO hay un usuario
+        // literal fijo ("api"); son las dos keys propias de la cuenta.
+        Authorization: `Basic ${Buffer.from(`${apiKey}:${apiSecret}`).toString("base64")}`
       },
-      body
+      body: JSON.stringify({
+        Messages: [
+          {
+            From: { Email: fromEmail, Name: fromName },
+            To: [{ Email: to }],
+            Subject: content.subject,
+            TextPart: content.text,
+            HTMLPart: content.html
+          }
+        ]
+      })
     });
 
     if (!response.ok) {
-      console.error(`[notifications] Mailgun respondió ${response.status} al enviar a ${to}`);
+      console.error(`[notifications] Mailjet respondió ${response.status} al enviar a ${to}`);
+      return { sent: false, reason: "provider_error" };
+    }
+
+    // ⚠️ A diferencia de Mailgun, Mailjet puede devolver HTTP 200 con un
+    // error POR MENSAJE dentro del body (ej: dirección inválida,
+    // dominio del remitente no verificado) -- el status HTTP solo
+    // confirma que el REQUEST fue válido, no que el envío se aceptó.
+    // Hay que mirar `Messages[0].Status` para saberlo de verdad.
+    const data = (await response.json().catch(() => null)) as MailjetSendResponse | null;
+    const status = data?.Messages?.[0]?.Status;
+    if (status && status !== "success") {
+      const errorDetail = data?.Messages?.[0]?.Errors?.[0]?.ErrorMessage ?? status;
+      console.error(`[notifications] Mailjet no pudo enviar a ${to}: ${errorDetail}`);
       return { sent: false, reason: "provider_error" };
     }
 

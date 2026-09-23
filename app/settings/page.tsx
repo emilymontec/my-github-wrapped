@@ -89,6 +89,7 @@ export default async function SettingsPage() {
           <NotificationPreferencesToggles
             initialWrappedReadyEmail={notificationPreferences.wrappedReadyEmail}
             initialStreakMilestoneEmail={notificationPreferences.streakMilestoneEmail}
+            initialComparisonInviteEmail={notificationPreferences.comparisonInviteEmail}
             locale={locale}
           />
         </div>

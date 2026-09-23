@@ -65,7 +65,7 @@ export function ComparisonRow({ comparison, locale }: { comparison: ComparisonSu
             type="button"
             onClick={() => respond("revoke")}
             disabled={submitting}
-            className="rounded-full bg-white/10 px-3 py-1.5 text-xs text-cool-muted hover:bg-white/20 disabled:opacity-50"
+            className="rounded-full bg-cool-muted/10 px-3 py-1.5 text-xs text-cool-muted hover:bg-cool-muted/20 disabled:opacity-50"
           >
             {comparison.status === "PENDING" ? dict.cancel : dict.revoke}
           </button>

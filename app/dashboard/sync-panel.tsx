@@ -150,7 +150,7 @@ export function SyncPanel({ locale }: { locale: Locale }) {
       </div>
 
       {isSyncing && (
-        <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-white/5">
+        <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-cool-muted/15">
           <div
             className="h-full rounded-full bg-gradient-to-r from-cool-violet to-cool-cyan transition-all duration-500"
             style={{ width: `${state.progress}%` }}

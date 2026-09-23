@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/db/prisma";
 import { sendEmail } from "@/lib/notifications/email";
-import { wrappedReadyEmail, streakMilestoneEmail } from "@/lib/notifications/templates";
+import { wrappedReadyEmail, streakMilestoneEmail, comparisonInviteEmail } from "@/lib/notifications/templates";
 import { getNotificationPreferences } from "@/lib/notifications/preferences";
 import type { NotificationType } from "@/lib/notifications/types";
 import type { BadgeType } from "@/lib/gamification/badges";
@@ -119,6 +119,61 @@ export async function notifyStreakMilestone(
     displayName: user.username ?? user.name,
     badgeType,
     streakLength,
+    locale
+  });
+  return sendEmail(user.email, content);
+}
+
+/**
+ * Notifica a un usuario EXISTENTE que alguien lo invitó a comparar
+ * (invitación por username, o por email cuando esa dirección ya
+ * pertenece a una cuenta -- ver `lib/comparisons/invites.ts`). No cubre
+ * el caso de invitar a alguien SIN cuenta todavía: ese envío no pasa por
+ * preferencias (no hay fila de usuario a la que consultarle una
+ * preferencia) y lo dispara directo `createEmailInvite`.
+ *
+ * ⚠️ La key de dedup es `${comparisonLinkId}:${createdAt}`, no solo
+ * `comparisonLinkId` -- un vínculo DECLINED se puede reabrir (mismo id,
+ * `createdAt` se resetea, ver `createComparisonRequest`), y ese
+ * re-invite SÍ debe volver a notificar. Si dedupeara solo por id, la
+ * segunda invitación nunca mandaría email porque el log de la primera
+ * ya existiría para ese id.
+ */
+export async function notifyComparisonInvite(params: {
+  userId: string;
+  comparisonLinkId: string;
+  comparisonLinkCreatedAt: Date;
+  inviterUsername: string;
+}): Promise<NotifyResult> {
+  const { userId, comparisonLinkId, comparisonLinkCreatedAt, inviterUsername } = params;
+
+  const preferences = await getNotificationPreferences(userId);
+  if (!preferences.comparisonInviteEmail) {
+    return { sent: false, reason: "preference_disabled" };
+  }
+
+  const claimed = await tryClaimNotification(
+    userId,
+    "comparison_invite",
+    `${comparisonLinkId}:${comparisonLinkCreatedAt.getTime()}`
+  );
+  if (!claimed) {
+    return { sent: false, reason: "already_sent" };
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { email: true, username: true, name: true, locale: true }
+  });
+  if (!user?.email) {
+    return { sent: false, reason: "no_email" };
+  }
+
+  const locale = isSupportedLocale(user.locale) ? user.locale : DEFAULT_LOCALE;
+
+  const content = comparisonInviteEmail({
+    displayName: user.username ?? user.name,
+    inviterUsername,
     locale
   });
   return sendEmail(user.email, content);

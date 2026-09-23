@@ -102,6 +102,7 @@ model User {
   badges         Badge[]
   comparisonsInitiated ComparisonLink[] @relation("ComparisonRequester")
   comparisonsReceived  ComparisonLink[] @relation("ComparisonRecipient")
+  comparisonInvitesSent ComparisonInvite[]
   notificationPreference NotificationPreference?
   notificationLogs       NotificationLog[]
   dataExportRequests     DataExportRequest[]
@@ -365,6 +366,7 @@ model ComparisonLink {
 
   userA User @relation("ComparisonRequester", fields: [userAId], references: [id], onDelete: Cascade)
   userB User @relation("ComparisonRecipient", fields: [userBId], references: [id], onDelete: Cascade)
+  invite ComparisonInvite?
 
   // Un mismo par de usuarios tiene a lo sumo UN vínculo de comparación,
   // sin importar quién invitó a quién — lib/comparisons/service.ts busca
@@ -377,6 +379,55 @@ enum ComparisonStatus {
   PENDING
   ACCEPTED
   DECLINED
+}
+
+// ⚠️ Fase 8 (invitaciones por correo): separado de ComparisonLink a
+// propósito -- un ComparisonLink siempre conecta dos User.id que YA
+// existen (ver @@unique([userAId, userBId]) arriba), pero invitar "por
+// correo" tiene que soportar invitar a alguien que TODAVÍA no tiene
+// cuenta. Este modelo es el puente: vive en estado PENDING con solo un
+// email de destino (sin userId del lado del invitado) hasta que esa
+// persona entra por el link con el token, inicia sesión con GitHub (se
+// le crea su User si es la primera vez, mismo flujo de auth de
+// siempre) y acepta -- recién ahí se crea el ComparisonLink real y este
+// registro pasa a ACCEPTED con comparisonLinkId apuntando a él.
+//
+// Si el email invitado YA es de un usuario existente, este modelo NO
+// se usa -- lib/comparisons/invites.ts va directo por el mismo camino
+// que invitar por username (crea el ComparisonLink en PENDING de una)
+// y solo dispara un email de aviso, porque no hay nada que "puentear":
+// el usuario ya existe y ya tiene una fila en /compare para aceptar.
+model ComparisonInvite {
+  id               String                 @id @default(cuid())
+  // Token opaco de un solo uso -- no es el id (que es predecible por
+  // orden de creación con cuid); se genera aparte con crypto.randomBytes
+  // (ver lib/comparisons/invites.ts) para que no se pueda adivinar ni
+  // enumerar por fuerza bruta el link de otra persona.
+  token            String                 @unique
+  inviterUserId    String
+  inviteeEmail     String
+  status           ComparisonInviteStatus @default(PENDING)
+  comparisonLinkId String?                @unique
+  createdAt        DateTime               @default(now())
+  // 7 días -- ver MIN_INVITE_TTL_MS en lib/comparisons/invites.ts. Un
+  // link de invitación vive para siempre en la bandeja de entrada del
+  // destinatario; sin vencimiento, alguien podría aceptar una invitación
+  // de hace un año sin que el que invitó lo recuerde ni lo espere.
+  expiresAt        DateTime
+  acceptedAt       DateTime?
+
+  inviter        User            @relation(fields: [inviterUserId], references: [id], onDelete: Cascade)
+  comparisonLink ComparisonLink? @relation(fields: [comparisonLinkId], references: [id], onDelete: SetNull)
+
+  @@index([inviterUserId])
+  @@index([inviteeEmail])
+}
+
+enum ComparisonInviteStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  EXPIRED
 }
 
 // ─────────────────────────────────────────────────────────
@@ -461,11 +512,17 @@ enum DataExportStatus {
 // datos leídos. El usuario puede desactivarlas en cualquier momento
 // desde /settings.
 model NotificationPreference {
-  id                   String   @id @default(cuid())
-  userId               String   @unique
-  wrappedReadyEmail    Boolean  @default(true)
-  streakMilestoneEmail Boolean  @default(true)
-  updatedAt            DateTime @updatedAt
+  id                     String   @id @default(cuid())
+  userId                 String   @unique
+  wrappedReadyEmail      Boolean  @default(true)
+  streakMilestoneEmail   Boolean  @default(true)
+  // ⚠️ Fase 8 (invitaciones por correo): solo aplica cuando el email
+  // invitado YA es de un usuario existente -- si la persona todavía no
+  // tiene cuenta, el email de invitación (con el link + token) es el
+  // mecanismo en sí, no un "aviso" opt-out-able; no hay preferencia que
+  // consultar porque todavía no existe la fila de NotificationPreference.
+  comparisonInviteEmail  Boolean  @default(true)
+  updatedAt              DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

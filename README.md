@@ -245,7 +245,7 @@ The objective of GitHub Wrapped is to transform raw GitHub activity into a visua
 <td width="25%" valign="top">
 <h3>Notifications</h3>
 
-- Email preferences via Mailgun
+- Email preferences via Mailjet
 - Optional — the pipeline works with notifications fully disabled
 
 </td>
@@ -355,9 +355,9 @@ GITHUB_WEBHOOK_SECRET=GITHUB_WEBHOOK_SECRET
 WEBHOOK_BASE_URL=http://localhost:3000
 HUGGINGFACE_API_KEY=HUGGINGFACE_API_KEY
 HUGGINGFACE_MODEL=HUGGINGFACE_MODEL
-MAILGUN_API_KEY=MAILGUN_API_KEY
-MAILGUN_DOMAIN=MAILGUN_DOMAIN
-MAILGUN_FROM_EMAIL=MAILGUN_FROM_EMAIL
+MJ_APIKEY_PUBLIC=MJ_APIKEY_PUBLIC
+MJ_APIKEY_PRIVATE=MJ_APIKEY_PRIVATE
+MAILJET_FROM_EMAIL=MAILJET_FROM_EMAIL
 ```
 
 <sub> create the `.env` file and configure the environment variables — see `.env.example` for details on each one </sub>

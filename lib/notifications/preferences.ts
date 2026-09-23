@@ -3,11 +3,13 @@ import { prisma } from "@/lib/db/prisma";
 export interface NotificationPreferences {
   wrappedReadyEmail: boolean;
   streakMilestoneEmail: boolean;
+  comparisonInviteEmail: boolean;
 }
 
 const DEFAULT_PREFERENCES: NotificationPreferences = {
   wrappedReadyEmail: true,
-  streakMilestoneEmail: true
+  streakMilestoneEmail: true,
+  comparisonInviteEmail: true
 };
 
 /**
@@ -23,7 +25,7 @@ const DEFAULT_PREFERENCES: NotificationPreferences = {
 export async function getNotificationPreferences(userId: string): Promise<NotificationPreferences> {
   const row = await prisma.notificationPreference.findUnique({
     where: { userId },
-    select: { wrappedReadyEmail: true, streakMilestoneEmail: true }
+    select: { wrappedReadyEmail: true, streakMilestoneEmail: true, comparisonInviteEmail: true }
   });
 
   return row ?? DEFAULT_PREFERENCES;
@@ -44,7 +46,7 @@ export async function setNotificationPreferences(
     where: { userId },
     create: { userId, ...DEFAULT_PREFERENCES, ...updates },
     update: updates,
-    select: { wrappedReadyEmail: true, streakMilestoneEmail: true }
+    select: { wrappedReadyEmail: true, streakMilestoneEmail: true, comparisonInviteEmail: true }
   });
 
   return row;

@@ -14,8 +14,8 @@ export async function GET() {
 
 /**
  * PATCH parcial (sección de `lib/notifications/preferences.ts`): el body
- * puede traer solo una de las dos preferencias, la otra no se toca.
- * Nunca acepta `userId` del body -- igual que `PATCH /api/wrapped`, solo
+ * puede traer solo una de las tres preferencias, las demás no se tocan.
+ * Nunca acepta `userId` del body -- igual que `PATCH /wrapped`, solo
  * puede modificar las preferencias del propio usuario autenticado.
  */
 export async function PATCH(request: Request) {
@@ -25,7 +25,7 @@ export async function PATCH(request: Request) {
   }
 
   const body = await request.json().catch(() => ({}));
-  const updates: { wrappedReadyEmail?: boolean; streakMilestoneEmail?: boolean } = {};
+  const updates: { wrappedReadyEmail?: boolean; streakMilestoneEmail?: boolean; comparisonInviteEmail?: boolean } = {};
 
   if (body?.wrappedReadyEmail !== undefined) {
     if (typeof body.wrappedReadyEmail !== "boolean") {
@@ -39,6 +39,13 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ error: "streakMilestoneEmail debe ser boolean" }, { status: 400 });
     }
     updates.streakMilestoneEmail = body.streakMilestoneEmail;
+  }
+
+  if (body?.comparisonInviteEmail !== undefined) {
+    if (typeof body.comparisonInviteEmail !== "boolean") {
+      return NextResponse.json({ error: "comparisonInviteEmail debe ser boolean" }, { status: 400 });
+    }
+    updates.comparisonInviteEmail = body.comparisonInviteEmail;
   }
 
   if (Object.keys(updates).length === 0) {

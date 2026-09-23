@@ -25,7 +25,7 @@ export function ScoreCard({ score, locale }: { score: DeveloperActivityScore; lo
         {(Object.keys(score.breakdown) as (keyof typeof score.breakdown)[]).map((key) => (
           <div key={key} className="flex items-center gap-3">
             <span className="w-24 shrink-0 text-xs text-cool-muted">{dimensionLabels[key]}</span>
-            <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/10">
+            <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-cool-muted/15">
               <div
                 className="h-full rounded-full bg-cool-violet"
                 style={{ width: `${score.breakdown[key]}%` }}

@@ -37,7 +37,7 @@ env:
 
 jobs:
   typecheck:
-    name: Typecheck (tsc)
+    name: Typecheck (tsc) + Lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -50,6 +50,14 @@ jobs:
         env:
           DATABASE_URL: "postgresql://user:pass@localhost:5432/unused_at_generate_time"
       - run: npx tsc --noEmit
+      # ⚠️ Agregado junto con .eslintrc.json -- el script `lint` existía
+      # en package.json desde el principio pero `eslint`/`eslint-config-next`
+      # nunca estuvieron instalados ni había config, así que nunca corrió
+      # ni acá ni en ningún lado. `next lint` sin config, en un entorno
+      # no interactivo como CI, no falla el build (Next.js lo saltea en
+      # silencio) -- por eso esto pasó desapercibido en vez de romper
+      # pipelines anteriores.
+      - run: npm run lint
 
   unit-tests:
     name: Tests unitarios + integración (Vitest)
@@ -111,6 +119,27 @@ jobs:
     env:
       DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/github_wrapped_e2e"
       E2E_BASE_URL: "http://localhost:3000"
+      # ⚠️ Corrección: faltaban CASI TODAS las variables que la app
+      # necesita para arrancar en modo producción (`next build && next
+      # start`, ver playwright.config.ts). Auth.js v5 exige `AUTH_SECRET`
+      # en runtime de producción -- sin ella tira `MissingSecret` en
+      # CADA request que toque sesión, que en este proyecto es
+      # prácticamente cada página (`auth()` se llama desde casi todos
+      # los Server Components de /app). Eso explica que el job entero
+      # falle con una sola X: el server nunca sirve una página válida,
+      # así que TODOS los specs fallan por igual, no uno en particular.
+      # Los valores acá son dummies solo para que la app bootee -- e2e
+      # nunca ejercita OAuth real (ver e2e/global-setup.ts, que inyecta
+      # la sesión directo en la base) ni cifra/descifra un token real.
+      AUTH_SECRET: "ci-e2e-dummy-auth-secret-do-not-use-in-prod"
+      AUTH_URL: "http://localhost:3000"
+      GITHUB_CLIENT_ID: "ci-dummy-client-id"
+      GITHUB_CLIENT_SECRET: "ci-dummy-client-secret"
+      # Hex de 64 chars (32 bytes) -- lib/auth/crypto.ts valida el
+      # largo exacto del buffer decodificado y tira si no matchea.
+      TOKEN_ENCRYPTION_KEY: "99227d6d93c22eb19e7475d5685b009cfa2ae867d40ba9fef5dcfacaca2567d9"
+      GITHUB_WEBHOOK_SECRET: "ci-dummy-webhook-secret"
+      WEBHOOK_BASE_URL: "http://localhost:3000"
       # ⚠️ `INNGEST_DEV=1` fuerza al SDK de Inngest a mandar eventos al
       # Inngest Dev Server local (ver el paso "Start Inngest Dev Server"
       # abajo) en vez de a Inngest Cloud -- sin esto, `inngest.send(...)`
