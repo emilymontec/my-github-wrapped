@@ -29,23 +29,23 @@ export const es = {
     pageTitle: "Configuración",
     notificationsSectionTitle: "Notificaciones",
     notificationsSectionDescription:
-      "Elegí qué avisos por email querés recibir. Podés desactivarlos en cualquier momento.",
+      "Elige qué avisos por email quieres recibir. Puedes desactivarlos en cualquier momento.",
     wrappedReadyLabel: "Tu Wrapped anual está listo",
     wrappedReadyDescription: "Un email cuando se genera el Wrapped de un año recién cerrado.",
     streakMilestoneLabel: "Nuevas rachas de commits",
-    streakMilestoneDescription: "Un email cuando alcanzás una racha de 7, 30 o 100 días seguidos.",
+    streakMilestoneDescription: "Un email cuando alcanzas una racha de 7, 30 o 100 días seguidos.",
     comparisonInviteLabel: "Invitaciones a comparar",
     comparisonInviteDescription: "Un email cuando alguien te invita a comparar tu actividad con la suya.",
     languageSectionTitle: "Idioma",
-    languageSectionDescription: "Elegí el idioma de la interfaz y de los emails que te enviamos.",
+    languageSectionDescription: "Elige el idioma de la interfaz y de los emails que te enviamos.",
     languageSpanish: "Español",
     languageEnglish: "English",
     appearanceSectionTitle: "Apariencia",
-    appearanceSectionDescription: "Elegí el color de acento de la interfaz. El modo claro/oscuro se cambia desde el botón en la parte superior.",
+    appearanceSectionDescription: "Elige el color de acento de la interfaz. El modo claro/oscuro se cambia desde el botón en la parte superior.",
     preferenceUpdateError: "No se pudo actualizar la preferencia.",
     privateRepos: {
       title: "Repositorios privados",
-      intro: "Por defecto, GitHub Wrapped solo analiza tus repositorios públicos. Si activás esta opción, también vamos a leer los",
+      intro: "Por defecto, GitHub Wrapped solo analiza tus repositorios públicos. Si activas esta opción, también vamos a leer los",
       introBold: "nombres, commits y lenguajes",
       introRest: "de tus repositorios privados para incluirlos en tus estadísticas.",
       note: "Nunca leemos ni almacenamos el",
@@ -54,7 +54,7 @@ export const es = {
         "— solo metadata agregada (cuántos commits, en qué lenguaje, cuándo). Esa metadata nunca se hace pública automáticamente: compartir tu Wrapped sigue siendo una decisión aparte (ver",
       noteShareLink: "Compartir",
       noteEnd:
-        "dentro de cada Wrapped). Podés desactivar esto en cualquier momento — al hacerlo, borramos los datos de repos privados ya sincronizados, no solo dejamos de traer nuevos.",
+        "dentro de cada Wrapped). Puedes desactivar esto en cualquier momento — al hacerlo, borramos los datos de repos privados ya sincronizados, no solo dejamos de traer nuevos.",
       connectButton: "Conectar repos privados",
       includedLabel: "Repos privados incluidos",
       notIncludedLabel: "Repos privados no incluidos",
@@ -70,16 +70,16 @@ export const es = {
     dataExport: {
       title: "Exportar tus datos",
       description:
-        "Descargá una copia de todo lo que GitHub Wrapped guarda sobre vos: perfil, repositorios, commits, lenguajes, Wrapped generados, insights, badges y comparaciones. Nunca incluye tus tokens de acceso a GitHub.",
+        "Descarga una copia de todo lo que GitHub Wrapped guarda sobre ti: perfil, repositorios, commits, lenguajes, Wrapped generados, insights, badges y comparaciones. Nunca incluye tus tokens de acceso a GitHub.",
       requestButton: "Solicitar export",
       requestAnother: "Solicitar otro export",
       statusQueued: "En cola…",
       statusRunning: "Generando tu export…",
       statusCompleted: "Tu export está listo.",
-      statusFailed: "No se pudo generar el export. Probá de nuevo.",
+      statusFailed: "No se pudo generar el export. Prueba de nuevo.",
       downloadButton: "Descargar JSON",
       genericError: "No se pudo solicitar el export.",
-      rateLimitError: "Ya pediste el máximo de exports permitidos por hoy. Probá de nuevo mañana."
+      rateLimitError: "Ya pediste el máximo de exports permitidos por hoy. Prueba de nuevo mañana."
     },
     deleteAccount: {
       title: "Eliminar tu cuenta",
@@ -103,7 +103,7 @@ export const es = {
       body: "Tu GitHub Wrapped {year} ya se generó y está esperándote: tu volumen de commits, tus lenguajes, tu racha más larga y los patrones que detectamos en tu actividad de este año.",
       cta: "Ver mi Wrapped",
       footer:
-        "Recibiste este email porque tenés notificaciones activadas en GitHub Wrapped. Podés desactivarlas en cualquier momento desde tu configuración."
+        "Recibiste este email porque tienes notificaciones activadas en GitHub Wrapped. Puedes desactivarlas en cualquier momento desde tu configuración."
     },
     streakMilestone: {
       subject: "Nueva racha desbloqueada: {badgeLabel} 🔥",
@@ -112,16 +112,16 @@ export const es = {
       body: "Llegaste a una racha de {streakLength} días programando seguidos y ganaste el badge \"{badgeLabel}\".",
       cta: "Ver mi dashboard",
       footer:
-        "Recibiste este email porque tenés notificaciones activadas en GitHub Wrapped. Podés desactivarlas en cualquier momento desde tu configuración."
+        "Recibiste este email porque tienes notificaciones activadas en GitHub Wrapped. Puedes desactivarlas en cualquier momento desde tu configuración."
     },
     comparisonInvite: {
       subject: "{username} te invitó a comparar en GitHub Wrapped",
       greetingNamed: "Hola {name}",
       greetingGeneric: "Hola",
-      body: "{username} quiere comparar su actividad de GitHub con la tuya. La comparación solo se muestra si vos también aceptás — podés rechazarla o revocarla cuando quieras.",
+      body: "{username} quiere comparar su actividad de GitHub con la tuya. La comparación solo se muestra si tú también aceptas — puedes rechazarla o revocarla cuando quieras.",
       cta: "Ver invitación",
       footer:
-        "Recibiste este email porque alguien te invitó a comparar en GitHub Wrapped. Si no esperabas esto, podés ignorarlo con tranquilidad."
+        "Recibiste este email porque alguien te invitó a comparar en GitHub Wrapped. Si no esperabas esto, puedes ignorarlo con tranquilidad."
     }
   },
   badges: {
@@ -162,7 +162,7 @@ export const es = {
     emptyStateDescription: "Sincroniza tu cuenta de GitHub arriba para ver tu actividad, lenguajes y rachas.",
     periodEmptyTitle: "Sin actividad en este período",
     periodEmptyDescription:
-      "Probá con un rango más amplio, o esperá a que termine la sincronización si acabás de conectar tu cuenta.",
+      "Prueba con un rango más amplio, o espera a que termine la sincronización si acabas de conectar tu cuenta.",
     periodLoadError: "No se pudo cargar el período seleccionado. Intenta de nuevo.",
     statCommits: "Commits",
     statActiveRepos: "Repos activos",
@@ -262,7 +262,7 @@ export const es = {
       isPublicLabel: "Tu Wrapped es público",
       isPrivateLabel: "Tu Wrapped es privado",
       isPublicDescription: "Cualquiera con el link puede verlo.",
-      isPrivateDescription: "Solo vos podés verlo.",
+      isPrivateDescription: "Solo tú puedes verlo.",
       makePrivate: "Hacer privado",
       makePublic: "Hacer público",
       copy: "Copiar",
@@ -280,7 +280,7 @@ export const es = {
     pageTitle: "Comparaciones",
     pageDescription:
       "Invita a otro usuario a comparar su actividad con la tuya. Nunca es automático — la otra persona tiene que aceptar, y cualquiera de los dos puede revocarlo después.",
-    emptyList: "Todavía no tenés ninguna comparación.",
+    emptyList: "Todavía no tienes ninguna comparación.",
     invitedPrefix: "Invitaste a",
     invitedByPrefix: "Te invitó",
     statusPending: "Pendiente",
@@ -294,9 +294,9 @@ export const es = {
     inviteButton: "Invitar a comparar",
     inviteSending: "Enviando…",
     inviteGenericError: "No se pudo enviar la invitación.",
-    inviteEmailSent: "Listo — le mandamos un email de invitación.",
+    inviteEmailSent: "Listo — le enviamos un email de invitación.",
     inviteEmailFailed:
-      "Creamos la invitación pero no pudimos mandar el email. El link sigue siendo válido por 7 días — probá de nuevo más tarde.",
+      "Creamos la invitación pero no pudimos enviar el email. El link sigue siendo válido por 7 días — prueba de nuevo más tarde.",
     vsLabel: "vs",
     metricCommits: "Commits",
     metricActiveDays: "Días activos",
@@ -307,13 +307,13 @@ export const es = {
     invitePage: {
       heading: "{username} te invitó a comparar",
       description:
-        "Vas a poder ver tu actividad de GitHub una al lado de la otra con la de {username}. La comparación solo se muestra si vos también aceptás.",
-      signInToAccept: "Iniciá sesión con GitHub para aceptar",
+        "Vas a poder ver tu actividad de GitHub una al lado de la otra con la de {username}. La comparación solo se muestra si tú también aceptas.",
+      signInToAccept: "Inicia sesión con GitHub para aceptar",
       accept: "Aceptar y comparar",
       decline: "No, gracias",
       declined: "Rechazaste esta invitación.",
       notFound: "Esta invitación no existe o el link está mal copiado.",
-      expired: "Esta invitación venció. Pedile a la persona que te invitó que te mande una nueva.",
+      expired: "Esta invitación venció. Pídele a la persona que te invitó que te envíe una nueva.",
       alreadyResolved: "Esta invitación ya se resolvió.",
       viewComparisons: "Ver mis comparaciones"
     }

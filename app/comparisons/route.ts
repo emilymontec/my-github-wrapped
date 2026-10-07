@@ -47,9 +47,9 @@ export async function POST(request: Request) {
       const status = result.error === "invalid_email" || result.error === "inviter_incomplete" ? 400 : 409;
       const messages: Record<string, string> = {
         invalid_email: "Esa dirección de email no parece válida.",
-        self: "No podés invitarte a vos mismo.",
+        self: "No puedes invitarte a ti mismo.",
         already_exists: "Ya existe una comparación (pendiente, aceptada o esperando respuesta) con ese usuario.",
-        inviter_incomplete: "Tu cuenta todavía no terminó de configurarse — probá de nuevo en un momento."
+        inviter_incomplete: "Tu cuenta todavía no terminó de configurarse — prueba de nuevo en un momento."
       };
       return NextResponse.json({ error: messages[result.error] }, { status });
     }
@@ -68,7 +68,7 @@ export async function POST(request: Request) {
     const status = result.error === "not_found" ? 404 : 409;
     const messages: Record<string, string> = {
       not_found: "No existe ningún usuario con ese username en GitHub Wrapped.",
-      self: "No podés compararte con vos mismo.",
+      self: "No puedes compararte contigo mismo.",
       already_exists: "Ya existe una comparación (pendiente, aceptada o esperando respuesta) con ese usuario."
     };
     return NextResponse.json({ error: messages[result.error] }, { status });

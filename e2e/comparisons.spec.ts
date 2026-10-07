@@ -16,7 +16,7 @@ test.describe("Comparaciones", () => {
 
     await expect(page.getByRole("heading", { name: "Comparaciones" })).toBeVisible();
     await expect(page.getByPlaceholder(/username de github/i)).toBeVisible();
-    await expect(page.getByText(/todavía no tenés ninguna comparación/i)).toBeVisible();
+    await expect(page.getByText(/todavía no tienes ninguna comparación/i)).toBeVisible();
   });
 
   test("invitar a un username que no existe muestra un error, no un crash", async ({ page }) => {
