@@ -476,9 +476,7 @@ See the [LICENSE](LICENSE) file for additional information.
 
 ---
 
-<!--
-## Appendices
-See the [UserGuide](docs/) to learn more.
 
-If you want to know more about the system, please check the [Documentation](docs/).
--->
+## Appendices
+
+If you want to know more about the system, please check the [Documentation](docs/DOCUMENTACION%20TECNICA%20MY%20GITHUB%20WRAPPED.pdf).
