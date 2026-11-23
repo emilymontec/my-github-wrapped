@@ -89,7 +89,7 @@ export const es = {
       cancelButton: "Cancelar",
       confirmLabel: "Escribe tu username ({username}) para confirmar",
       confirmPlaceholder: "tu-username",
-      confirmButton: "Si, eliminar mi cuenta para siempre",
+      confirmButton: "Sí, eliminar mi cuenta para siempre",
       deleting: "Eliminando…",
       mismatchError: "El username no coincide.",
       genericError: "No se pudo eliminar la cuenta."

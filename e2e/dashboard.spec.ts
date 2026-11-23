@@ -15,12 +15,13 @@ test.describe("Dashboard", () => {
 
   test("el selector de período cambia los datos mostrados sin recargar la página", async ({ page }) => {
     const periodSelector = page.getByRole("button", { name: /este año/i });
+    const analyticsResponse = page.waitForResponse((res) => res.url().includes("/analytics") && res.ok());
     await periodSelector.click();
 
     // Cambiar de período dispara un fetch a /analytics -- se espera
     // la respuesta en vez de un timeout fijo, para no depender de cuán
     // rápido responda el entorno donde corra esto.
-    await page.waitForResponse((res) => res.url().includes("/analytics") && res.ok());
+    await analyticsResponse;
     await expect(page.getByText(/analizando|cargando/i)).toBeHidden();
   });
 
@@ -38,13 +39,13 @@ test.describe("Dashboard", () => {
       await route.continue();
     });
 
-    const syncButton = page.getByRole("button", { name: /sincronizar ahora|sync now/i });
+    const syncButton = page.getByRole("button", { name: /sincronizar|sync now/i });
     await expect(syncButton).toBeVisible();
 
     await syncButton.click();
     // Solo se prueba el estado visual; la ruta de sync queda simulada para
     // no depender de Inngest ni de la API real de GitHub.
-    await expect(page.getByText(/analizando tu github|sincronizando/i)).toBeVisible();
+    await expect(page.getByText(/analizando tu github|sincronizando|analyzing your github|syncing/i)).toBeVisible();
   });
 
   test("los badges y los insights se renderizan sin errores de consola", async ({ page }) => {

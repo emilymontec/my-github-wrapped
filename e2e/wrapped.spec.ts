@@ -9,7 +9,7 @@ test.describe("Wrapped", () => {
     // e2e/seed.ts ya pre-generó el WrappedReport de PREVIOUS_YEAR -- no
     // debería aparecer el CTA de "generar", debería ir directo al deck.
     await expect(page.getByRole("button", { name: /generar mi wrapped/i })).toBeHidden();
-    await expect(page.getByText(String(PREVIOUS_YEAR))).toBeVisible();
+    await expect(page.getByRole("heading", { name: String(PREVIOUS_YEAR) })).toBeVisible();
   });
 
   test("las flechas de navegación avanzan y retroceden slides", async ({ page }) => {
@@ -22,7 +22,7 @@ test.describe("Wrapped", () => {
 
     const prevZone = page.getByRole("button", { name: /slide anterior/i });
     await prevZone.click();
-    await expect(page.getByText(String(PREVIOUS_YEAR))).toBeVisible();
+    await expect(page.getByRole("heading", { name: String(PREVIOUS_YEAR) })).toBeVisible();
   });
 
   test("el panel de compartir permite alternar público/privado", async ({ page }) => {

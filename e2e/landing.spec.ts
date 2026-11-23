@@ -19,7 +19,10 @@ test.describe("Landing", () => {
     // que lee `middleware.ts` para sembrar la cookie NEXT_LOCALE (ver
     // lib/i18n/resolve.ts::parseAcceptLanguage). Un contexto nuevo sin
     // cookies previas simula a un visitante que nunca estuvo antes.
-    const context = await browser.newContext({ extraHTTPHeaders: { "Accept-Language": "en-US,en;q=0.9" } });
+    const context = await browser.newContext({
+      locale: "en-US",
+      extraHTTPHeaders: { "Accept-Language": "en-US,en;q=0.9" }
+    });
     const page = await context.newPage();
 
     await page.goto("/");
@@ -40,6 +43,10 @@ test.describe("Landing", () => {
     // proyecto). Eso es intencional: más allá de este punto es
     // infraestructura de un tercero, no código de este proyecto (ver
     // e2e/global-setup.ts para el bypass que usa el resto de la suite).
-    await page.waitForURL(/github\.com\/login\/oauth\/authorize/, { timeout: 10_000 });
+    await page.waitForURL(
+      (url) => url.hostname === "github.com" && url.pathname === "/login" && url.searchParams.has("client_id"),
+      { timeout: 10_000 }
+    );
+    expect(new URL(page.url()).searchParams.get("return_to")).toContain("/login/oauth/authorize");
   });
 });
