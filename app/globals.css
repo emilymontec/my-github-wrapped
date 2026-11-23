@@ -24,6 +24,9 @@
    Por eso cada paleta tiene versión oscura Y clara. */
 
 :root {
+  --font-display: "Trebuchet MS", "Arial", sans-serif;
+  --font-body: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+
   /* -- Tema: oscuro (default) -- */
   --color-ink: 5 6 12;
   --color-panel: 10 13 22;
