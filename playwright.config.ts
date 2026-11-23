@@ -37,6 +37,7 @@ export default defineConfig({
   globalTeardown: "./e2e/global-teardown.ts",
   use: {
     baseURL: process.env.E2E_BASE_URL ?? "http://localhost:3000",
+    locale: "es-AR",
     trace: "on-first-retry",
     screenshot: "only-on-failure"
   },
