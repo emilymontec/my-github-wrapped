@@ -25,13 +25,25 @@ test.describe("Dashboard", () => {
   });
 
   test("el panel de sincronización permite disparar una sync y muestra progreso", async ({ page }) => {
-    const syncButton = page.getByRole("button", { name: /generar mi wrapped|sincronizando/i });
+    await page.route("**/sync", async (route) => {
+      if (route.request().method() === "POST") {
+        await route.fulfill({
+          status: 200,
+          contentType: "application/json",
+          body: JSON.stringify({ status: "queued" })
+        });
+        return;
+      }
+
+      await route.continue();
+    });
+
+    const syncButton = page.getByRole("button", { name: /sincronizar ahora/i });
     await expect(syncButton).toBeVisible();
 
     await syncButton.click();
-    // No se espera a que la sync real termine (dependería de la API real
-    // de GitHub con el token dummy del seed, ver e2e/seed.ts) -- solo que
-    // el estado visual cambie a "en progreso".
+    // Solo se prueba el estado visual; la ruta de sync queda simulada para
+    // no depender de Inngest ni de la API real de GitHub.
     await expect(page.getByText(/analizando tu github|sincronizando/i)).toBeVisible();
   });
 

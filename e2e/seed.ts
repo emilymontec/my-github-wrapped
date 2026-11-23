@@ -60,6 +60,13 @@ export async function seedTestUser(prisma: PrismaClient): Promise<void> {
       notificationPreference: {
         create: { wrappedReadyEmail: true, streakMilestoneEmail: true }
       },
+      syncState: {
+        create: {
+          status: "COMPLETED",
+          progress: 100,
+          lastSyncedAt: new Date()
+        }
+      },
       repositories: {
         create: [
           {
