@@ -9,7 +9,7 @@ test.describe("Dashboard", () => {
     await expect(page.getByText(/hola, e2e test user/i)).toBeVisible();
 
     // Datos exactos de e2e/seed.ts -- 10 commits en el repo "github-wrapped".
-    await expect(page.getByText("Commits")).toBeVisible();
+    await expect(page.getByText("Commits", { exact: true })).toBeVisible();
     await expect(page.getByText("10").first()).toBeVisible();
   });
 
@@ -38,7 +38,7 @@ test.describe("Dashboard", () => {
       await route.continue();
     });
 
-    const syncButton = page.getByRole("button", { name: /sincronizar ahora/i });
+    const syncButton = page.getByRole("button", { name: /sincronizar ahora|sync now/i });
     await expect(syncButton).toBeVisible();
 
     await syncButton.click();

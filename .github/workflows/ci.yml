@@ -54,6 +54,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     needs: quality
+    if: ${{ !cancelled() }}
 
     services:
       postgres:
@@ -98,6 +99,18 @@ jobs:
 
       - name: Apply database schema
         run: npx prisma db push
+
+      - name: Start Inngest Dev Server
+        run: |
+          npx --ignore-scripts=false inngest-cli@latest dev -u http://localhost:3000/api/inngest > /tmp/inngest.log 2>&1 &
+          for attempt in {1..30}; do
+            if curl --fail --silent --output /dev/null http://127.0.0.1:8288; then
+              exit 0
+            fi
+            sleep 2
+          done
+          cat /tmp/inngest.log
+          exit 1
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium firefox webkit

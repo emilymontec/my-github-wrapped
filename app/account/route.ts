@@ -34,13 +34,11 @@ export async function DELETE(request: Request) {
     );
   }
 
-  await deleteAccount(session.user.id);
-
   // La sesión (strategy "database") queda huérfana apenas se borra el
-  // User -- su fila en `Session` ya cayó en la misma cascada. `signOut`
-  // limpia además la cookie del lado del cliente para que la próxima
-  // navegación no dependa de que el middleware detecte la sesión rota.
-  await signOut({ redirect: false }).catch(() => {});
+  // User -- cerrar sesión primero evita que el adapter intente borrar
+  // una fila que la cascada del User ya eliminó.
+  await signOut({ redirect: false });
+  await deleteAccount(session.user.id);
 
   return NextResponse.json({ status: "deleted" });
 }

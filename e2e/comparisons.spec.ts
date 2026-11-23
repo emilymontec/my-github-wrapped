@@ -25,6 +25,6 @@ test.describe("Comparaciones", () => {
     await page.getByPlaceholder(/username de github/i).fill("usuario-que-no-existe-e2e-12345");
     await page.getByRole("button", { name: /invitar a comparar/i }).click();
 
-    await expect(page.getByText(/no se pudo enviar la invitación|no encontrado/i)).toBeVisible();
+    await expect(page.getByText(/no se pudo enviar la invitación|no existe ningún usuario|no encontrado/i)).toBeVisible();
   });
 });
