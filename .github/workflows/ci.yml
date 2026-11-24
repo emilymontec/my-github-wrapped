@@ -8,6 +8,14 @@ on:
 permissions:
   contents: read
 
+# Un push nuevo cancela la corrida anterior de la misma rama en vez de
+# dejarla corriendo en paralelo -- evita gastar minutos de runner en
+# runs que ya fueron reemplazados (y es lo que hasta ahora se hacía a
+# mano, con los runs quedando en estado "cancelled" a mitad del job e2e).
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   quality:
     name: Typecheck, lint and tests
@@ -119,7 +127,11 @@ jobs:
         run: npm run test:e2e
 
       - name: Upload Playwright report
-        if: failure()
+        # `always()` en vez de `failure()`: un run cancelado (o uno cuyo
+        # job falló antes del paso) también debe dejar el HTML report +
+        # los screenshots/traces de `test-results/` como artefacto, que
+        # es justamente lo que falta para diagnosticar error.txt.
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report

@@ -30,10 +30,22 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
+  // El default de Playwright es 5000ms, y en CI eso se queda corto: el
+  // primer render de cada ruta es el más lento de la corrida (bundle de
+  // la ruta + motor de Prisma en frío + queries del seed), así que el
+  // PRIMER test de cada archivo expiraba justo antes de que pintara el
+  // elemento mientras el resto de los tests de ese archivo —ya con la
+  // ruta caliente— pasaban. Ver e2e/global-setup.ts (warm-up).
+  expect: {
+    timeout: process.env.CI ? 15_000 : 5_000
+  },
+  // Debe superar holgadamente el `expect` de arriba: si un test llega a
+  // agotar el timeout por test (30s default) en vez de fallar en el
+  // assert, el mensaje de error deja de decir qué elemento faltaba.
+  timeout: process.env.CI ? 45_000 : 30_000,
   // E2E specs share one seeded account/database; serial CI avoids races in mutable preferences.
   workers: process.env.CI ? 1 : undefined,
   reporter: process.env.CI ? [["html", { open: "never" }], ["github"]] : "list",
-  timeout: 30_000,
   globalSetup: "./e2e/global-setup.ts",
   globalTeardown: "./e2e/global-teardown.ts",
   use: {
@@ -53,7 +65,10 @@ export default defineConfig({
     command: "npm run build && npm run start",
     url: process.env.E2E_BASE_URL ?? "http://localhost:3000",
     reuseExistingServer: !process.env.CI,
-    timeout: 120_000
+    // `npm run build && npm run start` en un runner frío de CI se acerca
+    // al default de 120s; si lo supera el run entero muere con
+    // "Timeout while waiting for server" antes de correr un solo test.
+    timeout: 240_000
   },
   projects: [
     { name: "chromium", use: { ...devices["Desktop Chrome"] } },

@@ -1,0 +1,114 @@
+Run npm run test:e2e
+
+> github-wrapped@0.2.0 test:e2e
+> playwright test
+
+
+Running 84 tests using 1 worker
+··×±
+Error:   1) [chromium] › e2e/dashboard.spec.ts:8:7 › Dashboard › muestra el saludo y las cuatro estadísticas principales con datos del seed 
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByText(/hola, e2e test user/i)
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByText(/hola, e2e test user/i) with timeout 5000ms
+      - waiting for getByText(/hola, e2e test user/i)
+
+
+       7 |
+       8 |   test("muestra el saludo y las cuatro estadísticas principales con datos del seed", async ({ page }) => {
+    >  9 |     await expect(page.getByText(/hola, e2e test user/i)).toBeVisible();
+         |                                                          ^
+      10 |
+      11 |     // Datos exactos de e2e/seed.ts -- 10 commits en el repo "github-wrapped".
+      12 |     await expect(page.getByText("Commits", { exact: true })).toBeVisible();
+        at /home/runner/work/my-github-wrapped/my-github-wrapped/e2e/dashboard.spec.ts:9:58
+[WebServer] PrismaClientKnownRequestError: 
+[WebServer] Invalid `prisma.syncState.update()` invocation:
+[WebServer] 
+[WebServer] 
+[WebServer] An operation failed because it depends on one or more records that were required but not found. Record to update not found.
+[WebServer]     at $n.handleRequestError (/home/runner/work/my-github-wrapped/my-github-wrapped/node_modules/@prisma/client/runtime/library.js:121:7315)
+[WebServer]     at $n.handleAndLogRequestError (/home/runner/work/my-github-wrapped/my-github-wrapped/node_modules/@prisma/client/runtime/library.js:121:6623)
+[WebServer]     at $n.request (/home/runner/work/my-github-wrapped/my-github-wrapped/node_modules/@prisma/client/runtime/library.js:121:6307)
+[WebServer]     at async l (/home/runner/work/my-github-wrapped/my-github-wrapped/node_modules/@prisma/client/runtime/library.js:130:9633)
+[WebServer]     at async /home/runner/work/my-github-wrapped/my-github-wrapped/.next/server/app/api/inngest/route.js:38:720
+[WebServer]     at async h (/home/runner/work/my-github-wrapped/my-github-wrapped/.next/server/chunks/2064.js:7:7117)
+[WebServer]     at async I.tryExecuteStep (/home/runner/work/my-github-wrapped/my-github-wrapped/.next/server/chunks/2064.js:1:126449)
+[WebServer]     at async steps-found (/home/runner/work/my-github-wrapped/my-github-wrapped/.next/server/chunks/2064.js:1:122981)
+[WebServer]     at async I._start (/home/runner/work/my-github-wrapped/my-github-wrapped/.next/server/chunks/2064.js:1:119288)
+[WebServer]     at async I.handleAction (/home/runner/work/my-github-wrapped/my-github-wrapped/.next/server/app/api/inngest/route.js:1:15106) {
+[WebServer]   code: 'P2025',
+[WebServer]   clientVersion: '5.22.0',
+[WebServer]   meta: { modelName: 'SyncState', cause: 'Record to update not found.' }
+[WebServer] }
+[WebServer] PrismaClientKnownRequestError: 
+[WebServer] Invalid `prisma.dataExportRequest.update()` invocation:
+[WebServer] 
+[WebServer] 
+[WebServer] An operation failed because it depends on one or more records that were required but not found. Record to update not found.
+[WebServer]     at $n.handleRequestError (/home/runner/work/my-github-wrapped/my-github-wrapped/node_modules/@prisma/client/runtime/library.js:121:7315)
+[WebServer]     at $n.handleAndLogRequestError (/home/runner/work/my-github-wrapped/my-github-wrapped/node_modules/@prisma/client/runtime/library.js:121:6623)
+[WebServer]     at $n.request (/home/runner/work/my-github-wrapped/my-github-wrapped/node_modules/@prisma/client/runtime/library.js:121:6307)
+[WebServer]     at async l (/home/runner/work/my-github-wrapped/my-github-wrapped/node_modules/@prisma/client/runtime/library.js:130:9633)
+[WebServer]     at async h (/home/runner/work/my-github-wrapped/my-github-wrapped/.next/server/chunks/2064.js:7:7117)
+[WebServer]     at async I.tryExecuteStep (/home/runner/work/my-github-wrapped/my-github-wrapped/.next/server/chunks/2064.js:1:126449)
+[WebServer]     at async steps-found (/home/runner/work/my-github-wrapped/my-github-wrapped/.next/server/chunks/2064.js:1:122981)
+[WebServer]     at async I._start (/home/runner/work/my-github-wrapped/my-github-wrapped/.next/server/chunks/2064.js:1:119288)
+[WebServer]     at async I.handleAction (/home/runner/work/my-github-wrapped/my-github-wrapped/.next/server/app/api/inngest/route.js:1:15106)
+[WebServer]     at async k.wrap (/home/runner/work/my-github-wrapped/my-github-wrapped/.next/server/app/api/inngest/route.js:1:1446) {
+[WebServer]   code: 'P2025',
+[WebServer]   clientVersion: '5.22.0',
+[WebServer]   meta: {
+[WebServer]     modelName: 'DataExportRequest',
+[WebServer]     cause: 'Record to update not found.'
+[WebServer]   }
+[WebServer] }
+··········×±
+Error:   2) [chromium] › e2e/settings.spec.ts:4:7 › Settings — idioma › cambiar a inglés persiste tras recargar la página (cookie NEXT_LOCALE) 
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('heading', { name: 'Configuración' })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('heading', { name: 'Configuración' }) with timeout 5000ms
+      - waiting for getByRole('heading', { name: 'Configuración' })
+
+
+      4 |   test("cambiar a inglés persiste tras recargar la página (cookie NEXT_LOCALE)", async ({ page }) => {
+      5 |     await page.goto("/settings");
+    > 6 |     await expect(page.getByRole("heading", { name: "Configuración" })).toBeVisible();
+        |                                                                        ^
+      7 |
+      8 |     await page.getByRole("button", { name: "English" }).click();
+      9 |     await expect(page.getByRole("heading", { name: "Settings" })).toBeVisible();
+        at /home/runner/work/my-github-wrapped/my-github-wrapped/e2e/settings.spec.ts:6:72
+···×±
+Error:   3) [chromium] › e2e/wrapped.spec.ts:6:7 › Wrapped › el año cerrado del seed muestra el deck de slides, no el CTA de generar 
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('heading', { name: '2025' })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('heading', { name: '2025' }) with timeout 5000ms
+      - waiting for getByRole('heading', { name: '2025' })
+
+
+      10 |     // debería aparecer el CTA de "generar", debería ir directo al deck.
+      11 |     await expect(page.getByRole("button", { name: /generar mi wrapped/i })).toBeHidden();
+    > 12 |     await expect(page.getByRole("heading", { name: String(PREVIOUS_YEAR) })).toBeVisible();
+         |                                                                              ^
+      13 |   });
+      14 |
+      15 |   test("las flechas de navegación avanzan y retroceden slides", async ({ page }) => {
+        at /home/runner/work/my-github-wrapped/my-github-wrapped/e2e/wrapped.spec.ts:12:78
